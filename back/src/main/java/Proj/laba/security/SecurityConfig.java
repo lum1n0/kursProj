@@ -57,24 +57,24 @@ public class SecurityConfig {
     }
 
 
-
     @Bean
-public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-    http
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http
             .csrf(csrf -> csrf.disable())
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .sessionManagement(session -> session
-                    .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-                    .requestMatchers(PUBLIC_ENDPOINTS).permitAll()
-                    .anyRequest().authenticated()
+                .requestMatchers(PUBLIC_ENDPOINTS).permitAll()
+                .requestMatchers("/api/profile/**").authenticated() // Доступ для аутентифицированных
+                .requestMatchers("/api/admin/**").hasRole("ADMIN") // Только для админов
+                .anyRequest().authenticated()
             )
             .authenticationProvider(authenticationProvider())
             .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
-
-
-    return http.build();
-}
+    
+        return http.build();
+    }
 
 
     @Bean

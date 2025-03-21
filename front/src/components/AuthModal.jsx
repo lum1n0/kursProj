@@ -1,6 +1,6 @@
-// src/components/AuthModal.jsx
 import React, { useState } from 'react';
-import { login, register } from '../api/ApiClient'; // Импортируй login и register
+import { login, register } from '../api/ApiClient';
+import Cookies from 'js-cookie'; // Добавь этот импорт
 
 function AuthModal({ isOpen, onClose, onLoginSuccess }) {
   const [isLogin, setIsLogin] = useState(true);
@@ -12,32 +12,30 @@ function AuthModal({ isOpen, onClose, onLoginSuccess }) {
     e.preventDefault();
     console.log("handleLogin called");
     try {
-      await login(loginValue, password);
-      console.log("Login successful");
+      const response = await login(loginValue, password);
+      console.log("Login response:", response); // Проверяем, что возвращает сервер
+      Cookies.set('jwtToken', response.token); // Сохраняем токен вручную
+      console.log("Login successful, token saved:", Cookies.get('jwtToken'));
       onClose();
-      onLoginSuccess(); 
+      onLoginSuccess();
     } catch (error) {
       console.error("Login failed", error);
       alert("Неверное имя пользователя или пароль");
     }
   };
-  
-  
-  
-
 
   const handleRegister = async (e) => {
     e.preventDefault();
     try {
       const userData = {
-        login: loginValue,  // Исправлено: login -> loginValue
+        login: loginValue,
         password: password,
-        confirmPassword: password, 
+        confirmPassword: password,
         email: email,
       };
       await register(userData);
       alert("Registration successful! Please log in.");
-      setIsLogin(true); 
+      setIsLogin(true);
     } catch (error) {
       console.error("Registration failed", error);
       alert("Registration failed: " + error.response?.data?.message || "Unknown error");
@@ -49,10 +47,10 @@ function AuthModal({ isOpen, onClose, onLoginSuccess }) {
   return (
     <div className="modal">
       <div className="modal-content">
-        <span className="close" onClick={onClose}>&times;</span>
-        <h2>{isLogin ? 'Вход' : 'Регистрация'}</h2> {/* Раскомментируй заголовок */}
-        <form onSubmit={isLogin ? handleLogin : handleRegister}> {/*  Добавь обработчик onSubmit */}
-          {!isLogin && ( 
+        <span className="close" onClick={onClose}>×</span>
+        <h2>{isLogin ? 'Вход' : 'Регистрация'}</h2>
+        <form onSubmit={isLogin ? handleLogin : handleRegister}>
+          {!isLogin && (
             <input
               type="email"
               placeholder="Email"
@@ -64,7 +62,7 @@ function AuthModal({ isOpen, onClose, onLoginSuccess }) {
           <input
             type="text"
             placeholder="Имя пользователя"
-            value={loginValue} 
+            value={loginValue}
             onChange={(e) => setLogin(e.target.value)}
             required
           />
@@ -75,10 +73,10 @@ function AuthModal({ isOpen, onClose, onLoginSuccess }) {
             onChange={(e) => setPassword(e.target.value)}
             required
           />
-          <button type="submit">{isLogin ? 'Войти' : 'Зарегистрироваться'}</button> {/* Раскомментируй кнопку */}
+          <button type="submit">{isLogin ? 'Войти' : 'Зарегистрироваться'}</button>
         </form>
-        <button onClick={() => setIsLogin(!isLogin)}> {/* Раскомментируй кнопку переключения */}
-          {isLogin ? 'Создать аккаунт' : 'У меня есть аккаунт'} 
+        <button onClick={() => setIsLogin(!isLogin)}>
+          {isLogin ? 'Создать аккаунт' : 'У меня есть аккаунт'}
         </button>
       </div>
     </div>

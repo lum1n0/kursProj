@@ -1,8 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import { ApiClient } from '../api/ApiClient';
-import Cookies from 'js-cookie';
-import { jwtDecode } from "jwt-decode";
 
 function User() {
   const [userData, setUserData] = useState(null);
@@ -10,59 +7,41 @@ function User() {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [phone, setPhone] = useState('');
-  const [userId, setUserId] = useState(null); // State для хранения ID пользователя
 
-   useEffect(() => {
-    console.log("useEffect запущен"); //  Добавляем лог
-    const decodeToken = () => {
-      const token = Cookies.get('jwtToken');
-      if (token) {
-        console.log("token:", token); //  Добавляем лог
-        try {
-          const decodedToken = jwtDecode(token);
-          console.log("Decoded Token:", decodedToken); //  Проверка содержимого токена
-          //  Предполагаем, что ID пользователя находится в поле 'id' токена
-          setUserId(decodedToken.id);
-          console.log("decode");
-          return decodedToken.id;
-        } catch (error) {
-          console.error("Error decoding token:", error);
-          return null;
-        }
-      } else {
-        console.log("No token found in cookies"); //  Добавляем лог
-        return null;
+  const fetchUserData = async () => {
+    try {
+      console.log("Fetching user data");
+      const response = await ApiClient.get('/api/profile/me');
+      console.log("User data fetched:", response.data);
+      setUserData(response.data);
+      setFirstName(response.data.firstName || '');
+      setLastName(response.data.lastName || '');
+      setPhone(response.data.phone || '');
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+      if (error.response) {
+        console.log("Response status:", error.response.status);
+        console.log("Response data:", error.response.data);
       }
-    };
-
-    const fetchUserData = async (userId) => {
-      try {
-        console.log("Fetching user data for userId:", userId); //  Добавляем лог
-        const response = await ApiClient.get(`/users/${userId}`);
-        setUserData(response.data);
-      } catch (error) {
-        console.error('Error fetching user data:', error);
-      }
-    };
-
-    //  Получаем ID пользователя из токена
-    const id = decodeToken();
-    if (id) {
-      fetchUserData(id);
     }
+  };
+
+  useEffect(() => {
+    fetchUserData();
   }, []);
 
-  const handleSave = () => {
-    ApiClient.put(`/users/${userId}`, {
-      firstName: firstName,
-      lastName: lastName,
-      phone: phone
-    })
-    .then(response => {
+  const handleSave = async () => {
+    try {
+      const response = await ApiClient.put('/api/profile/me', {
+        firstName: firstName,
+        lastName: lastName,
+        phone: phone
+      });
       setUserData(response.data);
       setEditing(false);
-    })
-    .catch(error => console.error('Error updating user data:', error));
+    } catch (error) {
+      console.error('Error updating user data:', error);
+    }
   };
 
   if (!userData) {

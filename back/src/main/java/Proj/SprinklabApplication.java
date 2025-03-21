@@ -59,7 +59,7 @@ public class SprinklabApplication implements CommandLineRunner {
 
             User admin = new User();
             admin.setLogin("admin");
-            admin.setPassword(passwordEncoder.encode("  "));
+            admin.setPassword(passwordEncoder.encode("Admin123!"));
             admin.setEmail("admin@example.com");
             admin.setFirstName("Admin");
             admin.setLastName("Adminov");

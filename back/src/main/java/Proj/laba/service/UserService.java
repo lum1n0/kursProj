@@ -130,4 +130,7 @@ public class UserService {
         dto.setRole(user.getRole() != null ? user.getRole().getTitle() : null);
         return dto;
     }
+    public Optional<User> findByLogin(String login) {
+        return userRepository.findByLogin(login);
+    }
 }
