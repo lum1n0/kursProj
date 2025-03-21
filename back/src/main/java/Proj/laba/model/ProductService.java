@@ -1,0 +1,57 @@
+package Proj.laba.model;
+
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import java.math.BigDecimal;
+import java.util.List;
+
+@Entity
+@Table(name = "product_services")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@SequenceGenerator(name = "default_generator", sequenceName = "product_services_seq", allocationSize = 1)
+public class ProductService extends GenericModel {
+
+    @Column(name = "name", nullable = false)
+    private String name;
+
+    @Column(name = "price", nullable = false)
+    private BigDecimal price;
+
+    @OneToMany(mappedBy = "productService", cascade = CascadeType.ALL)
+    private List<Order> orders;
+
+    @ManyToOne
+    @JoinColumn(name = "category_id")
+    private ProductCategory productCategory;
+
+    public List<Order> getOrders() {
+        return orders;
+    }
+
+    public void setOrders(List<Order> orders) {
+        this.orders = orders;
+    }
+
+    public BigDecimal getPrice() {
+        return price;
+    }
+
+    public void setPrice(BigDecimal price) {
+        this.price = price;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+}
