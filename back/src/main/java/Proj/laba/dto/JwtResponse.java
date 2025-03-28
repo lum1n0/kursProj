@@ -10,4 +10,5 @@ public class JwtResponse {
     private Long id;
     private String username;
     private String role;
+    private Long roleId; // Добавляем поле для role_id
 }

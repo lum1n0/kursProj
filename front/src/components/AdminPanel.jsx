@@ -1,51 +1,130 @@
 import { useEffect, useState } from 'react';
 import Cookies from 'js-cookie';
+import { useNavigate } from 'react-router-dom';
+import { ApiClient } from '../api/ApiClient';
 
 function AdminPanel() {
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [page, setPage] = useState(0);
+    const [totalPages, setTotalPages] = useState(0);
+    const [activeTab, setActiveTab] = useState('users');
+    const [editingUser, setEditingUser] = useState(null);
+    const [history, setHistory] = useState({});
+    const navigate = useNavigate();
 
     useEffect(() => {
-        const fetchUsers = async () => {
-            const token = Cookies.get('jwtToken');
-            if (!token) {
-                setError('Нет доступа');
-                setLoading(false);
-                return;
-            }
+        if (activeTab === 'users') {
+            fetchUsers();
+        }
+    }, [page, activeTab]);
 
-            try {
-                const response = await fetch('/api/admin/users', {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                });
-                if (!response.ok) throw new Error('Ошибка сервера');
-                const data = await response.json();
-                setUsers(data);
-            } catch (err) {
-                setError('Ошибка при загрузке пользователей');
-                console.error(err);
-            } finally {
-                setLoading(false);
+    const fetchUsers = async () => {
+        const token = Cookies.get('jwtToken');
+        if (!token) {
+            console.log('Токен отсутствует');
+            setError('Нет доступа');
+            setLoading(false);
+            return;
+        }
+    
+        try {
+            console.log('Отправляем запрос к /api/users/paged?page=', page, '&size=7');
+            const response = await ApiClient.get(`/api/users/paged?page=${page}&size=7`);
+            console.log('Ответ сервера:', response.data);
+            console.log('Статус ответа:', response.status);
+    
+            setUsers(response.data.content || []);
+            setTotalPages(response.data.totalPages || 0);
+        } catch (err) {
+            console.error('Ошибка в fetchUsers:', err);
+            if (err.response) {
+                console.error('Статус ошибки:', err.response.status);
+                console.error('Данные ошибки:', err.response.data);
+            } else {
+                console.error('Сетевая ошибка или проблема на клиенте:', err.message);
             }
-        };
+            setError('Ошибка при загрузке пользователей');
+        } finally {
+            console.log('Загрузка завершена');
+            setLoading(false);
+        }
+    };
 
+    const fetchHistory = async (userId) => {
+        const token = Cookies.get('jwtToken');
+        const response = await fetch(`/api/user-history/by-user/${userId}`, {
+            headers: { Authorization: `Bearer ${token}` },
+        });
+        const data = await response.json();
+        setHistory((prev) => ({ ...prev, [userId]: data }));
+    };
+
+    const handleEdit = (user) => {
+        setEditingUser({ ...user });
+    };
+
+    const handleSave = async () => {
+        const token = Cookies.get('jwtToken');
+        await fetch(`/api/users/${editingUser.id}`, {
+            method: 'PUT',
+            headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(editingUser),
+        });
+        setEditingUser(null);
         fetchUsers();
-    }, []);
+    };
+
+    const handleDelete = async (id) => {
+        if (window.confirm('Точно ли вы хотите удалить данного пользователя?')) {
+            const token = Cookies.get('jwtToken');
+            await fetch(`/api/users/${id}`, {
+                method: 'DELETE',
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            fetchUsers();
+        }
+    };
 
     if (loading) return <div>Загрузка...</div>;
     if (error) return <div>{error}</div>;
 
     return (
         <div>
-            <h1>Список пользователей</h1>
-            <ul>
-                {users.map(user => (
-                    <li key={user.id}>{user.firstName} {user.lastName}</li>
-                ))}
-            </ul>
+            <div>
+                <button onClick={() => setActiveTab('users')}>Пользователи</button>
+                <button onClick={() => setActiveTab('shop')}>Товары и Услуги</button>
+                <button onClick={() => window.location.href = '/swagger-ui.html'}>Swagger</button>
+            </div>
+
+            {activeTab === 'users' && (
+                <>
+                    <h1>Список пользователей</h1>
+                    <table>
+                        <thead><tr><th>Логин</th><th>Имя</th><th>Фамилия</th><th>Почта</th><th>Телефон</th><th>Роль</th><th>Тариф</th><th>История</th><th>Действия</th></tr></thead>
+                        <tbody>
+                            {users.map((user) => (
+                                <tr key={user.id}><td><a href={`/user/${user.id}`}>{user.login}</a></td><td>{editingUser?.id === user.id ? (<input value={editingUser.firstName} onChange={(e) => setEditingUser({ ...editingUser, firstName: e.target.value })} />) : (user.firstName)}</td><td>{editingUser?.id === user.id ? (<input value={editingUser.lastName} onChange={(e) => setEditingUser({ ...editingUser, lastName: e.target.value })} />) : (user.lastName)}</td><td>{user.email}</td><td>{editingUser?.id === user.id ? (<input value={editingUser.phone} onChange={(e) => setEditingUser({ ...editingUser, phone: e.target.value })} />) : (user.phone)}</td><td>{user.roleId === 1 ? 'Пользователь' : 'Администратор'}</td><td>{user.tariffId ? 'Название тарифа' : 'Нет тарифа'}</td><td><button onClick={() => fetchHistory(user.id)}>История</button>{history[user.id] && (<select>{history[user.id].map((entry) => (<option key={entry.id}>{entry.fieldName}: Было {entry.oldValue} Стало {entry.newValue}</option>))}</select>)}</td><td>{editingUser?.id === user.id ? (<button onClick={handleSave}>Сохранить</button>) : (<button onClick={() => handleEdit(user)}>Редактировать</button>)}<button onClick={() => handleDelete(user.id)}>Удалить</button></td></tr>
+                            ))}
+                        </tbody>
+                    </table>
+                    <div>
+                        <button disabled={page === 0} onClick={() => setPage(page - 1)}>
+                            Назад
+                        </button>
+                        <span>Страница {page + 1} из {totalPages}</span>
+                        <button disabled={page === totalPages - 1} onClick={() => setPage(page + 1)}>
+                            Вперед
+                        </button>
+                    </div>
+                </>
+            )}
+
+            {activeTab === 'shop' && <AdminShop />}
         </div>
     );
 }

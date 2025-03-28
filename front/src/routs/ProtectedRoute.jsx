@@ -1,27 +1,20 @@
 import React from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useLocation } from 'react-router-dom';
 import Cookies from 'js-cookie';
 import { jwtDecode } from 'jwt-decode';
-import AppRoutes from './AppRoutes';
-
-function ProtectedRoute({ children, requiredRole = 'ADMIN' }) {
+    
+function ProtectedRoute({ children }) {
+  const location = useLocation();
   const token = Cookies.get('jwtToken');
-  if (!token) {
-    return <Navigate to="/" />;
-  }
-
-  try {
+    
+  if (token) {
     const decodedToken = jwtDecode(token);
-    const userRole = decodedToken.role;
-    if (userRole !== requiredRole) {
-      return <Navigate to="/" />;
+    if (decodedToken.roleId == 2) { // Проверяем поле admin
+      return children;
     }
-  } catch (error) {
-    console.error('Ошибка декодирования токена:', error);
-    return <Navigate to="/" />;
   }
-
-  return children;
+    
+  return <Navigate to="/login" state={{ from: location }} replace />;
 }
-
+    
 export default ProtectedRoute;

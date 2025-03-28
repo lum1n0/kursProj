@@ -72,9 +72,11 @@ public class AuthController {
     
             SecurityContextHolder.getContext().setAuthentication(authentication);
             String jwt = jwtUtils.generateJwtToken(authentication);
-    
+
             UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-    
+            Long roleId = userDetails.getRoleId(); // Получаем ID роли
+
+
             // Создание cookie
             ResponseCookie cookie = ResponseCookie.from("jwtToken", jwt)
                     .httpOnly(false) // Делаем доступным для JavaScript
@@ -90,7 +92,8 @@ public class AuthController {
                             jwt,
                             userDetails.getId(),
                             userDetails.getUsername(),
-                            userDetails.getRole()
+                            userDetails.getRole(),
+                            roleId // Добавляем role_id в ответ
                     ));
         } catch (AuthenticationException e) {
             return ResponseEntity

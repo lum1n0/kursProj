@@ -57,5 +57,10 @@ public class User extends GenericModel {
     @JoinColumn(name = "role_id")
     @JsonBackReference
     private Role role;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+@JoinColumn(name = "tariff_id")
+private Tariff tariff;
+
 }
 

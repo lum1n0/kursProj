@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @Schema(description = "Информация о пользователе")
-public class UserResponseDTO {
+public class UserResponseDTO extends GenericDTO {
     @Schema(description = "ID пользователя")
     private Long id;
 
@@ -29,4 +29,7 @@ public class UserResponseDTO {
 
     @Schema(description = "Роль пользователя")
     private String role;
+
+    @Schema(description = "ID тарифа")
+    private Long tariffId;
 }

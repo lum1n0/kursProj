@@ -9,11 +9,14 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/admin/users")
+@RequestMapping("/api/users")
 @Tag(name = "Users", description = "API для работы с пользователями")
 @SecurityRequirement(name = "JWT")
 public class UserController {
@@ -50,8 +53,10 @@ public class UserController {
     @Operation(summary = "Обновить пользователя")
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User user) {
-        return ResponseEntity.ok(userService.updateUser(id, user));
+    public ResponseEntity<UserResponseDTO> updateUser(@PathVariable Long id, @RequestBody UserResponseDTO userDTO) {
+        userDTO.setId(id); // Устанавливаем ID из пути
+        UserResponseDTO updatedUser = userService.update(userDTO);
+        return ResponseEntity.ok(updatedUser);
     }
 
     @Operation(summary = "Удалить пользователя")
@@ -61,4 +66,11 @@ public class UserController {
         userService.deleteUser(id);
         return ResponseEntity.ok().build();
     }
+    @GetMapping("/paged")
+@PreAuthorize("hasRole('ADMIN')")
+public ResponseEntity<Page<UserResponseDTO>> getAllUsersPaged(@PageableDefault(size = 10) Pageable pageable) {
+    return ResponseEntity.ok(userService.listAllPaged(pageable));
+}
+
+    
 }
