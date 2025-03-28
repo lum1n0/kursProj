@@ -1218,6 +1218,52 @@ html.dark_time .menu-items.active a {
   display: none;
 }
 
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+  font-family: Arial, sans-serif;
+}
+
+.admin-th {
+  background-color: #f4f4f4;
+  padding: 10px;
+  text-align: left;
+  border-bottom: 2px solid #ddd;
+  font-weight: bold;
+}
+
+.admin-td {
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+}
+
+.admin-td a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.admin-td a:hover {
+  text-decoration: underline;
+}
+
+.admin-button {
+  background-color: #007bff;
+  color: white;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.admin-button:hover {
+  background-color: #0056b3;
+}
+.nav-admi-btn{
+  display: flex;
+  gap: 15px;
+  padding-left: 45px;
+}
+
 @media (max-width: 768px) {
   /* .burger-menu {
     display: block;
