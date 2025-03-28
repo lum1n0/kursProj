@@ -1264,7 +1264,99 @@ html.dark_time .menu-items.active a {
   padding-left: 45px;
 }
 
+
+/* Стили для таблицы */
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+  font-family: Arial, sans-serif;
+}
+
+.admin-th {
+  background-color: #f4f4f4;
+  padding: 10px;
+  text-align: left;
+  border-bottom: 2px solid #ddd;
+  font-weight: bold;
+}
+
+.admin-td {
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+}
+
+.admin-td a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.admin-td a:hover {
+  text-decoration: underline;
+}
+
+/* Стили для кнопок */
+.btn {
+  background-color: #007bff;
+  color: white;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-right: 10px;
+}
+
+.btn:hover {
+  background-color: #0056b3;
+}
+
+/* Вариант для кнопки "Удалить" */
+.admin-btn-delete {
+  background-color: #dc3545;
+}
+
+.admin-btn-delete:hover {
+  background-color: #c82333;
+}
+
+/* Стили для навигации */
+.admin-nav {
+  margin-bottom: 20px;
+}
+
+.admin-nav button {
+  background-color: #f4f4f4;
+  border: 1px solid #ddd;
+  padding: 10px 15px;
+  margin-right: 10px;
+  cursor: pointer;
+  font-family: Arial, sans-serif;
+}
+
+.admin-nav button:hover {
+  background-color: #e9ecef;
+}
+/* Стили для полей ввода в админ-панели */
+.admin-input {
+  width: 100%; /* Поле занимает всю ширину ячейки */
+  padding: 5px; /* Внутренние отступы для удобства */
+  border: 1px solid #ccc; /* Рамка для видимости */
+  border-radius: 4px; /* Скруглённые углы */
+  box-sizing: border-box; /* Учитываем padding в ширине */
+  font-size: 14px; /* Размер шрифта */
+}
+
+/* Стили при фокусе */
+.admin-input:focus {
+  border-color: #007bff; /* Цвет рамки при фокусе */
+  outline: none; /* Убираем стандартный outline */
+}
+
 @media (max-width: 768px) {
+  .admin-table {
+    display: block;
+    overflow-x: auto;
+}
   /* .burger-menu {
     display: block;
     margin-top: auto;
@@ -1283,6 +1375,60 @@ html.dark_time .menu-items.active a {
     display: flex;
   }
 }
+
+
+/* style.css */
+
+/* Контейнер шапки */
+.head_conteiner {
+  background-color: #f8f9fa; /* Светлый фон */
+  padding: 10px 20px;
+  border-bottom: 1px solid #e0e0e0; /* Тонкая граница снизу */
+}
+
+/* Навигационная панель */
+.nav_bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Левая часть (логотип) */
+.left .logo {
+  font-size: 24px;
+  font-weight: bold;
+  color: #007bff; /* Синий цвет */
+  text-decoration: none;
+}
+
+.left .logo:hover {
+  color: #0056b3; /* Более тёмный синий при наведении */
+}
+
+/* Правая часть (ссылки) */
+.right .links {
+  display: flex;
+  gap: 20px; /* Расстояние между ссылками */
+}
+
+.nav_link {
+  text-decoration: none;
+  color: #333; /* Тёмно-серый цвет */
+  font-size: 16px;
+  transition: color 0.3s ease; /* Плавный переход цвета */
+}
+
+.nav_link:hover {
+  color: #007bff; /* Синий цвет при наведении */
+}
+
+/* Контент под шапкой */
+.admin-content {
+  padding: 20px;
+}
+
 /* Для планшетов (768px) */
 @media screen and (max-width: 768px) {
   .conteiner {

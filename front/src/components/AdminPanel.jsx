@@ -13,7 +13,7 @@ function AdminPanel() {
     const [editingUser, setEditingUser] = useState(null);
     const [history, setHistory] = useState({});
     const navigate = useNavigate();
-//
+
     useEffect(() => {
         if (activeTab === 'users') {
             fetchUsers();
@@ -62,21 +62,27 @@ function AdminPanel() {
     };
 
     const handleEdit = (user) => {
+        console.log('Редактируем пользователя:', user);
         setEditingUser({ ...user });
     };
 
     const handleSave = async () => {
         const token = Cookies.get('jwtToken');
-        await fetch(`/api/users/${editingUser.id}`, {
-            method: 'PUT',
-            headers: {
-                Authorization: `Bearer ${token}`,
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(editingUser),
-        });
-        setEditingUser(null);
-        fetchUsers();
+        try {
+            await fetch(`/api/users/${editingUser.id}`, {
+                method: 'PUT',
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(editingUser),
+            });
+            console.log('Пользователь успешно обновлён');
+            setEditingUser(null);
+            fetchUsers();
+        } catch (err) {
+            console.error('Ошибка при сохранении:', err);
+        }
     };
 
     const handleDelete = async (id) => {
@@ -95,31 +101,111 @@ function AdminPanel() {
 
     return (
         <div>
-            <div className='nav-admi-btn'>
-                <button className="admin-button" onClick={() => setActiveTab('users')}>Пользователи</button>
-                <button className="admin-button" onClick={() => setActiveTab('shop')}>Товары и Услуги</button>
-                <button className="admin-button" onClick={() => window.location.href = '/swagger-ui.html'}>Swagger</button>
-            </div>
+            <header className="head_conteiner">
+                <nav className="nav_bar">
+                    <div className="left">
+                        <a href="/" className="logo">Админ-панель</a>
+                    </div>
+                    <div className="right">
+                        <div className="links">
+                            <a href="#" className="nav_link" onClick={() => setActiveTab('users')}>
+                                Пользователи
+                            </a>
+                            <a href="#" className="nav_link" onClick={() => setActiveTab('shop')}>
+                                Товары и Услуги
+                            </a>
+                            <a href="/swagger-ui.html" className="nav_link">Swagger</a>
+                        </div>
+                    </div>
+                </nav>
+            </header>
+            
 
             {activeTab === 'users' && (
                 <>
-                    <h1>Список пользователей</h1>
+                    <h1 className="title_sect">Список пользователей</h1>
                     <table className="admin-table">
-                        <thead><tr><th className="admin-th">Логин</th><th className="admin-th">Имя</th><th className="admin-th">Фамилия</th><th className="admin-th">Почта</th><th className="admin-th">Телефон</th><th className="admin-th">Роль</th><th className="admin-th">Тариф</th><th className="admin-th">История</th><th className="admin-th">Действия</th></tr></thead>
+                        <thead>
+                            <tr>
+                                <th className="admin-th">Логин</th>
+                                <th className="admin-th">Имя</th>
+                                <th className="admin-th">Фамилия</th>
+                                <th className="admin-th">Почта</th>
+                                <th className="admin-th">Телефон</th>
+                                <th className="admin-th">Роль</th>
+                                <th className="admin-th">Тариф</th>
+                                <th className="admin-th">История</th>
+                                <th className="admin-th">Действия</th>
+                            </tr>
+                        </thead>
                         <tbody>
                             {users.map((user) => (
-                                <tr key={user.id}><td className="admin-td"><a href={`/user/${user.id}`}>{user.login}</a></td><td className="admin-td">{editingUser?.id === user.id ? (<input value={editingUser.firstName} onChange={(e) => setEditingUser({ ...editingUser, firstName: e.target.value })} />) : (user.firstName)}</td><td className="admin-td">{editingUser?.id === user.id ? (<input value={editingUser.lastName} onChange={(e) => setEditingUser({ ...editingUser, lastName: e.target.value })} />) : (user.lastName)}</td><td className="admin-td">{user.email}</td><td className="admin-td">{editingUser?.id === user.id ? (<input value={editingUser.phone} onChange={(e) => setEditingUser({ ...editingUser, phone: e.target.value })} />) : (user.phone)}</td><td className="admin-td">{user.roleId === 1 ? 'Пользователь' : 'Администратор'}</td><td className="admin-td">{user.tariffId ? 'Название тарифа' : 'Нет тарифа'}</td><td className="admin-td"><button onClick={() => fetchHistory(user.id)}>История</button>{history[user.id] && (<select>{history[user.id].map((entry) => (<option key={entry.id}>{entry.fieldName}: Было {entry.oldValue} Стало {entry.newValue}</option>))}</select>)}</td><td className="admin-td">{editingUser?.id === user.id ? (<button onClick={handleSave}>Сохранить</button>) : (<button className="admin-button" onClick={() => handleEdit(user)}>Редактировать</button>)}<button onClick={() => handleDelete(user.id)}>Удалить</button></td></tr>
+                                <tr key={user.id}>
+                                    <td className="admin-td"><a href={`/user/${user.id}`}>{user.login}</a></td>
+                                    <td className="admin-td">
+                                        {editingUser?.id === user.id ? (
+                                            <input
+                                                className="admin-input"
+                                                value={editingUser.firstName}
+                                                onChange={(e) => setEditingUser({ ...editingUser, firstName: e.target.value })}
+                                            />
+                                        ) : (
+                                            user.firstName
+                                        )}
+                                    </td>
+                                    <td className="admin-td">
+                                        {editingUser?.id === user.id ? (
+                                            <input
+                                                className="admin-input"
+                                                value={editingUser.lastName}
+                                                onChange={(e) => setEditingUser({ ...editingUser, lastName: e.target.value })}
+                                            />
+                                        ) : (
+                                            user.lastName
+                                        )}
+                                    </td>
+                                    <td className="admin-td">{user.email}</td>
+                                    <td className="admin-td">
+                                        {editingUser?.id === user.id ? (
+                                            <input
+                                                className="admin-input"
+                                                value={editingUser.phone}
+                                                onChange={(e) => setEditingUser({ ...editingUser, phone: e.target.value })}
+                                            />
+                                        ) : (
+                                            user.phone
+                                        )}
+                                    </td>
+                                    <td className="admin-td">{user.roleId === 1 ? 'Пользователь' : 'Администратор'}</td>
+                                    <td className="admin-td">{user.tariffId ? 'Название тарифа' : 'Нет тарифа'}</td>
+                                    <td className="admin-td">
+                                        <button className="btn" onClick={() => fetchHistory(user.id)}>История</button>
+                                        {history[user.id] && (
+                                            <select>
+                                                {history[user.id].map((entry) => (
+                                                    <option key={entry.id}>
+                                                        {entry.fieldName}: Было {entry.oldValue} Стало {entry.newValue}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                        )}
+                                    </td>
+                                    <td className="admin-td">
+                                        {editingUser?.id === user.id ? (
+                                            <button className="btn" onClick={handleSave}>Сохранить</button>
+                                        ) : (
+                                            <button className="btn" onClick={() => handleEdit(user)}>Редактировать</button>
+                                        )}
+                                        <button className="btn admin-btn-delete" onClick={() => handleDelete(user.id)}>Удалить</button>
+                                    </td>
+                                </tr>
                             ))}
                         </tbody>
                     </table>
                     <div>
-                        <button disabled={page === 0} onClick={() => setPage(page - 1)}>
-                            Назад
-                        </button>
+                        <button className="btn" disabled={page === 0} onClick={() => setPage(page - 1)}>Назад</button>
                         <span>Страница {page + 1} из {totalPages}</span>
-                        <button disabled={page === totalPages - 1} onClick={() => setPage(page + 1)}>
-                            Вперед
-                        </button>
+                        <button className="btn" disabled={page === totalPages - 1} onClick={() => setPage(page + 1)}>Вперед</button>
                     </div>
                 </>
             )}
