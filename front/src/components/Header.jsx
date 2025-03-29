@@ -46,7 +46,7 @@ function Header({ isLoggedIn, setIsLoggedIn }) {
           <div className="nav_bar">
             <div className="left">
               <Link to="/">
-                <img src="/assets/img/white_on_trans1.svg" alt="" className="logo" />
+                <img src="img/white_on_trans1.svg" alt="" className="logo" />
               </Link>
             </div>
             <div className="right">

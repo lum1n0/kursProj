@@ -6,7 +6,7 @@ function Footer() {
     <footer className="text-dark mt-5">
       <div className="conteiner">
         <div className="foot_img">
-          <img src="/assets/img/white_on_trans1.svg" alt="" />
+          <img src="/img/white_on_trans1.svg" alt="" />
         </div>
         <div className="">
           <div className="abs_foot">

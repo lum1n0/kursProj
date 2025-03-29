@@ -64,20 +64,18 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-            .csrf(csrf -> csrf.disable())
-            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+            .csrf(csrf -> csrf.disable()) // Отключаем CSRF для REST API
+            .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Настройка CORS
             .sessionManagement(session -> session
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Без состояния для JWT
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers(PUBLIC_ENDPOINTS).permitAll()
-                .requestMatchers("/api/profile/**").authenticated() // Доступ для аутентифицированных
-                .requestMatchers("/api/admin/**").hasRole("ADMIN") // Только для админов
-                .requestMatchers("/api/users/**").hasRole("ADMIN") // Добавь это
-                
-                .anyRequest().authenticated()
+                .requestMatchers(PUBLIC_ENDPOINTS).permitAll() // Открытые эндпоинты
+                .requestMatchers("/api/profile/**").authenticated() // Доступ для аутентифицированных пользователей
+                .requestMatchers("/api/admin/**", "/api/users/**", "/api/user-history/**").hasRole("ADMIN") // Только для админов
+                .anyRequest().authenticated() // Все остальные запросы требуют аутентификации
             )
-            .authenticationProvider(authenticationProvider())
-            .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+            .authenticationProvider(authenticationProvider()) // Провайдер аутентификации
+            .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class); // Фильтр JWT
     
         return http.build();
     }

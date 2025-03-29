@@ -43,25 +43,25 @@ function Shop() {
                 className={`list-group-item list-group-item-action left_menu ${category === 'modems' ? 'active' : ''}`}
                 onClick={() => handleCategoryClick('modems')}
               >
-                <img src="/assets/img/modem2.svg" alt="" /> Модемы и роутеры
+                <img src="/img/modem2.svg" alt="" /> Модемы и роутеры
               </button>
               <button
                 className={`list-group-item list-group-item-action left_menu ${category === 'routers' ? 'active' : ''}`}
                 onClick={() => handleCategoryClick('routers')}
               >
-                <img src="/assets/img/router3.svg" alt="" /> Роутеры и интернет-центры
+                <img src="/img/router3.svg" alt="" /> Роутеры и интернет-центры
               </button>
               <button
                 className={`list-group-item list-group-item-action left_menu ${category === 'sim' ? 'active' : ''}`}
                 onClick={() => handleCategoryClick('sim')}
               >
-                <img src="/assets/img/sim4.svg" alt="" /> Сим-карты
+                <img src="/img/sim4.svg" alt="" /> Сим-карты
               </button>
               <button
                 className={`list-group-item list-group-item-action left_menu ${category === 'subscriptions' ? 'active' : ''}`}
                 onClick={() => handleCategoryClick('subscriptions')}
               >
-                <img src="/assets/img/abonent5.svg" alt="" /> СТМ Абонементы
+                <img src="/img/abonent5.svg" alt="" /> СТМ Абонементы
               </button>
             </div>
           </div>

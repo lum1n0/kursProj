@@ -6,25 +6,25 @@ function Slider() {
     {
       title: 'Ого! CTM возвращает деньги',
       description: 'За неиспользованные минуты и ГБ.',
-      image: '/assets/img/img_sl_1.png',
+      image: '/img/img_sl_1.png',
       alt: 'Слайд 1',
     },
     {
       title: 'Подключи Максимум',
       description: 'Всего 1000 ₽ за 3 месяца с Абонементом',
-      image: '/assets/img/img_sl_2.png',
+      image: '/img/img_sl_2.png',
       alt: 'Слайд 2',
     },
     {
       title: 'Всего 1000 ₽ за 3 месяца с Абонементом',
       description: 'Начисляем игровую валюту каждый месяц',
-      image: '/assets/img/img_sl_3.png',
+      image: '/img/img_sl_3.png',
       alt: 'Слайд 3',
     },
     {
       title: 'Сим-карта за 30 минут',
       description: 'Бесплатная доставка от Самоката',
-      image: '/assets/img/img_sl_4.svg',
+      image: '/img/img_sl_4.svg',
       alt: 'Слайд 4',
     },
   ];

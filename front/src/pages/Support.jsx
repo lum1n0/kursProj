@@ -9,7 +9,7 @@ function Support() {
       <div className="card-container">
         <div className="card">
           <div className="card-header">
-            <img src="/assets/img/sup_svg/Background.svg" alt="Иконка 1" className="card-icon" />
+            <img src="/img/sup_svg/Background.svg" alt="Иконка 1" className="card-icon" />
             <h2 className="card-title">Тарифы</h2>
           </div>
           <ul className="card-list">

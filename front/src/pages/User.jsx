@@ -90,7 +90,7 @@ function User() {
                                 </>
                             )}
                         </div>
-                        <img src="/assets/img/free-icon-profile-avatar-4794936.png" alt="" />
+                        <img src="/img/free-icon-profile-avatar-4794936.png" alt="" />
                     </div>
                     {editing ? (
                         <button onClick={handleSave}>Сохранить изменения</button>

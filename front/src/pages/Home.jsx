@@ -62,12 +62,12 @@ function Home() {
                   </div>
                 </div>
               </div>
-              <img src="/assets/img/card_top_img.png" alt="" className="card_top" />
+              <img src="/img/card_top_img.png" alt="" className="card_top" />
             </div>
           </div>
           <div className="trio_bot">
             <div className="bot_card">
-              <img src="/assets/img/sim.png" alt="" className="card_bot_img" />
+              <img src="/img/sim.png" alt="" className="card_bot_img" />
               <div className="card_bot_text">
                 <h3 className="card_title">Перейти со своим номером</h3>
                 <p className="card_text">От другого оператора</p>
@@ -78,7 +78,7 @@ function Home() {
             </div>
             <div className="bot_card">
               <img
-                src="/assets/img/routerflash.png"
+                src="/img/routerflash.png"
                 alt=""
                 className="card_bot_img"
               />
@@ -95,7 +95,7 @@ function Home() {
             </div>
             <div className="bot_card">
               <img
-                src="/assets/img/nicenumber.png"
+                src="/img/nicenumber.png"
                 alt=""
                 className="card_bot_img"
               />
@@ -118,7 +118,7 @@ function Home() {
         <div className="rate_cards">
           <div className="first_our_rate rate_card">
             <h3 className="card_title blue_title">Свой тариф</h3>
-            <img src="/assets/img/rate_set.png" alt="" />
+            <img src="/img/rate_set.png" alt="" />
 
             <div className="btn_my">
               <button className="card_btn" id="rate_btn">Перейти</button>
@@ -137,7 +137,7 @@ function Home() {
                 </p>
               </div>
               <p className="small_text_max">Самое большое наполнение на 3 месяца</p>
-              <img src="/assets/img/apps.png" alt="" className="apps_my" />
+              <img src="/img/apps.png" alt="" className="apps_my" />
               <div className="za_dney_text">
                 <div className="za_bolshe">
                   1000 ₽
@@ -162,7 +162,7 @@ function Home() {
         <h2 className="title_sect">Почему СТМ</h2>
         <div className="cards_block">
           <div className="card_item">
-            <div className=""><img src="/assets/img/seven.png" alt="" /></div>
+            <div className=""><img src="/img/seven.png" alt="" /></div>
 
             <p className="card_elemt_title">7 дней на связи</p>
             <p className="card_elemt_text">
@@ -170,7 +170,7 @@ function Home() {
             </p>
           </div>
           <div className="card_item">
-            <div className=""><img src="/assets/img/speed.png" alt="" /></div>
+            <div className=""><img src="/img/speed.png" alt="" /></div>
 
             <p className="card_elemt_title">Быстрый интернет</p>
             <p className="card_elemt_text">
@@ -181,13 +181,13 @@ function Home() {
             </p>
           </div>
           <div className="card_item">
-            <div className=""><img src="/assets/img/pocryl.png" alt="" /></div>
+            <div className=""><img src="/img/pocryl.png" alt="" /></div>
 
             <p className="card_elemt_title">Широкое покрытие</p>
             <p className="card_elemt_text">Сеть охватывает всю страну</p>
           </div>
           <div className="card_item">
-            <div className=""><img src="/assets/img/heart.png" alt="" /></div>
+            <div className=""><img src="/img/heart.png" alt="" /></div>
 
             <p className="card_elemt_title">Абоненты любят нас</p>
             <p className="card_elemt_text">

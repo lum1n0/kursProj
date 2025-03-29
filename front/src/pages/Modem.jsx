@@ -20,7 +20,7 @@ function Modem() {
             </ul>
             <Link to="#" className="card-link">Подробнее</Link>
           </div>
-          <img src="/assets/img/modem_tariffs.png.png" alt="" />
+          <img src="/img/modem_tariffs.png.png" alt="" />
         </div>
 
         {/* ... остальные карточки ... */}

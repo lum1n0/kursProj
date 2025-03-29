@@ -95,43 +95,78 @@ public class UserService extends GenericService<User, UserResponseDTO> {
     }
 
     @Override
-    @Transactional
-    public UserResponseDTO update(UserResponseDTO updatedObject) {
-        User existingUser = userRepository.findById(updatedObject.getId())
-                .orElseThrow(() -> new NotFoundException("User с ID " + updatedObject.getId() + " не найден"));
+@Transactional
+public UserResponseDTO update(UserResponseDTO updatedObject) {
+    // Находим существующего пользователя
+    User existingUser = userRepository.findById(updatedObject.getId())
+            .orElseThrow(() -> new NotFoundException("User с ID " + updatedObject.getId() + " не найден"));
 
-        User updatedUser = userMapper.toEntity(updatedObject);
-        saveHistory(existingUser, updatedUser, "admin"); // Замените "admin" на текущего пользователя
+    // Сохраняем оригинальные данные для истории изменений
+    User originalUser = new User();
+    originalUser.setFirstName(existingUser.getFirstName());
+    originalUser.setLastName(existingUser.getLastName());
+    originalUser.setEmail(existingUser.getEmail());
+    originalUser.setPhone(existingUser.getPhone());
+    originalUser.setRole(existingUser.getRole());
+    originalUser.setTariff(existingUser.getTariff());
+    originalUser.setPassword(existingUser.getPassword());
 
-        // Устанавливаем роль и тариф вручную, если они изменились
-        if (updatedObject.getRole() != null && !updatedObject.getRole().equals(existingUser.getRole().getTitle())) {
-            Role role = roleRepository.findByTitle(updatedObject.getRole())
-                    .orElseThrow(() -> new NotFoundException("Role " + updatedObject.getRole() + " not found"));
-            updatedUser.setRole(role);
-        }
-        if (updatedObject.getTariffId() != null && (existingUser.getTariff() == null || !updatedObject.getTariffId().equals(existingUser.getTariff().getId()))) {
-            Tariff tariff = tariffRepository.findById(updatedObject.getTariffId())
-                    .orElseThrow(() -> new NotFoundException("Tariff with ID " + updatedObject.getTariffId() + " not found"));
-            updatedUser.setTariff(tariff);
-        }
-
-        return userMapper.toDTO(userRepository.save(updatedUser));
+    // Обновляем только те поля, которые переданы и не равны null
+    if (updatedObject.getFirstName() != null) {
+        existingUser.setFirstName(updatedObject.getFirstName());
+    }
+    if (updatedObject.getLastName() != null) {
+        existingUser.setLastName(updatedObject.getLastName());
+    }
+    if (updatedObject.getEmail() != null) {
+        existingUser.setEmail(updatedObject.getEmail());
+    }
+    if (updatedObject.getPhone() != null) {
+        existingUser.setPhone(updatedObject.getPhone());
     }
 
-    private void saveHistory(User oldUser, User newUser, String changedBy) {
-        if (!oldUser.getFirstName().equals(newUser.getFirstName())) {
-            userHistoryRepository.save(new UserHistory(null, oldUser, "firstName", oldUser.getFirstName(), newUser.getFirstName(), changedBy, LocalDateTime.now()));
-        }
-        if (!oldUser.getLastName().equals(newUser.getLastName())) {
-            userHistoryRepository.save(new UserHistory(null, oldUser, "lastName", oldUser.getLastName(), newUser.getLastName(), changedBy, LocalDateTime.now()));
-        }
-        if (oldUser.getPhone() != null && !oldUser.getPhone().equals(newUser.getPhone())) {
-            userHistoryRepository.save(new UserHistory(null, oldUser, "phone", oldUser.getPhone(), newUser.getPhone(), changedBy, LocalDateTime.now()));
-        }
-        if (oldUser.getPassword() != null && !oldUser.getPassword().equals(newUser.getPassword())) {
-            userHistoryRepository.save(new UserHistory(null, oldUser, "password", oldUser.getPassword(), newUser.getPassword(), changedBy, LocalDateTime.now()));
-        }
+    // Обновляем роль, если она передана и отличается от текущей
+    if (updatedObject.getRole() != null && !updatedObject.getRole().equals(existingUser.getRole().getTitle())) {
+        Role role = roleRepository.findByTitle(updatedObject.getRole())
+                .orElseThrow(() -> new NotFoundException("Role " + updatedObject.getRole() + " not found"));
+        existingUser.setRole(role);
     }
+
+    // Обновляем тариф, если он передан и отличается от текущего
+    if (updatedObject.getTariffId() != null && (existingUser.getTariff() == null || !updatedObject.getTariffId().equals(existingUser.getTariff().getId()))) {
+        Tariff tariff = tariffRepository.findById(updatedObject.getTariffId())
+                .orElseThrow(() -> new NotFoundException("Tariff with ID " + updatedObject.getTariffId() + " not found"));
+        existingUser.setTariff(tariff);
+    }
+
+    // Сохраняем историю изменений, сравнивая оригинальные и новые данные
+    saveHistory(originalUser, existingUser, "admin"); // Замени "admin" на текущего пользователя, если нужно
+
+    // Сохраняем обновленного пользователя и возвращаем DTO
+    return userMapper.toDTO(userRepository.save(existingUser));
+}
+    
+     
+private void saveHistory(User oldUser, User newUser, String changedBy) {
+    if (!oldUser.getFirstName().equals(newUser.getFirstName())) {
+        userHistoryRepository.save(new UserHistory(null, newUser, "firstName", oldUser.getFirstName(), newUser.getFirstName(), changedBy, LocalDateTime.now()));
+    }
+    if (!oldUser.getLastName().equals(newUser.getLastName())) {
+        userHistoryRepository.save(new UserHistory(null, newUser, "lastName", oldUser.getLastName(), newUser.getLastName(), changedBy, LocalDateTime.now()));
+    }
+    if (oldUser.getEmail() != null && !oldUser.getEmail().equals(newUser.getEmail())) {
+        userHistoryRepository.save(new UserHistory(null, newUser, "email", oldUser.getEmail(), newUser.getEmail(), changedBy, LocalDateTime.now()));
+    }
+    if (oldUser.getPhone() != null && !oldUser.getPhone().equals(newUser.getPhone())) {
+        userHistoryRepository.save(new UserHistory(null, newUser, "phone", oldUser.getPhone(), newUser.getPhone(), changedBy, LocalDateTime.now()));
+    }
+    if (oldUser.getRole() != null && newUser.getRole() != null && !oldUser.getRole().getTitle().equals(newUser.getRole().getTitle())) {
+        userHistoryRepository.save(new UserHistory(null, newUser, "role", oldUser.getRole().getTitle(), newUser.getRole().getTitle(), changedBy, LocalDateTime.now()));
+    }
+    if (oldUser.getTariff() != null && newUser.getTariff() != null && !oldUser.getTariff().getId().equals(newUser.getTariff().getId())) {
+        userHistoryRepository.save(new UserHistory(null, newUser, "tariff", oldUser.getTariff().getId().toString(), newUser.getTariff().getId().toString(), changedBy, LocalDateTime.now()));
+    }
+}
 
     public Page<UserResponseDTO> listAllPaged(Pageable pageable) {
         return userRepository.findAll(pageable).map(userMapper::toDTO);

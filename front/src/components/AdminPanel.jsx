@@ -12,6 +12,7 @@ function AdminPanel() {
     const [activeTab, setActiveTab] = useState('users');
     const [editingUser, setEditingUser] = useState(null);
     const [history, setHistory] = useState({});
+    const [openHistoryId, setOpenHistoryId] = useState(null);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -28,13 +29,13 @@ function AdminPanel() {
             setLoading(false);
             return;
         }
-    
+
         try {
             console.log('Отправляем запрос к /api/users/paged?page=', page, '&size=7');
             const response = await ApiClient.get(`/api/users/paged?page=${page}&size=7`);
             console.log('Ответ сервера:', response.data);
             console.log('Статус ответа:', response.status);
-    
+
             setUsers(response.data.content || []);
             setTotalPages(response.data.totalPages || 0);
         } catch (err) {
@@ -54,11 +55,27 @@ function AdminPanel() {
 
     const fetchHistory = async (userId) => {
         const token = Cookies.get('jwtToken');
-        const response = await fetch(`/api/user-history/by-user/${userId}`, {
-            headers: { Authorization: `Bearer ${token}` },
-        });
-        const data = await response.json();
-        setHistory((prev) => ({ ...prev, [userId]: data }));
+        try {
+            if (openHistoryId === userId) {
+                setOpenHistoryId(null);
+                return;
+            }
+
+            if (!history[userId]) {
+                const response = await fetch(`/api/user-history/by-user/${userId}`, {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    setHistory((prev) => ({ ...prev, [userId]: data }));
+                } else {
+                    console.error(`Ошибка при получении истории: ${response.status}`);
+                }
+            }
+            setOpenHistoryId(userId);
+        } catch (error) {
+            console.error('Ошибка в fetchHistory:', error);
+        }
     };
 
     const handleEdit = (user) => {
@@ -68,15 +85,24 @@ function AdminPanel() {
 
     const handleSave = async () => {
         const token = Cookies.get('jwtToken');
+        const updatedUser = {
+            id: editingUser.id,
+            firstName: editingUser.firstName,
+            lastName: editingUser.lastName,
+            phone: editingUser.phone,
+        };
         try {
-            await fetch(`/api/users/${editingUser.id}`, {
+            const response = await fetch(`/api/users/${editingUser.id}`, {
                 method: 'PUT',
                 headers: {
                     Authorization: `Bearer ${token}`,
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(editingUser),
+                body: JSON.stringify(updatedUser),
             });
+            if (!response.ok) {
+                throw new Error(`Ошибка: ${response.status}`);
+            }
             console.log('Пользователь успешно обновлён');
             setEditingUser(null);
             fetchUsers();
@@ -94,6 +120,17 @@ function AdminPanel() {
             });
             fetchUsers();
         }
+    };
+
+    // Функция для форматирования даты в формат "29.03.2025 11:14"
+    const formatDate = (dateString) => {
+        const date = new Date(dateString);
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const year = date.getFullYear();
+        const hours = String(date.getHours()).padStart(2, '0');
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+        return `${day}.${month}.${year} ${hours}:${minutes}`;
     };
 
     if (loading) return <div>Загрузка...</div>;
@@ -114,12 +151,11 @@ function AdminPanel() {
                             <a href="#" className="nav_link" onClick={() => setActiveTab('shop')}>
                                 Товары и Услуги
                             </a>
-                            <a href="/swagger-ui.html" className="nav_link">Swagger</a>
+                            <a href="http://localhost:8080/swagger-ui/index.html" className="nav_link" target="_blank">Swagger</a>
                         </div>
                     </div>
                 </nav>
             </header>
-            
 
             {activeTab === 'users' && (
                 <>
@@ -134,71 +170,81 @@ function AdminPanel() {
                                 <th className="admin-th">Телефон</th>
                                 <th className="admin-th">Роль</th>
                                 <th className="admin-th">Тариф</th>
-                                <th className="admin-th">История</th>
                                 <th className="admin-th">Действия</th>
                             </tr>
                         </thead>
                         <tbody>
                             {users.map((user) => (
-                                <tr key={user.id}>
-                                    <td className="admin-td"><a href={`/user/${user.id}`}>{user.login}</a></td>
-                                    <td className="admin-td">
-                                        {editingUser?.id === user.id ? (
-                                            <input
-                                                className="admin-input"
-                                                value={editingUser.firstName}
-                                                onChange={(e) => setEditingUser({ ...editingUser, firstName: e.target.value })}
-                                            />
-                                        ) : (
-                                            user.firstName
-                                        )}
-                                    </td>
-                                    <td className="admin-td">
-                                        {editingUser?.id === user.id ? (
-                                            <input
-                                                className="admin-input"
-                                                value={editingUser.lastName}
-                                                onChange={(e) => setEditingUser({ ...editingUser, lastName: e.target.value })}
-                                            />
-                                        ) : (
-                                            user.lastName
-                                        )}
-                                    </td>
-                                    <td className="admin-td">{user.email}</td>
-                                    <td className="admin-td">
-                                        {editingUser?.id === user.id ? (
-                                            <input
-                                                className="admin-input"
-                                                value={editingUser.phone}
-                                                onChange={(e) => setEditingUser({ ...editingUser, phone: e.target.value })}
-                                            />
-                                        ) : (
-                                            user.phone
-                                        )}
-                                    </td>
-                                    <td className="admin-td">{user.roleId === 1 ? 'Пользователь' : 'Администратор'}</td>
-                                    <td className="admin-td">{user.tariffId ? 'Название тарифа' : 'Нет тарифа'}</td>
-                                    <td className="admin-td">
-                                        <button className="btn" onClick={() => fetchHistory(user.id)}>История</button>
-                                        {history[user.id] && (
-                                            <select>
-                                                {history[user.id].map((entry) => (
-                                                    <option key={entry.id}>
-                                                        {entry.fieldName}: Было {entry.oldValue} Стало {entry.newValue}
-                                                    </option>
-                                                ))}
-                                            </select>
-                                        )}
-                                    </td>
-                                    <td className="admin-td">
-                                        {editingUser?.id === user.id ? (
-                                            <button className="btn" onClick={handleSave}>Сохранить</button>
-                                        ) : (
-                                            <button className="btn" onClick={() => handleEdit(user)}>Редактировать</button>
-                                        )}
-                                        <button className="btn admin-btn-delete" onClick={() => handleDelete(user.id)}>Удалить</button>
-                                    </td>
-                                </tr>
+                                <>
+                                    <tr key={user.id}>
+                                        <td className="admin-td"><a href={`/user/${user.id}`}>{user.login}</a></td>
+                                        <td className="admin-td">
+                                            {editingUser?.id === user.id ? (
+                                                <input
+                                                    className="admin-input"
+                                                    value={editingUser.firstName}
+                                                    onChange={(e) => setEditingUser({ ...editingUser, firstName: e.target.value })}
+                                                />
+                                            ) : (
+                                                user.firstName
+                                            )}
+                                        </td>
+                                        <td className="admin-td">
+                                            {editingUser?.id === user.id ? (
+                                                <input
+                                                    className="admin-input"
+                                                    value={editingUser.lastName || ''}
+                                                    onChange={(e) => setEditingUser({ ...editingUser, lastName: e.target.value })}
+                                                />
+                                            ) : (
+                                                user.lastName
+                                            )}
+                                        </td>
+                                        <td className="admin-td">{user.email}</td>
+                                        <td className="admin-td">
+                                            {editingUser?.id === user.id ? (
+                                                <input
+                                                    className="admin-input"
+                                                    value={editingUser.phone || ''}
+                                                    onChange={(e) => setEditingUser({ ...editingUser, phone: e.target.value })}
+                                                />
+                                            ) : (
+                                                user.phone
+                                            )}
+                                        </td>
+                                        <td className="admin-td">
+                                            {user.role === 'USER' ? 'Пользователь' : 'Администратор'}
+                                        </td>
+                                        <td className="admin-td">{user.tariffId ? 'Название тарифа' : 'Нет тарифа'}</td>
+                                        <td className="admin-td">
+                                            {editingUser?.id === user.id ? (
+                                                <button className="btn" onClick={handleSave}>Сохранить</button>
+                                            ) : (
+                                                <button className="btn" onClick={() => handleEdit(user)}>Редактировать</button>
+                                            )}
+                                            <button className="btn admin-btn-delete" onClick={() => handleDelete(user.id)}>Удалить</button>
+                                            <button className="btn" onClick={() => fetchHistory(user.id)}>
+                                                {openHistoryId === user.id ? 'Скрыть историю' : 'Показать историю'}
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    {openHistoryId === user.id && history[user.id] && (
+                                        <tr>
+                                            <td colSpan="8">
+                                                <div className="history-container">
+                                                    <h3>История изменений</h3>
+                                                    <ul>
+                                                        {history[user.id].map((entry) => (
+                                                            <li key={entry.id}>
+                                                                {entry.fieldName}: Было {entry.oldValue} Стало {entry.newValue} (Изменено: {formatDate(entry.changedWhen)})
+                                                            </li>
+                                                        ))}
+                                                    </ul>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    )}
+                                </>
                             ))}
                         </tbody>
                     </table>
