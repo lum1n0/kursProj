@@ -181,8 +181,17 @@ private void saveHistory(User oldUser, User newUser, String changedBy) {
         return userRepository.findById(id).map(userMapper::toDTO);
     }
 
+    @Transactional
     public void deleteUser(Long id) {
-        userRepository.deleteById(id);
+        // Находим пользователя
+        User user = userRepository.findById(id)
+            .orElseThrow(() -> new NotFoundException("User not found"));
+    
+        // Удаляем все записи истории для этого пользователя
+        userHistoryRepository.deleteByUser(user);
+    
+        // Удаляем пользователя
+        userRepository.delete(user);
     }
 
     public List<User> getAllUsers() {

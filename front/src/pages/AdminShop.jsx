@@ -1,13 +1,18 @@
 import { useEffect, useState } from 'react';
 import Cookies from 'js-cookie';
+import { ApiClient, getCategories } from '../api/ApiClient';
 
 function AdminShop() {
     const [products, setProducts] = useState([]);
+    const [categories, setCategories] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [editingProduct, setEditingProduct] = useState(null); // Для редактирования
+    const [newProduct, setNewProduct] = useState({ name: '', price: '', categoryId: '' }); // Для добавления
 
+    // Загрузка данных при монтировании компонента
     useEffect(() => {
-        const fetchProducts = async () => {
+        const fetchData = async () => {
             const token = Cookies.get('jwtToken');
             if (!token) {
                 setError('Нет доступа');
@@ -16,34 +21,153 @@ function AdminShop() {
             }
 
             try {
-                const response = await fetch('/api/admin/product-services', {
+                // Получаем категории
+                const categoryData = await getCategories();
+                setCategories(categoryData);
+
+                // Получаем товары
+                const response = await ApiClient.get('/api/admin/product-services', {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
                 });
-                if (!response.ok) throw new Error('Ошибка сервера');
-                const data = await response.json();
-                setProducts(data);
+                setProducts(response.data);
             } catch (err) {
-                setError('Ошибка при загрузке услуг');
+                setError('Ошибка при загрузке данных');
                 console.error(err);
             } finally {
                 setLoading(false);
             }
         };
 
-        fetchProducts();
+        fetchData();
     }, []);
+
+    // Добавление нового товара
+    const handleAddProduct = async () => {
+        const token = Cookies.get('jwtToken');
+        try {
+            const response = await ApiClient.post('/api/admin/product-services', newProduct, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            setProducts([...products, response.data]);
+            setNewProduct({ name: '', price: '', categoryId: '' }); // Сброс формы
+        } catch (err) {
+            console.error('Ошибка при добавлении товара:', err);
+        }
+    };
+
+    // Сохранение отредактированного товара
+    const handleEditProduct = async () => {
+        const token = Cookies.get('jwtToken');
+        try {
+            const response = await ApiClient.put(`/api/admin/product-services/${editingProduct.id}`, editingProduct, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            setProducts(products.map(p => (p.id === editingProduct.id ? response.data : p)));
+            setEditingProduct(null); // Закрытие формы редактирования
+        } catch (err) {
+            console.error('Ошибка при редактировании товара:', err);
+        }
+    };
+
+    // Удаление товара
+    const handleDeleteProduct = async (id) => {
+        if (window.confirm('Вы уверены, что хотите удалить этот товар?')) {
+            const token = Cookies.get('jwtToken');
+            try {
+                await ApiClient.delete(`/api/admin/product-services/${id}`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+                setProducts(products.filter(p => p.id !== id));
+            } catch (err) {
+                console.error('Ошибка при удалении товара:', err);
+            }
+        }
+    };
+
+    // Начало редактирования товара
+    const startEditing = (product) => {
+        setEditingProduct({ ...product });
+    };
 
     if (loading) return <div>Загрузка...</div>;
     if (error) return <div>{error}</div>;
 
     return (
         <div>
-            <h1>Список услуг</h1>
+            <h1>Управление товарами и услугами</h1>
+
+            {/* Форма добавления нового товара */}
+            <div>
+                <h2>Добавить новый товар</h2>
+                <input
+                    type="text"
+                    placeholder="Название"
+                    value={newProduct.name}
+                    onChange={(e) => setNewProduct({ ...newProduct, name: e.target.value })}
+                />
+                <input
+                    type="number"
+                    placeholder="Цена"
+                    value={newProduct.price}
+                    onChange={(e) => setNewProduct({ ...newProduct, price: e.target.value })}
+                />
+                <select
+                    value={newProduct.categoryId}
+                    onChange={(e) => setNewProduct({ ...newProduct, categoryId: e.target.value })}
+                >
+                    <option value="">Выберите категорию</option>
+                    {categories.map(cat => (
+                        <option key={cat.id} value={cat.id}>{cat.title}</option>
+                    ))}
+                </select>
+                <button onClick={handleAddProduct}>Добавить</button>
+            </div>
+
+            {/* Форма редактирования товара */}
+            {editingProduct && (
+                <div>
+                    <h2>Редактировать товар</h2>
+                    <input
+                        type="text"
+                        value={editingProduct.name}
+                        onChange={(e) => setEditingProduct({ ...editingProduct, name: e.target.value })}
+                    />
+                    <input
+                        type="number"
+                        value={editingProduct.price}
+                        onChange={(e) => setEditingProduct({ ...editingProduct, price: e.target.value })}
+                    />
+                    <select
+                        value={editingProduct.categoryId}
+                        onChange={(e) => setEditingProduct({ ...editingProduct, categoryId: e.target.value })}
+                    >
+                        <option value="">Выберите категорию</option>
+                        {categories.map(cat => (
+                            <option key={cat.id} value={cat.id}>{cat.title}</option>
+                        ))}
+                    </select>
+                    <button onClick={handleEditProduct}>Сохранить</button>
+                    <button onClick={() => setEditingProduct(null)}>Отмена</button>
+                </div>
+            )}
+
+            {/* Список товаров */}
+            <h2>Список товаров</h2>
             <ul>
                 {products.map(product => (
-                    <li key={product.id}>{product.name} - {product.price}</li>
+                    <li key={product.id}>
+                        {product.name} - {product.price} руб.
+                        <button onClick={() => startEditing(product)}>Редактировать</button>
+                        <button onClick={() => handleDeleteProduct(product.id)}>Удалить</button>
+                    </li>
                 ))}
             </ul>
         </div>

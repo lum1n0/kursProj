@@ -1,4 +1,3 @@
-// src/api/ApiClient.js
 import axios from 'axios';
 import Cookies from 'js-cookie';
 
@@ -6,8 +5,9 @@ const API_BASE_URL = 'http://localhost:8080';
 
 const ApiClient = axios.create({
   baseURL: API_BASE_URL,
-  withCredentials: true, // Разрешить отправку cookies
+  withCredentials: true,
 });
+
 ApiClient.interceptors.request.use(
   (config) => {
     const token = Cookies.get('jwtToken');
@@ -19,7 +19,6 @@ ApiClient.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-
 export const register = async (userData) => {
   try {
     const response = await ApiClient.post('/auth/register', userData);
@@ -30,20 +29,29 @@ export const register = async (userData) => {
   }
 };
 
-export const login = async (login, password) => { 
+export const login = async (login, password) => {
   try {
-    const response = await ApiClient.post('/auth/login', { login, password }); //  Изменено: username -> login
-    // Cookie устанавливается бэкендом, здесь ничего не делаем с токеном
-    return response.data; //  вернуть данные пользователя или что-то еще полезное
+    const response = await ApiClient.post('/auth/login', { login, password });
+    return response.data;
   } catch (error) {
     console.error("Login failed:", error);
     throw error;
   }
 };
 
+export const getCategories = async () => {
+  try {
+      const response = await ApiClient.get('/product-categories');
+      return response.data;
+  } catch (error) {
+      console.error("Error fetching categories:", error);
+      throw error;
+  }
+};
+
 export const getProducts = async () => {
   try {
-    const response = await ApiClient.get('/products');
+    const response = await ApiClient.get('/api/shop/products');
     return response.data;
   } catch (error) {
     console.error("Error fetching products:", error);
@@ -54,4 +62,5 @@ export const getProducts = async () => {
 export const logout = () => {
   Cookies.remove('jwtToken', { path: '/' });
 };
-export { ApiClient }; //  Explicitly export ApiClient
+
+export { ApiClient };

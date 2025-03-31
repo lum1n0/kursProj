@@ -1,29 +1,35 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { getProducts } from '../api/ApiClient'; // Импортируй функцию для получения товаров с бэкенда
+import { getCategories, getProducts } from '../api/ApiClient';
+import ProductCard from '../components/ProductCard'; // Импортируем новый компонент
 
 function Shop() {
   const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [category, setCategory] = useState('all');
 
   useEffect(() => {
-    async function fetchProducts() {
+    async function fetchData() {
       try {
-        const data = await getProducts();
-        setProducts(data);
+        const categoryData = await getCategories();
+        const productData = await getProducts();
+        setCategories(categoryData);
+        setProducts(productData);
       } catch (error) {
-        console.error("Failed to fetch products", error);
+        console.error("Failed to fetch data", error);
       }
     }
 
-    fetchProducts();
+    fetchData();
   }, []);
 
-  const handleCategoryClick = (cat) => {
-    setCategory(cat);
+  const handleCategoryClick = (catId) => {
+    setCategory(catId);
   };
 
-  const filteredProducts = category === 'all' ? products : products.filter(product => product.category === category);
+  const filteredProducts = category === 'all'
+    ? products
+    : products.filter(product => product.categoryId === category);
 
   return (
     <section className="conteiner" id="shop_z1">
@@ -39,30 +45,15 @@ function Shop() {
               >
                 Все товары
               </button>
-              <button
-                className={`list-group-item list-group-item-action left_menu ${category === 'modems' ? 'active' : ''}`}
-                onClick={() => handleCategoryClick('modems')}
-              >
-                <img src="/img/modem2.svg" alt="" /> Модемы и роутеры
-              </button>
-              <button
-                className={`list-group-item list-group-item-action left_menu ${category === 'routers' ? 'active' : ''}`}
-                onClick={() => handleCategoryClick('routers')}
-              >
-                <img src="/img/router3.svg" alt="" /> Роутеры и интернет-центры
-              </button>
-              <button
-                className={`list-group-item list-group-item-action left_menu ${category === 'sim' ? 'active' : ''}`}
-                onClick={() => handleCategoryClick('sim')}
-              >
-                <img src="/img/sim4.svg" alt="" /> Сим-карты
-              </button>
-              <button
-                className={`list-group-item list-group-item-action left_menu ${category === 'subscriptions' ? 'active' : ''}`}
-                onClick={() => handleCategoryClick('subscriptions')}
-              >
-                <img src="/img/abonent5.svg" alt="" /> СТМ Абонементы
-              </button>
+              {categories.map(cat => (
+                <button
+                  key={cat.id}
+                  className={`list-group-item list-group-item-action left_menu ${category === cat.id ? 'active' : ''}`}
+                  onClick={() => handleCategoryClick(cat.id)}
+                >
+                  <img src={`/img/${cat.title.toLowerCase().replace(/\s+/g, '')}.svg`} alt="" /> {cat.title}
+                </button>
+              ))}
             </div>
           </div>
 
@@ -70,16 +61,7 @@ function Shop() {
           <div className="col-md-9">
             <div className="row_card" id="products">
               {filteredProducts.map(product => (
-                <div key={product.id} className="col-md-4 product-card">
-                  <div className="card">
-                    <img src={product.image} className="card-img_top" alt={product.name} />
-                    <div className="card-body">
-                      <h5 className="card-title">{product.name}</h5>
-                      <p className="card-text">{product.description}</p>
-                      <a href="#" className="btn btn-primary">Купить</a>
-                    </div>
-                  </div>
-                </div>
+                <ProductCard key={product.id} product={product} />
               ))}
             </div>
           </div>
