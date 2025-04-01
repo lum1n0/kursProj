@@ -1,14 +1,15 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Cookies from 'js-cookie';
 import { ApiClient, getCategories } from '../api/ApiClient';
+import axios from 'axios'; // Для отправки файлов на сервер
 
 function AdminShop() {
     const [products, setProducts] = useState([]);
     const [categories, setCategories] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [editingProduct, setEditingProduct] = useState(null); // Для редактирования
-    const [newProduct, setNewProduct] = useState({ name: '', price: '', categoryId: '' }); // Для добавления
+    const [editingProduct, setEditingProduct] = useState(null);
+    const [newProduct, setNewProduct] = useState({ name: '', price: '', categoryId: '', imageUrl: '' });
 
     // Загрузка данных при монтировании компонента
     useEffect(() => {
@@ -21,15 +22,11 @@ function AdminShop() {
             }
 
             try {
-                // Получаем категории
                 const categoryData = await getCategories();
                 setCategories(categoryData);
 
-                // Получаем товары
                 const response = await ApiClient.get('/api/admin/product-services', {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
+                    headers: { Authorization: `Bearer ${token}` },
                 });
                 setProducts(response.data);
             } catch (err) {
@@ -43,17 +40,36 @@ function AdminShop() {
         fetchData();
     }, []);
 
+    // Обработка загрузки файла
+    const handleFileUpload = async (e, isEditing = false) => {
+        const file = e.target.files[0];
+        const formData = new FormData();
+        formData.append('file', file);
+
+        try {
+            const response = await axios.post('/api/upload', formData, {
+                headers: { 'Content-Type': 'multipart/form-data' },
+            });
+            const imagePath = response.data;
+            if (isEditing) {
+                setEditingProduct({ ...editingProduct, imageUrl: imagePath });
+            } else {
+                setNewProduct({ ...newProduct, imageUrl: imagePath });
+            }
+        } catch (error) {
+            console.error('Ошибка загрузки изображения:', error);
+        }
+    };
+
     // Добавление нового товара
     const handleAddProduct = async () => {
         const token = Cookies.get('jwtToken');
         try {
             const response = await ApiClient.post('/api/admin/product-services', newProduct, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
+                headers: { Authorization: `Bearer ${token}` },
             });
             setProducts([...products, response.data]);
-            setNewProduct({ name: '', price: '', categoryId: '' }); // Сброс формы
+            setNewProduct({ name: '', price: '', categoryId: '', imageUrl: '' });
         } catch (err) {
             console.error('Ошибка при добавлении товара:', err);
         }
@@ -64,12 +80,10 @@ function AdminShop() {
         const token = Cookies.get('jwtToken');
         try {
             const response = await ApiClient.put(`/api/admin/product-services/${editingProduct.id}`, editingProduct, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
+                headers: { Authorization: `Bearer ${token}` },
             });
             setProducts(products.map(p => (p.id === editingProduct.id ? response.data : p)));
-            setEditingProduct(null); // Закрытие формы редактирования
+            setEditingProduct(null);
         } catch (err) {
             console.error('Ошибка при редактировании товара:', err);
         }
@@ -81,9 +95,7 @@ function AdminShop() {
             const token = Cookies.get('jwtToken');
             try {
                 await ApiClient.delete(`/api/admin/product-services/${id}`, {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
+                    headers: { Authorization: `Bearer ${token}` },
                 });
                 setProducts(products.filter(p => p.id !== id));
             } catch (err) {
@@ -128,6 +140,17 @@ function AdminShop() {
                         <option key={cat.id} value={cat.id}>{cat.title}</option>
                     ))}
                 </select>
+                <input
+                    type="text"
+                    placeholder="URL изображения"
+                    value={newProduct.imageUrl}
+                    onChange={(e) => setNewProduct({ ...newProduct, imageUrl: e.target.value })}
+                />
+                <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => handleFileUpload(e, false)}
+                />
                 <button onClick={handleAddProduct}>Добавить</button>
             </div>
 
@@ -154,6 +177,17 @@ function AdminShop() {
                             <option key={cat.id} value={cat.id}>{cat.title}</option>
                         ))}
                     </select>
+                    <input
+                        type="text"
+                        placeholder="URL изображения"
+                        value={editingProduct.imageUrl}
+                        onChange={(e) => setEditingProduct({ ...editingProduct, imageUrl: e.target.value })}
+                    />
+                    <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => handleFileUpload(e, true)}
+                    />
                     <button onClick={handleEditProduct}>Сохранить</button>
                     <button onClick={() => setEditingProduct(null)}>Отмена</button>
                 </div>
@@ -164,6 +198,9 @@ function AdminShop() {
             <ul>
                 {products.map(product => (
                     <li key={product.id}>
+                        {product.imageUrl && (
+                            <img src={product.imageUrl} alt={product.name} style={{ width: '50px', height: '50px' }} />
+                        )}
                         {product.name} - {product.price} руб.
                         <button onClick={() => startEditing(product)}>Редактировать</button>
                         <button onClick={() => handleDeleteProduct(product.id)}>Удалить</button>

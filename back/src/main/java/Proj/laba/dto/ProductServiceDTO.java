@@ -18,4 +18,7 @@ public class ProductServiceDTO extends GenericDTO {
     @NotNull(message = "Цена не может быть пустой")
     @Positive(message = "Цена должна быть положительным числом")
     private Double price;
+
+    
+    private String imageUrl; 
 }

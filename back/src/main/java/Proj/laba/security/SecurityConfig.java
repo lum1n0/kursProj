@@ -44,7 +44,9 @@ public class SecurityConfig {
             "/webjars/**",
             "/swagger-ui/index.html",
             "/api-docs/**",
-            "/api/orders"
+            "/api/orders",
+            "/product-categories",
+            "/api/shop/**"
     
     };
     
