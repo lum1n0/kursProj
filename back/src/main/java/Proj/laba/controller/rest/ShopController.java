@@ -22,6 +22,6 @@ public class ShopController {
 
     @GetMapping("/products")
     public List<ProductServiceDTO> getAllProducts() {
-        return productService.listAll();
+        return productService.getAllProductsWithCategory();
     }
 }

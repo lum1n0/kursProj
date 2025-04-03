@@ -1,6 +1,5 @@
 package Proj.laba.model;
 
-
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -9,7 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
-
+import java.util.List;
 
 @Entity
 @Table(name = "users",
@@ -23,7 +22,6 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @SequenceGenerator(name = "default_generator", sequenceName = "users_seq", allocationSize = 1)
 public class User extends GenericModel {
-    // Изменим аннотацию для id, чтобы явно указать использование sequence
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "users_seq")
     @SequenceGenerator(name = "users_seq", sequenceName = "users_seq", allocationSize = 1)
@@ -58,9 +56,6 @@ public class User extends GenericModel {
     @JsonBackReference
     private Role role;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-@JoinColumn(name = "tariff_id")
-private Tariff tariff;
-
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<Order> orders;
 }
-

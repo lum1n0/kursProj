@@ -21,14 +21,12 @@ public class UserMapper extends GenericMapper<User, UserResponseDTO> {
         modelMapper.createTypeMap(User.class, UserResponseDTO.class)
                 .addMappings(mapper -> {
                     mapper.map(src -> src.getRole().getTitle(), UserResponseDTO::setRole);
-                    mapper.map(src -> src.getTariff() != null ? src.getTariff().getId() : null, UserResponseDTO::setTariffId);
                 });
 
         // Маппинг из UserResponseDTO в User (игнорируем поля, которые не должны обновляться напрямую)
         modelMapper.createTypeMap(UserResponseDTO.class, User.class)
                 .addMappings(mapper -> {
                     mapper.skip(User::setRole); // Роль устанавливается отдельно через RoleRepository
-                    mapper.skip(User::setTariff); // Тариф устанавливается отдельно через TariffRepository
                 });
     }
 

@@ -63,6 +63,7 @@ function AdminShop() {
 
     // Добавление нового товара
     const handleAddProduct = async () => {
+        console.log("Отправляемый объект:", newProduct); // Логирование объекта
         const token = Cookies.get('jwtToken');
         try {
             const response = await ApiClient.post('/api/admin/product-services', newProduct, {
@@ -133,7 +134,7 @@ function AdminShop() {
                 />
                 <select
                     value={newProduct.categoryId}
-                    onChange={(e) => setNewProduct({ ...newProduct, categoryId: e.target.value })}
+                    onChange={(e) => setNewProduct({ ...newProduct, categoryId: Number(e.target.value) })}
                 >
                     <option value="">Выберите категорию</option>
                     {categories.map(cat => (
@@ -170,7 +171,7 @@ function AdminShop() {
                     />
                     <select
                         value={editingProduct.categoryId}
-                        onChange={(e) => setEditingProduct({ ...editingProduct, categoryId: e.target.value })}
+                        onChange={(e) => setEditingProduct({ ...editingProduct, categoryId: Number(e.target.value) })}
                     >
                         <option value="">Выберите категорию</option>
                         {categories.map(cat => (

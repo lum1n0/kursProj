@@ -27,9 +27,13 @@ public class ProductService extends GenericModel {
     @OneToMany(mappedBy = "productService", cascade = CascadeType.ALL)
     private List<Order> orders;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "category_id")
     private ProductCategory productCategory;
+
+
+    @Column(name = "image_path")
+private String imageUrl;
 
     public List<Order> getOrders() {
         return orders;

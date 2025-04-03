@@ -53,9 +53,7 @@ public ResponseEntity<?> updateCurrentUser(
         userDTO.setLastName(updateDTO.getLastName());
         userDTO.setPhone(updateDTO.getPhone());
         userDTO.setRole(user.getRole().getTitle());
-        if (user.getTariff() != null) {
-            userDTO.setTariffId(user.getTariff().getId());
-        }
+        
 
         // Обновляем через сервис
         UserResponseDTO updatedUser = userService.update(userDTO);

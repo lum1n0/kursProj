@@ -30,6 +30,4 @@ public class UserResponseDTO extends GenericDTO {
     @Schema(description = "Роль пользователя")
     private String role;
 
-    @Schema(description = "ID тарифа")
-    private Long tariffId;
 }

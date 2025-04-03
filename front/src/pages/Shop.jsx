@@ -2,35 +2,37 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { getCategories, getProducts } from '../api/ApiClient';
 import ProductCard from '../components/ProductCard';
-
+    
 function Shop() {
     const [products, setProducts] = useState([]);
     const [categories, setCategories] = useState([]);
     const [category, setCategory] = useState('all');
-
+    
     useEffect(() => {
         async function fetchData() {
             try {
                 const categoryData = await getCategories();
                 const productData = await getProducts();
+                console.log("Категории:", categoryData);
+                console.log("Товары:", productData);
                 setCategories(categoryData);
                 setProducts(productData);
             } catch (error) {
                 console.error("Failed to fetch data", error);
             }
         }
-
         fetchData();
     }, []);
-
+    
     const handleCategoryClick = (catId) => {
+        console.log("Выбрана категория:", catId);
         setCategory(catId);
     };
-
+    
     const filteredProducts = category === 'all'
-        ? products
-        : products.filter(product => product.categoryId === category);
-
+    ? products
+    : products.filter(product => Number(product.categoryId) === Number(category));
+    
     return (
         <section className="conteiner" id="shop_z1">
             <h1 className="title_hero shop_title">Магазин СТМ</h1>
@@ -56,7 +58,7 @@ function Shop() {
                             ))}
                         </div>
                     </div>
-
+    
                     {/* Карточки товаров */}
                     <div className="col-md-9">
                         <div className="row_card" id="products">
@@ -70,5 +72,5 @@ function Shop() {
         </section>
     );
 }
-
+    
 export default Shop;

@@ -4,6 +4,7 @@ import Proj.laba.dto.GenericDTO;
 import Proj.laba.model.GenericModel;
 import jakarta.annotation.PostConstruct;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeMap;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -25,8 +26,17 @@ public abstract class GenericMapper<E extends GenericModel, D extends GenericDTO
 
     @PostConstruct
     protected void setupMapper() {
-        modelMapper.createTypeMap(entityClass, dtoClass);
-        modelMapper.createTypeMap(dtoClass, entityClass);
+        // Создаём TypeMap для маппинга из сущности в DTO
+        TypeMap<E, D> entityToDtoMap = modelMapper.getTypeMap(entityClass, dtoClass);
+        if (entityToDtoMap == null) {
+            modelMapper.createTypeMap(entityClass, dtoClass);
+        }
+
+        // Создаём TypeMap для маппинга из DTO в сущность
+        TypeMap<D, E> dtoToEntityMap = modelMapper.getTypeMap(dtoClass, entityClass);
+        if (dtoToEntityMap == null) {
+            modelMapper.createTypeMap(dtoClass, entityClass);
+        }
     }
 
     public E toEntity(D dto) {
@@ -53,9 +63,14 @@ public abstract class GenericMapper<E extends GenericModel, D extends GenericDTO
                 .collect(Collectors.toList());
     }
 
+    
+
     protected abstract void mapSpecificFields(D source, E destination);
 
     protected abstract void mapSpecificFields(E source, D destination);
 
     protected abstract List<Long> getIds(E entity);
+
+
+    
 }

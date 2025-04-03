@@ -10,14 +10,12 @@ import org.webjars.NotFoundException;
 import java.time.LocalDateTime;
 import java.util.List;
 
-
 @Service
 public abstract class GenericService<E extends GenericModel, D extends GenericDTO> {
 
     protected final GenericRepository<E> repository;
     protected final GenericMapper<E, D> mapper;
 
-    @SuppressWarnings("SpringJavalnjectionPointsAutowiringInspection")
     public GenericService(GenericRepository<E> repository, GenericMapper<E, D> mapper) {
         this.repository = repository;
         this.mapper = mapper;
@@ -43,5 +41,9 @@ public abstract class GenericService<E extends GenericModel, D extends GenericDT
 
     public void delete(final Long id) {
         repository.deleteById(id);
+    }
+
+    public GenericMapper<E, D> getMapper() {
+        return mapper;
     }
 }

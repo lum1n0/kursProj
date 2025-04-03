@@ -5,12 +5,14 @@ import Proj.laba.dto.UserResponseDTO;
 import Proj.laba.mapper.UserMapper;
 import Proj.laba.model.User;
 import Proj.laba.model.Role;
-import Proj.laba.model.Tariff;
 import Proj.laba.model.UserHistory;
+import Proj.laba.model.Order;
+import Proj.laba.model.ProductService;
 import Proj.laba.reposirory.RoleRepository;
-import Proj.laba.reposirory.TariffRepository;
 import Proj.laba.reposirory.UserHistoryRepository;
 import Proj.laba.reposirory.UserRepository;
+import Proj.laba.reposirory.OrderRepository;
+import Proj.laba.reposirory.ProductServiceRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -31,23 +33,26 @@ public class UserService extends GenericService<User, UserResponseDTO> {
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
-    private final TariffRepository tariffRepository;
     private final UserHistoryRepository userHistoryRepository;
     private final UserMapper userMapper;
+    private final OrderRepository orderRepository;
+    private final ProductServiceRepository productServiceRepository;
 
     public UserService(UserRepository userRepository,
                        UserMapper userMapper,
                        PasswordEncoder passwordEncoder,
                        RoleRepository roleRepository,
-                       TariffRepository tariffRepository,
-                       UserHistoryRepository userHistoryRepository) {
+                       UserHistoryRepository userHistoryRepository,
+                       OrderRepository orderRepository,
+                       ProductServiceRepository productServiceRepository) {
         super(userRepository, userMapper);
         this.userRepository = userRepository;
         this.userMapper = userMapper;
         this.passwordEncoder = passwordEncoder;
         this.roleRepository = roleRepository;
-        this.tariffRepository = tariffRepository;
         this.userHistoryRepository = userHistoryRepository;
+        this.orderRepository = orderRepository;
+        this.productServiceRepository = productServiceRepository;
         initializeRoles(); // Инициализация ролей при старте сервиса
     }
 
@@ -91,82 +96,85 @@ public class UserService extends GenericService<User, UserResponseDTO> {
                 .orElseThrow(() -> new RuntimeException("User role not found"));
         user.setRole(userRole);
 
-        return userRepository.save(user);
+        // Сохраняем пользователя
+        user = userRepository.save(user);
+
+        // Создаем заказ с начальным тарифом
+        ProductService initialTariff = productServiceRepository.findById(3L)
+                .orElseThrow(() -> new NotFoundException("Initial tariff with id=1 not found"));
+        Order order = new Order();
+        order.setUser(user);
+        order.setProductService(initialTariff);
+        order.setQuantity(1);
+        order.setFinalPrice(initialTariff.getPrice());
+        order.setOrderDate(LocalDateTime.now());
+
+        orderRepository.save(order);
+
+        return user;
     }
 
     @Override
-@Transactional
-public UserResponseDTO update(UserResponseDTO updatedObject) {
-    // Находим существующего пользователя
-    User existingUser = userRepository.findById(updatedObject.getId())
-            .orElseThrow(() -> new NotFoundException("User с ID " + updatedObject.getId() + " не найден"));
+    @Transactional
+    public UserResponseDTO update(UserResponseDTO updatedObject) {
+        // Находим существующего пользователя
+        User existingUser = userRepository.findById(updatedObject.getId())
+                .orElseThrow(() -> new NotFoundException("User с ID " + updatedObject.getId() + " не найден"));
 
-    // Сохраняем оригинальные данные для истории изменений
-    User originalUser = new User();
-    originalUser.setFirstName(existingUser.getFirstName());
-    originalUser.setLastName(existingUser.getLastName());
-    originalUser.setEmail(existingUser.getEmail());
-    originalUser.setPhone(existingUser.getPhone());
-    originalUser.setRole(existingUser.getRole());
-    originalUser.setTariff(existingUser.getTariff());
-    originalUser.setPassword(existingUser.getPassword());
+        // Сохраняем оригинальные данные для истории изменений
+        User originalUser = new User();
+        originalUser.setFirstName(existingUser.getFirstName());
+        originalUser.setLastName(existingUser.getLastName());
+        originalUser.setEmail(existingUser.getEmail());
+        originalUser.setPhone(existingUser.getPhone());
+        originalUser.setRole(existingUser.getRole());
+        originalUser.setPassword(existingUser.getPassword());
 
-    // Обновляем только те поля, которые переданы и не равны null
-    if (updatedObject.getFirstName() != null) {
-        existingUser.setFirstName(updatedObject.getFirstName());
-    }
-    if (updatedObject.getLastName() != null) {
-        existingUser.setLastName(updatedObject.getLastName());
-    }
-    if (updatedObject.getEmail() != null) {
-        existingUser.setEmail(updatedObject.getEmail());
-    }
-    if (updatedObject.getPhone() != null) {
-        existingUser.setPhone(updatedObject.getPhone());
+        // Обновляем только те поля, которые переданы и не равны null
+        if (updatedObject.getFirstName() != null) {
+            existingUser.setFirstName(updatedObject.getFirstName());
+        }
+        if (updatedObject.getLastName() != null) {
+            existingUser.setLastName(updatedObject.getLastName());
+        }
+        if (updatedObject.getEmail() != null) {
+            existingUser.setEmail(updatedObject.getEmail());
+        }
+        if (updatedObject.getPhone() != null) {
+            existingUser.setPhone(updatedObject.getPhone());
+        }
+
+        // Обновляем роль, если она передана и отличается от текущей
+        if (updatedObject.getRole() != null && !updatedObject.getRole().equals(existingUser.getRole().getTitle())) {
+            Role role = roleRepository.findByTitle(updatedObject.getRole())
+                    .orElseThrow(() -> new NotFoundException("Role " + updatedObject.getRole() + " not found"));
+            existingUser.setRole(role);
+        }
+
+        // Сохраняем историю изменений, сравнивая оригинальные и новые данные
+        saveHistory(originalUser, existingUser, "admin"); // Замени "admin" на текущего пользователя, если нужно
+
+        // Сохраняем обновленного пользователя и возвращаем DTO
+        return userMapper.toDTO(userRepository.save(existingUser));
     }
 
-    // Обновляем роль, если она передана и отличается от текущей
-    if (updatedObject.getRole() != null && !updatedObject.getRole().equals(existingUser.getRole().getTitle())) {
-        Role role = roleRepository.findByTitle(updatedObject.getRole())
-                .orElseThrow(() -> new NotFoundException("Role " + updatedObject.getRole() + " not found"));
-        existingUser.setRole(role);
+    private void saveHistory(User oldUser, User newUser, String changedBy) {
+        if (!oldUser.getFirstName().equals(newUser.getFirstName())) {
+            userHistoryRepository.save(new UserHistory(null, newUser, "firstName", oldUser.getFirstName(), newUser.getFirstName(), changedBy, LocalDateTime.now()));
+        }
+        if (!oldUser.getLastName().equals(newUser.getLastName())) {
+            userHistoryRepository.save(new UserHistory(null, newUser, "lastName", oldUser.getLastName(), newUser.getLastName(), changedBy, LocalDateTime.now()));
+        }
+        if (oldUser.getEmail() != null && !oldUser.getEmail().equals(newUser.getEmail())) {
+            userHistoryRepository.save(new UserHistory(null, newUser, "email", oldUser.getEmail(), newUser.getEmail(), changedBy, LocalDateTime.now()));
+        }
+        if (oldUser.getPhone() != null && !oldUser.getPhone().equals(newUser.getPhone())) {
+            userHistoryRepository.save(new UserHistory(null, newUser, "phone", oldUser.getPhone(), newUser.getPhone(), changedBy, LocalDateTime.now()));
+        }
+        if (oldUser.getRole() != null && newUser.getRole() != null && !oldUser.getRole().getTitle().equals(newUser.getRole().getTitle())) {
+            userHistoryRepository.save(new UserHistory(null, newUser, "role", oldUser.getRole().getTitle(), newUser.getRole().getTitle(), changedBy, LocalDateTime.now()));
+        }
     }
-
-    // Обновляем тариф, если он передан и отличается от текущего
-    if (updatedObject.getTariffId() != null && (existingUser.getTariff() == null || !updatedObject.getTariffId().equals(existingUser.getTariff().getId()))) {
-        Tariff tariff = tariffRepository.findById(updatedObject.getTariffId())
-                .orElseThrow(() -> new NotFoundException("Tariff with ID " + updatedObject.getTariffId() + " not found"));
-        existingUser.setTariff(tariff);
-    }
-
-    // Сохраняем историю изменений, сравнивая оригинальные и новые данные
-    saveHistory(originalUser, existingUser, "admin"); // Замени "admin" на текущего пользователя, если нужно
-
-    // Сохраняем обновленного пользователя и возвращаем DTO
-    return userMapper.toDTO(userRepository.save(existingUser));
-}
-    
-     
-private void saveHistory(User oldUser, User newUser, String changedBy) {
-    if (!oldUser.getFirstName().equals(newUser.getFirstName())) {
-        userHistoryRepository.save(new UserHistory(null, newUser, "firstName", oldUser.getFirstName(), newUser.getFirstName(), changedBy, LocalDateTime.now()));
-    }
-    if (!oldUser.getLastName().equals(newUser.getLastName())) {
-        userHistoryRepository.save(new UserHistory(null, newUser, "lastName", oldUser.getLastName(), newUser.getLastName(), changedBy, LocalDateTime.now()));
-    }
-    if (oldUser.getEmail() != null && !oldUser.getEmail().equals(newUser.getEmail())) {
-        userHistoryRepository.save(new UserHistory(null, newUser, "email", oldUser.getEmail(), newUser.getEmail(), changedBy, LocalDateTime.now()));
-    }
-    if (oldUser.getPhone() != null && !oldUser.getPhone().equals(newUser.getPhone())) {
-        userHistoryRepository.save(new UserHistory(null, newUser, "phone", oldUser.getPhone(), newUser.getPhone(), changedBy, LocalDateTime.now()));
-    }
-    if (oldUser.getRole() != null && newUser.getRole() != null && !oldUser.getRole().getTitle().equals(newUser.getRole().getTitle())) {
-        userHistoryRepository.save(new UserHistory(null, newUser, "role", oldUser.getRole().getTitle(), newUser.getRole().getTitle(), changedBy, LocalDateTime.now()));
-    }
-    if (oldUser.getTariff() != null && newUser.getTariff() != null && !oldUser.getTariff().getId().equals(newUser.getTariff().getId())) {
-        userHistoryRepository.save(new UserHistory(null, newUser, "tariff", oldUser.getTariff().getId().toString(), newUser.getTariff().getId().toString(), changedBy, LocalDateTime.now()));
-    }
-}
 
     public Page<UserResponseDTO> listAllPaged(Pageable pageable) {
         return userRepository.findAll(pageable).map(userMapper::toDTO);
@@ -185,11 +193,11 @@ private void saveHistory(User oldUser, User newUser, String changedBy) {
     public void deleteUser(Long id) {
         // Находим пользователя
         User user = userRepository.findById(id)
-            .orElseThrow(() -> new NotFoundException("User not found"));
-    
+                .orElseThrow(() -> new NotFoundException("User not found"));
+
         // Удаляем все записи истории для этого пользователя
         userHistoryRepository.deleteByUser(user);
-    
+
         // Удаляем пользователя
         userRepository.delete(user);
     }

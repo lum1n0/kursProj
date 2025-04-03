@@ -19,6 +19,18 @@ public class ProductServiceDTO extends GenericDTO {
     @Positive(message = "Цена должна быть положительным числом")
     private Double price;
 
+    private String imageUrl;
+
+    private Long categoryId;
+
+    private String title;
+
+    public String getTitle() {
+        return title;
+    }
     
-    private String imageUrl; 
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
 }
