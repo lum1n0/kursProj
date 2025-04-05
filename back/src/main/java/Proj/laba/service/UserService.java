@@ -19,6 +19,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.webjars.NotFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import jakarta.annotation.PostConstruct;
 import java.time.LocalDateTime;
@@ -29,6 +31,8 @@ import java.util.stream.Collectors;
 @Service
 @Transactional
 public class UserService extends GenericService<User, UserResponseDTO> {
+
+    private static final Logger log = LoggerFactory.getLogger(UserService.class);
 
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
@@ -53,20 +57,17 @@ public class UserService extends GenericService<User, UserResponseDTO> {
         this.userHistoryRepository = userHistoryRepository;
         this.orderRepository = orderRepository;
         this.productServiceRepository = productServiceRepository;
-        initializeRoles(); // Инициализация ролей при старте сервиса
+        initializeRoles();
     }
 
     @PostConstruct
     public void initializeRoles() {
-        // Создаем роль USER, если она не существует
         if (roleRepository.findByTitle("USER").isEmpty()) {
             Role userRole = new Role();
             userRole.setTitle("USER");
             userRole.setDescription("Default user role");
             roleRepository.save(userRole);
         }
-
-        // Создаем роль ADMIN, если она не существует
         if (roleRepository.findByTitle("ADMIN").isEmpty()) {
             Role adminRole = new Role();
             adminRole.setTitle("ADMIN");
@@ -76,7 +77,6 @@ public class UserService extends GenericService<User, UserResponseDTO> {
     }
 
     public User registerSimple(SimpleRegistrationDTO registerDTO) {
-        // Проверяем, существует ли пользователь
         if (userRepository.findByLogin(registerDTO.getLogin()).isPresent()) {
             throw new RuntimeException("User already exists");
         }
@@ -91,17 +91,33 @@ public class UserService extends GenericService<User, UserResponseDTO> {
         user.setFirstName("Временное имя");
         user.setLastName("Временная фамилия");
 
-        // Устанавливаем роль USER по умолчанию
         Role userRole = roleRepository.findByTitle("USER")
                 .orElseThrow(() -> new RuntimeException("User role not found"));
         user.setRole(userRole);
 
-        // Сохраняем пользователя
+        // Логируем перед сохранением пользователя
+        log.info("Сохраняем пользователя без тарифа: {}", user);
+
         user = userRepository.save(user);
 
-        // Создаем заказ с начальным тарифом
+        // Логируем после сохранения пользователя
+        log.info("Пользователь сохранен: {}", user);
+
         ProductService initialTariff = productServiceRepository.findById(3L)
-                .orElseThrow(() -> new NotFoundException("Initial tariff with id=1 not found"));
+                .orElseThrow(() -> new NotFoundException("Initial tariff with id=3 not found"));
+
+        // Устанавливаем тариф для пользователя
+        user.setTariff(initialTariff);
+
+        // Логируем установку тарифа
+        log.info("Установлен тариф для пользователя: {}", initialTariff);
+
+        // Сохраняем пользователя с установленным тарифом
+        userRepository.save(user);
+
+        // Логируем после сохранения с тарифом
+        log.info("Пользователь с тарифом сохранен: {}", user);
+
         Order order = new Order();
         order.setUser(user);
         order.setProductService(initialTariff);
@@ -111,17 +127,39 @@ public class UserService extends GenericService<User, UserResponseDTO> {
 
         orderRepository.save(order);
 
+        // Логируем создание заказа
+        log.info("Заказ создан: {}", order);
+
         return user;
+    }
+
+    @Transactional
+    public void updateTariff(Long userId, Long newTariffId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("User с ID " + userId + " не найден"));
+
+        ProductService newTariff = productServiceRepository.findById(newTariffId)
+                .orElseThrow(() -> new NotFoundException("Tariff с ID " + newTariffId + " не найден"));
+
+        Order order = new Order();
+        order.setUser(user);
+        order.setProductService(newTariff);
+        order.setQuantity(1);
+        order.setFinalPrice(newTariff.getPrice());
+        order.setOrderDate(LocalDateTime.now());
+
+        orderRepository.save(order);
+
+        user.setTariff(newTariff);
+        userRepository.save(user);
     }
 
     @Override
     @Transactional
     public UserResponseDTO update(UserResponseDTO updatedObject) {
-        // Находим существующего пользователя
         User existingUser = userRepository.findById(updatedObject.getId())
                 .orElseThrow(() -> new NotFoundException("User с ID " + updatedObject.getId() + " не найден"));
 
-        // Сохраняем оригинальные данные для истории изменений
         User originalUser = new User();
         originalUser.setFirstName(existingUser.getFirstName());
         originalUser.setLastName(existingUser.getLastName());
@@ -130,7 +168,6 @@ public class UserService extends GenericService<User, UserResponseDTO> {
         originalUser.setRole(existingUser.getRole());
         originalUser.setPassword(existingUser.getPassword());
 
-        // Обновляем только те поля, которые переданы и не равны null
         if (updatedObject.getFirstName() != null) {
             existingUser.setFirstName(updatedObject.getFirstName());
         }
@@ -143,18 +180,14 @@ public class UserService extends GenericService<User, UserResponseDTO> {
         if (updatedObject.getPhone() != null) {
             existingUser.setPhone(updatedObject.getPhone());
         }
-
-        // Обновляем роль, если она передана и отличается от текущей
         if (updatedObject.getRole() != null && !updatedObject.getRole().equals(existingUser.getRole().getTitle())) {
             Role role = roleRepository.findByTitle(updatedObject.getRole())
                     .orElseThrow(() -> new NotFoundException("Role " + updatedObject.getRole() + " not found"));
             existingUser.setRole(role);
         }
 
-        // Сохраняем историю изменений, сравнивая оригинальные и новые данные
-        saveHistory(originalUser, existingUser, "admin"); // Замени "admin" на текущего пользователя, если нужно
+        saveHistory(originalUser, existingUser, "admin");
 
-        // Сохраняем обновленного пользователя и возвращаем DTO
         return userMapper.toDTO(userRepository.save(existingUser));
     }
 
@@ -191,14 +224,10 @@ public class UserService extends GenericService<User, UserResponseDTO> {
 
     @Transactional
     public void deleteUser(Long id) {
-        // Находим пользователя
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("User not found"));
 
-        // Удаляем все записи истории для этого пользователя
         userHistoryRepository.deleteByUser(user);
-
-        // Удаляем пользователя
         userRepository.delete(user);
     }
 

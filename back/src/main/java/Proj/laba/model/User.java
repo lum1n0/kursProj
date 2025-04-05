@@ -1,13 +1,13 @@
 package Proj.laba.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -24,7 +24,7 @@ import java.util.List;
 public class User extends GenericModel {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "users_seq")
-    @SequenceGenerator(name = "users_seq", sequenceName = "users_seq", allocationSize = 1)
+    @Column(name = "id")
     private Long id;
 
     @Column(name = "login", nullable = false, unique = true)
@@ -35,9 +35,6 @@ public class User extends GenericModel {
 
     @Column(name = "email", nullable = false, unique = true)
     private String email;
-
-    @Column(name = "birth_date")
-    private LocalDate birthDate;
 
     @Column(name = "first_name", nullable = false)
     private String firstName;
@@ -53,9 +50,28 @@ public class User extends GenericModel {
 
     @ManyToOne
     @JoinColumn(name = "role_id")
-    @JsonBackReference
     private Role role;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Order> orders;
+
+    @ManyToOne
+    @JoinColumn(name = "tariff_id")
+    private ProductService tariff; // Текущий тариф пользователя
+
+    @CreationTimestamp
+    @Column(name = "created_when")
+    private LocalDateTime createWhen;
+
+    @Column(name = "created_by")
+    private String createdBy;
+
+    @Column(name = "deleted_when")
+    private LocalDateTime deletedWhen;
+
+    @Column(name = "deleted_by")
+    private String deletedBy;
+
+    @Column(name = "is_deleted", columnDefinition = "boolean default false")
+    private boolean isDeleted;
 }

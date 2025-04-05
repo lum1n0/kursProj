@@ -17,7 +17,6 @@ function User() {
             setLastName(response.data.lastName || '');
             setPhone(response.data.phone || '');
 
-            // Получение заказов
             const ordersResponse = await ApiClient.get(`/api/orders?userId=${response.data.id}`);
             setOrders(ordersResponse.data);
         } catch (error) {
@@ -86,7 +85,7 @@ function User() {
                                 <>
                                     <p>ФИО: {userData.firstName} {userData.lastName}</p>
                                     <p>Номер телефона: {userData.phone}</p>
-                                    <p>Тариф: {userData.tariffId ? 'Название тарифа' : 'Нет тарифа'}</p> {/* Замените на реальный запрос */}
+                                    <p>Тариф: {userData.tariffName}</p>
                                 </>
                             )}
                         </div>
@@ -102,7 +101,7 @@ function User() {
                         {orders.map((order) => (
                             <div className="new_card" key={order.id}>
                                 <p>Дата: {new Date(order.orderDate).toLocaleString()}</p>
-                                <p>Услуга: {order.productServiceId}</p> {/* Замените на название услуги */}
+                                <p>Услуга: {order.productServiceId}</p>
                                 <p>Количество: {order.quantity}</p>
                                 <p>Цена: {order.finalPrice}</p>
                             </div>

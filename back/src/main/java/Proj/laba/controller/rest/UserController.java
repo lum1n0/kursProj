@@ -6,12 +6,13 @@ import Proj.laba.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -20,6 +21,7 @@ import java.util.List;
 @Tag(name = "Users", description = "API для работы с пользователями")
 @SecurityRequirement(name = "JWT")
 public class UserController {
+
     private final UserService userService;
 
     public UserController(UserService userService) {
@@ -35,14 +37,6 @@ public class UserController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @Operation(summary = "Поиск пользователей по фамилии")
-    @GetMapping("/by-lastname/{lastName}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<List<UserResponseDTO>> getUsersByLastName(@PathVariable String lastName) {
-        List<UserResponseDTO> users = userService.findByLastName(lastName);
-        return ResponseEntity.ok(users);
-    }
-
     @Operation(summary = "Получить всех пользователей")
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
@@ -54,9 +48,17 @@ public class UserController {
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<UserResponseDTO> updateUser(@PathVariable Long id, @RequestBody UserResponseDTO userDTO) {
-        userDTO.setId(id); // Устанавливаем ID из пути
+        userDTO.setId(id);
         UserResponseDTO updatedUser = userService.update(userDTO);
         return ResponseEntity.ok(updatedUser);
+    }
+
+    @Operation(summary = "Обновить тариф пользователя")
+    @PutMapping("/{id}/tariff")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Void> updateTariff(@PathVariable Long id, @RequestParam Long tariffId) {
+        userService.updateTariff(id, tariffId);
+        return ResponseEntity.ok().build();
     }
 
     @Operation(summary = "Удалить пользователя")
@@ -66,11 +68,11 @@ public class UserController {
         userService.deleteUser(id);
         return ResponseEntity.ok().build();
     }
-    @GetMapping("/paged")
-@PreAuthorize("hasRole('ADMIN')")
-public ResponseEntity<Page<UserResponseDTO>> getAllUsersPaged(@PageableDefault(size = 10) Pageable pageable) {
-    return ResponseEntity.ok(userService.listAllPaged(pageable));
-}
 
-    
+    @Operation(summary = "Получить всех пользователей с пагинацией")
+    @GetMapping("/paged")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Page<UserResponseDTO>> getAllUsersPaged(@PageableDefault(size = 10) Pageable pageable) {
+        return ResponseEntity.ok(userService.listAllPaged(pageable));
+    }
 }
