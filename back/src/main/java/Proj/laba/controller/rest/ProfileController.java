@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+import org.hibernate.Hibernate;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import lombok.extern.slf4j.Slf4j;
@@ -30,13 +31,22 @@ public class ProfileController {
             log.info("Получен запрос профиля для пользователя: {}", username);
             User user = userService.findByLogin(username)
                     .orElseThrow(() -> new RuntimeException("User not found"));
-            // Явно загружаем tariff, если он не null
-            if (user.getTariff() != null) {
-                log.debug("Загружаем tariff для пользователя: {}", username);
-                user.getTariff().getName(); // Инициализация объекта tariff
-            }
-            log.debug("Преобразуем User в UserResponseDTO для пользователя: {}", username);
-            UserResponseDTO userDTO = userService.getMapper().toDTO(user);
+
+            // Явно инициализируем tariff
+            Hibernate.initialize(user.getTariff());
+
+            // Ручное заполнение UserResponseDTO
+            UserResponseDTO userDTO = new UserResponseDTO();
+            userDTO.setId(user.getId());
+            userDTO.setLogin(user.getLogin());
+            userDTO.setFirstName(user.getFirstName());
+            userDTO.setLastName(user.getLastName());
+            userDTO.setEmail(user.getEmail());
+            userDTO.setPhone(user.getPhone());
+            userDTO.setAddress(user.getAddress());
+            userDTO.setRole(user.getRole().getTitle());
+            userDTO.setTariffName(userService.getTariffName(user));
+
             log.info("Профиль успешно преобразован для пользователя: {}", username);
             return ResponseEntity.ok(userDTO);
         } catch (Exception e) {

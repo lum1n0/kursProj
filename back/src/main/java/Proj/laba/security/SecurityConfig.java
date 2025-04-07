@@ -67,8 +67,9 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(PUBLIC_ENDPOINTS).permitAll()
                 .requestMatchers("/api/profile/**").authenticated()
-                .requestMatchers("/api/orders/**").authenticated() // Разрешаем доступ для аутентифицированных пользователей
+                .requestMatchers("/api/orders/**").authenticated()
                 .requestMatchers("/api/admin/**", "/api/users/**", "/api/user-history/**").hasRole("ADMIN")
+                .requestMatchers("/api/users/paged?**").hasRole("ADMIN") // Явное разрешение для /api/users/paged
                 .anyRequest().authenticated()
             )
             .authenticationProvider(authenticationProvider())

@@ -13,6 +13,7 @@ import Proj.laba.reposirory.UserHistoryRepository;
 import Proj.laba.reposirory.UserRepository;
 import Proj.laba.reposirory.OrderRepository;
 import Proj.laba.reposirory.ProductServiceRepository;
+import org.hibernate.Hibernate;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -95,27 +96,21 @@ public class UserService extends GenericService<User, UserResponseDTO> {
                 .orElseThrow(() -> new RuntimeException("User role not found"));
         user.setRole(userRole);
 
-        // Логируем перед сохранением пользователя
         log.info("Сохраняем пользователя без тарифа: {}", user);
 
         user = userRepository.save(user);
 
-        // Логируем после сохранения пользователя
         log.info("Пользователь сохранен: {}", user);
 
         ProductService initialTariff = productServiceRepository.findById(3L)
                 .orElseThrow(() -> new NotFoundException("Initial tariff with id=3 not found"));
 
-        // Устанавливаем тариф для пользователя
         user.setTariff(initialTariff);
 
-        // Логируем установку тарифа
         log.info("Установлен тариф для пользователя: {}", initialTariff);
 
-        // Сохраняем пользователя с установленным тарифом
         userRepository.save(user);
 
-        // Логируем после сохранения с тарифом
         log.info("Пользователь с тарифом сохранен: {}", user);
 
         Order order = new Order();
@@ -127,7 +122,6 @@ public class UserService extends GenericService<User, UserResponseDTO> {
 
         orderRepository.save(order);
 
-        // Логируем создание заказа
         log.info("Заказ создан: {}", order);
 
         return user;
@@ -210,7 +204,9 @@ public class UserService extends GenericService<User, UserResponseDTO> {
     }
 
     public Page<UserResponseDTO> listAllPaged(Pageable pageable) {
-        return userRepository.findAll(pageable).map(userMapper::toDTO);
+        Page<User> users = userRepository.findAll(pageable);
+        users.forEach(user -> Hibernate.initialize(user.getTariff())); // Инициализация tariff
+        return users.map(userMapper::toDTO);
     }
 
     public List<UserResponseDTO> findByLastName(String lastName) {
@@ -237,5 +233,13 @@ public class UserService extends GenericService<User, UserResponseDTO> {
 
     public Optional<User> findByLogin(String login) {
         return userRepository.findByLogin(login);
+    }
+
+    public String getTariffName(User user) {
+        ProductService tariff = user.getTariff();
+        if (tariff != null) {
+            return tariff.getName();
+        }
+        return "Нет тарифа";
     }
 }

@@ -13,7 +13,7 @@ public class ModelMapperConfig {
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.getConfiguration()
                 .setMatchingStrategy(MatchingStrategies.STRICT) // Строгое соответствие
-                .setFieldMatchingEnabled(true)
+                .setFieldMatchingEnabled(false)
                 .setSkipNullEnabled(true)
                 .setFieldAccessLevel(AccessLevel.PRIVATE)
                 .setPropertyCondition(context -> false); // Отключаем автоматический маппинг

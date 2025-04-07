@@ -44,12 +44,12 @@ public class UserMapper extends GenericMapper<User, UserResponseDTO> {
 
     @Override
     protected void mapSpecificFields(UserResponseDTO source, User destination) {
-        // Не требуется
+        // Не требуется, так как маппинг настроен в setupMapper
     }
 
     @Override
     protected void mapSpecificFields(User source, UserResponseDTO destination) {
-        // Не требуется
+        // Не требуется, так как маппинг настроен в setupMapper
     }
 
     @Override
