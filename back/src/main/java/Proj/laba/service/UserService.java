@@ -204,9 +204,25 @@ public class UserService extends GenericService<User, UserResponseDTO> {
     }
 
     public Page<UserResponseDTO> listAllPaged(Pageable pageable) {
+        log.info("Получение пользователей с пагинацией: page={}, size={}", pageable.getPageNumber(), pageable.getPageSize());
         Page<User> users = userRepository.findAll(pageable);
-        users.forEach(user -> Hibernate.initialize(user.getTariff())); // Инициализация tariff
-        return users.map(userMapper::toDTO);
+        users.forEach(user -> {
+            Hibernate.initialize(user.getRole());
+            Hibernate.initialize(user.getTariff());
+            log.debug("Пользователь: id={}, login={}, role={}, tariff={}",
+                    user.getId(), user.getLogin(),
+                    user.getRole() != null ? user.getRole().getTitle() : "Нет роли",
+                    user.getTariff() != null ? user.getTariff().getName() : "Нет тарифа");
+        });
+        Page<UserResponseDTO> result = users.map(user -> {
+            log.debug("Маппинг пользователя: id={}, login={}", user.getId(), user.getLogin());
+            UserResponseDTO dto = userMapper.toDTO(user);
+            log.debug("Смапленный DTO: id={}, login={}, role={}, tariffName={}",
+                    dto.getId(), dto.getLogin(), dto.getRole(), dto.getTariffName());
+            return dto;
+        });
+        log.info("Возвращено {} пользователей из {}", result.getNumberOfElements(), result.getTotalElements());
+        return result;
     }
 
     public List<UserResponseDTO> findByLastName(String lastName) {

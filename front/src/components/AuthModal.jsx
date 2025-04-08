@@ -8,13 +8,13 @@ import { useModalStore } from '../store/modalStore';
 
 const loginSchema = yup.object({
   login: yup.string().required('Логин обязателен'),
-  password: yup.string().min(6, 'Минимум 6 символов').required('Пароль обязателен'),
+  password: yup.string().min(6, 'Пароль должен быть не менее 6 символов').required('Пароль обязателен'),
 }).required();
 
 const registerSchema = yup.object({
   login: yup.string().required('Логин обязателен'),
-  password: yup.string().min(6, 'Минимум 6 символов').required('Пароль обязателен'),
-  confirmPassword: yup.string().oneOf([yup.ref('password'), null], 'Пароли не совпадают'),
+  password: yup.string().min(6, 'Пароль должен быть не менее 6 символов').required('Пароль обязателен'),
+  confirmPassword: yup.string().oneOf([yup.ref('password'), null], 'Пароли должны совпадать'),
   email: yup.string().email('Некорректный email').required('Email обязателен'),
 }).required();
 
@@ -23,7 +23,7 @@ function AuthModal() {
   const { isAuthModalOpen, closeAuthModal } = useModalStore();
   const [isLogin, setIsLogin] = React.useState(true);
 
-  const { register: formRegister, handleSubmit, formState: { errors }, reset } = useForm({
+  const { register: formRegister, handleSubmit, formState: { errors } } = useForm({
     resolver: yupResolver(isLogin ? loginSchema : registerSchema),
   });
 
@@ -31,24 +31,17 @@ function AuthModal() {
     try {
       if (isLogin) {
         const response = await login(data.login, data.password);
-        localStorage.setItem('jwtToken', response.token);
         setIsLoggedIn(true);
         setIsAdmin(response.roleId === 2);
+        closeAuthModal();
       } else {
-        await register({
-          login: data.login,
-          password: data.password,
-          confirmPassword: data.confirmPassword,
-          email: data.email,
-        });
-        alert("Registration successful! Please log in.");
+        await register(data);
+        alert('Регистрация успешна! Пожалуйста, войдите.');
         setIsLogin(true);
       }
-      closeAuthModal();
-      reset();
     } catch (error) {
-      console.error(isLogin ? "Login failed" : "Registration failed", error);
-      alert(isLogin ? "Неверное имя пользователя или пароль" : "Registration failed: " + error.response?.data?.message || "Unknown error");
+      console.error(isLogin ? 'Login failed' : 'Registration failed', error);
+      alert(isLogin ? 'Неверное имя пользователя или пароль' : 'Ошибка регистрации');
     }
   };
 
@@ -62,37 +55,21 @@ function AuthModal() {
         <form onSubmit={handleSubmit(onSubmit)}>
           {!isLogin && (
             <div>
-              <input
-                type="email"
-                placeholder="Email"
-                {...formRegister('email')}
-              />
+              <input {...formRegister('email')} placeholder="Email" />
               {errors.email && <p>{errors.email.message}</p>}
             </div>
           )}
           <div>
-            <input
-              type="text"
-              placeholder="Имя пользователя"
-              {...formRegister('login')}
-            />
+            <input {...formRegister('login')} placeholder="Имя пользователя" />
             {errors.login && <p>{errors.login.message}</p>}
           </div>
           <div>
-            <input
-              type="password"
-              placeholder="Пароль"
-              {...formRegister('password')}
-            />
+            <input type="password" {...formRegister('password')} placeholder="Пароль" />
             {errors.password && <p>{errors.password.message}</p>}
           </div>
           {!isLogin && (
             <div>
-              <input
-                type="password"
-                placeholder="Подтвердите пароль"
-                {...formRegister('confirmPassword')}
-              />
+              <input type="password" {...formRegister('confirmPassword')} placeholder="Подтвердите пароль" />
               {errors.confirmPassword && <p>{errors.confirmPassword.message}</p>}
             </div>
           )}

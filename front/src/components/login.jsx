@@ -1,42 +1,45 @@
-// src/components/Login.jsx
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // Импортируй useNavigate
+import React from 'react';
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
+import { login } from '../api/ApiClient';
+import { useAuth } from '../store/authStore';
+import { useNavigate } from 'react-router-dom';
+
+const schema = yup.object({
+  login: yup.string().required('Логин обязателен'),
+  password: yup.string().min(6, 'Пароль должен быть не менее 6 символов').required('Пароль обязателен'),
+}).required();
 
 function Login() {
-  const [login, setLogin] = useState('');
-  const [password, setPassword] = useState('');
-  const navigate = useNavigate(); // Инициализируй useNavigate
+  const { setIsLoggedIn, setIsAdmin } = useAuth();
+  const navigate = useNavigate();
+  const { register, handleSubmit, formState: { errors } } = useForm({
+    resolver: yupResolver(schema),
+  });
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    console.log("Login:", login);
-    console.log("Password:", password);
+  const onSubmit = async (data) => {
     try {
-      await login(login, password);
-      navigate('/admin'); //  Перенаправление после успешного входа
+      const response = await login(data.login, data.password);
+      setIsLoggedIn(true);
+      setIsAdmin(response.roleId === 2);
+      navigate('/admin');
     } catch (error) {
-      console.error("Login failed", error);
-      alert("Неверное имя пользователя или пароль");
+      console.error('Login failed', error);
+      alert('Неверное имя пользователя или пароль');
     }
   };
-  
 
   return (
-    <form onSubmit={handleSubmit}> {/* Добавь обработчик onSubmit */}
-      <input
-        type="text"
-        placeholder="Имя пользователя"
-        value={login}
-        onChange={(e) => setLogin(e.target.value)}
-        required
-      />
-      <input
-        type="password"
-        placeholder="Пароль"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        required
-      />
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <div>
+        <input {...register('login')} placeholder="Имя пользователя" />
+        {errors.login && <p>{errors.login.message}</p>}
+      </div>
+      <div>
+        <input type="password" {...register('password')} placeholder="Пароль" />
+        {errors.password && <p>{errors.password.message}</p>}
+      </div>
       <button type="submit">Войти</button>
     </form>
   );

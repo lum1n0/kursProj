@@ -13,12 +13,12 @@ export const ShopProvider = ({ children }) => {
       try {
         const categoryData = await getCategories();
         const productData = await getProducts();
-        console.log("Категории:", categoryData);
-        console.log("Товары:", productData);
+        console.log('Категории загружены:', categoryData);
+        console.log('Товары загружены:', productData);
         setCategories(categoryData);
         setProducts(productData);
       } catch (error) {
-        console.error("Failed to fetch data", error);
+        console.error('Ошибка загрузки данных:', error);
       }
     }
     fetchData();

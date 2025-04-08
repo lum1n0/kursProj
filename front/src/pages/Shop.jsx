@@ -1,19 +1,27 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import ProductCard from '../components/ProductCard';
-import { useShop } from '../store/ShopContext';
+import { useShop } from '../store/ShopContext.jsx';
 
 function Shop() {
-  const { products, categories, selectedCategory, setSelectedCategory } = useShop();
+  const shopData = useShop();
+
+  // Проверка на undefined
+  if (!shopData) {
+    return <div>Загрузка...</div>;
+  }
+
+  const { products, categories, selectedCategory, setSelectedCategory } = shopData;
 
   const handleCategoryClick = (catId) => {
-    console.log("Выбрана категория:", catId);
+    console.log('Выбрана категория:', catId);
     setSelectedCategory(catId);
   };
 
-  const filteredProducts = selectedCategory === 'all'
-    ? products
-    : products.filter(product => Number(product.categoryId) === Number(selectedCategory));
+  const filteredProducts =
+    selectedCategory === 'all'
+      ? products
+      : products.filter((product) => Number(product.categoryId) === Number(selectedCategory));
 
   return (
     <section className="conteiner" id="shop_z1">
@@ -25,21 +33,30 @@ function Shop() {
             <div className="list-group left_menu">
               <button
                 key="all-products"
-                className={`list-group-item list-group-item-action left_menu ${selectedCategory === 'all' ? 'active' : ''}`}
+                className={`list-group-item list-group-item-action left_menu ${
+                  selectedCategory === 'all' ? 'active' : ''
+                }`}
                 onClick={() => handleCategoryClick('all')}
               >
                 Все товары
               </button>
-              {categories.map(cat => (
+              {categories.map((cat) => (
                 <button
-                  key={cat.id || `cat-${Math.random()}`} // Добавляем запасной ключ, если id отсутствует
-                  className={`list-group-item list-group-item-action left_menu ${selectedCategory === cat.id ? 'active' : ''}`}
+                  key={cat.id || `cat-${Math.random()}`}
+                  className={`list-group-item list-group-item-action left_menu ${
+                    selectedCategory === cat.id ? 'active' : ''
+                  }`}
                   onClick={() => handleCategoryClick(cat.id)}
                 >
                   <img
-                    src={cat.title ? `/img/${cat.title.toLowerCase().replace(/\s+/g, '')}.svg` : '/img/default.svg'}
+                    src={
+                      cat.title
+                        ? `/img/${cat.title.toLowerCase().replace(/\s+/g, '')}.svg`
+                        : '/img/default.svg'
+                    }
                     alt={cat.title || 'Категория'}
-                  /> {cat.title || 'Без названия'}
+                  />{' '}
+                  {cat.title || 'Без названия'}
                 </button>
               ))}
             </div>
@@ -48,7 +65,7 @@ function Shop() {
           {/* Карточки товаров */}
           <div className="col-md-9">
             <div className="row_card" id="products">
-              {filteredProducts.map(product => (
+              {filteredProducts.map((product) => (
                 <ProductCard key={product.id || `prod-${Math.random()}`} product={product} />
               ))}
             </div>

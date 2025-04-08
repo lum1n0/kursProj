@@ -69,7 +69,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/profile/**").authenticated()
                 .requestMatchers("/api/orders/**").authenticated()
                 .requestMatchers("/api/admin/**", "/api/users/**", "/api/user-history/**").hasRole("ADMIN")
-                .requestMatchers("/api/users/paged?**").hasRole("ADMIN") // Явное разрешение для /api/users/paged
+                .requestMatchers("/api/users/paged").hasRole("ADMIN") // Исправленное правило
                 .anyRequest().authenticated()
             )
             .authenticationProvider(authenticationProvider())
