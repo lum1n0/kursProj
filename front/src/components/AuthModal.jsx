@@ -1,78 +1,101 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
 import { login, register } from '../api/ApiClient';
-import Cookies from 'js-cookie'; // Добавь этот импорт
+import { useAuth } from '../store/authStore';
+import { useModalStore } from '../store/modalStore';
 
-function AuthModal({ isOpen, onClose, onLoginSuccess }) {
-  const [isLogin, setIsLogin] = useState(true);
-  const [loginValue, setLogin] = useState('');
-  const [password, setPassword] = useState('');
-  const [email, setEmail] = useState('');
+const loginSchema = yup.object({
+  login: yup.string().required('Логин обязателен'),
+  password: yup.string().min(6, 'Минимум 6 символов').required('Пароль обязателен'),
+}).required();
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    console.log("handleLogin called");
+const registerSchema = yup.object({
+  login: yup.string().required('Логин обязателен'),
+  password: yup.string().min(6, 'Минимум 6 символов').required('Пароль обязателен'),
+  confirmPassword: yup.string().oneOf([yup.ref('password'), null], 'Пароли не совпадают'),
+  email: yup.string().email('Некорректный email').required('Email обязателен'),
+}).required();
+
+function AuthModal() {
+  const { setIsLoggedIn, setIsAdmin } = useAuth();
+  const { isAuthModalOpen, closeAuthModal } = useModalStore();
+  const [isLogin, setIsLogin] = React.useState(true);
+
+  const { register: formRegister, handleSubmit, formState: { errors }, reset } = useForm({
+    resolver: yupResolver(isLogin ? loginSchema : registerSchema),
+  });
+
+  const onSubmit = async (data) => {
     try {
-      const response = await login(loginValue, password);
-      console.log("Login response:", response); // Проверяем, что возвращает сервер
-      Cookies.set('jwtToken', response.token); // Сохраняем токен вручную
-      console.log("Login successful, token saved:", Cookies.get('jwtToken'));
-      onClose();
-      onLoginSuccess();
+      if (isLogin) {
+        const response = await login(data.login, data.password);
+        localStorage.setItem('jwtToken', response.token);
+        setIsLoggedIn(true);
+        setIsAdmin(response.roleId === 2);
+      } else {
+        await register({
+          login: data.login,
+          password: data.password,
+          confirmPassword: data.confirmPassword,
+          email: data.email,
+        });
+        alert("Registration successful! Please log in.");
+        setIsLogin(true);
+      }
+      closeAuthModal();
+      reset();
     } catch (error) {
-      console.error("Login failed", error);
-      alert("Неверное имя пользователя или пароль");
+      console.error(isLogin ? "Login failed" : "Registration failed", error);
+      alert(isLogin ? "Неверное имя пользователя или пароль" : "Registration failed: " + error.response?.data?.message || "Unknown error");
     }
   };
 
-  const handleRegister = async (e) => {
-    e.preventDefault();
-    try {
-      const userData = {
-        login: loginValue,
-        password: password,
-        confirmPassword: password,
-        email: email,
-      };
-      await register(userData);
-      alert("Registration successful! Please log in.");
-      setIsLogin(true);
-    } catch (error) {
-      console.error("Registration failed", error);
-      alert("Registration failed: " + error.response?.data?.message || "Unknown error");
-    }
-  };
-
-  if (!isOpen) return null;
+  if (!isAuthModalOpen) return null;
 
   return (
     <div className="modal">
       <div className="modal-content">
-        <span className="close" onClick={onClose}>×</span>
+        <span className="close" onClick={closeAuthModal}>×</span>
         <h2>{isLogin ? 'Вход' : 'Регистрация'}</h2>
-        <form onSubmit={isLogin ? handleLogin : handleRegister}>
+        <form onSubmit={handleSubmit(onSubmit)}>
           {!isLogin && (
-            <input
-              type="email"
-              placeholder="Email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
+            <div>
+              <input
+                type="email"
+                placeholder="Email"
+                {...formRegister('email')}
+              />
+              {errors.email && <p>{errors.email.message}</p>}
+            </div>
           )}
-          <input
-            type="text"
-            placeholder="Имя пользователя"
-            value={loginValue}
-            onChange={(e) => setLogin(e.target.value)}
-            required
-          />
-          <input
-            type="password"
-            placeholder="Пароль"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
+          <div>
+            <input
+              type="text"
+              placeholder="Имя пользователя"
+              {...formRegister('login')}
+            />
+            {errors.login && <p>{errors.login.message}</p>}
+          </div>
+          <div>
+            <input
+              type="password"
+              placeholder="Пароль"
+              {...formRegister('password')}
+            />
+            {errors.password && <p>{errors.password.message}</p>}
+          </div>
+          {!isLogin && (
+            <div>
+              <input
+                type="password"
+                placeholder="Подтвердите пароль"
+                {...formRegister('confirmPassword')}
+              />
+              {errors.confirmPassword && <p>{errors.confirmPassword.message}</p>}
+            </div>
+          )}
           <button type="submit">{isLogin ? 'Войти' : 'Зарегистрироваться'}</button>
         </form>
         <button onClick={() => setIsLogin(!isLogin)}>

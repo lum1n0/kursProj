@@ -1,76 +1,62 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
-import { getCategories, getProducts } from '../api/ApiClient';
 import ProductCard from '../components/ProductCard';
-    
+import { useShop } from '../store/ShopContext';
+
 function Shop() {
-    const [products, setProducts] = useState([]);
-    const [categories, setCategories] = useState([]);
-    const [category, setCategory] = useState('all');
-    
-    useEffect(() => {
-        async function fetchData() {
-            try {
-                const categoryData = await getCategories();
-                const productData = await getProducts();
-                console.log("Категории:", categoryData);
-                console.log("Товары:", productData);
-                setCategories(categoryData);
-                setProducts(productData);
-            } catch (error) {
-                console.error("Failed to fetch data", error);
-            }
-        }
-        fetchData();
-    }, []);
-    
-    const handleCategoryClick = (catId) => {
-        console.log("Выбрана категория:", catId);
-        setCategory(catId);
-    };
-    
-    const filteredProducts = category === 'all'
+  const { products, categories, selectedCategory, setSelectedCategory } = useShop();
+
+  const handleCategoryClick = (catId) => {
+    console.log("Выбрана категория:", catId);
+    setSelectedCategory(catId);
+  };
+
+  const filteredProducts = selectedCategory === 'all'
     ? products
-    : products.filter(product => Number(product.categoryId) === Number(category));
-    
-    return (
-        <section className="conteiner" id="shop_z1">
-            <h1 className="title_hero shop_title">Магазин СТМ</h1>
-            <div className="container-fluid">
-                <div className="row">
-                    {/* Боковое меню */}
-                    <div className="col-md-3">
-                        <div className="list-group left_menu">
-                            <button
-                                className={`list-group-item list-group-item-action left_menu ${category === 'all' ? 'active' : ''}`}
-                                onClick={() => handleCategoryClick('all')}
-                            >
-                                Все товары
-                            </button>
-                            {categories.map(cat => (
-                                <button
-                                    key={cat.id}
-                                    className={`list-group-item list-group-item-action left_menu ${category === cat.id ? 'active' : ''}`}
-                                    onClick={() => handleCategoryClick(cat.id)}
-                                >
-                                    <img src={`/img/${cat.title.toLowerCase().replace(/\s+/g, '')}.svg`} alt="" /> {cat.title}
-                                </button>
-                            ))}
-                        </div>
-                    </div>
-    
-                    {/* Карточки товаров */}
-                    <div className="col-md-9">
-                        <div className="row_card" id="products">
-                            {filteredProducts.map(product => (
-                                <ProductCard key={product.id} product={product} />
-                            ))}
-                        </div>
-                    </div>
-                </div>
+    : products.filter(product => Number(product.categoryId) === Number(selectedCategory));
+
+  return (
+    <section className="conteiner" id="shop_z1">
+      <h1 className="title_hero shop_title">Магазин СТМ</h1>
+      <div className="container-fluid">
+        <div className="row">
+          {/* Боковое меню */}
+          <div className="col-md-3">
+            <div className="list-group left_menu">
+              <button
+                key="all-products"
+                className={`list-group-item list-group-item-action left_menu ${selectedCategory === 'all' ? 'active' : ''}`}
+                onClick={() => handleCategoryClick('all')}
+              >
+                Все товары
+              </button>
+              {categories.map(cat => (
+                <button
+                  key={cat.id || `cat-${Math.random()}`} // Добавляем запасной ключ, если id отсутствует
+                  className={`list-group-item list-group-item-action left_menu ${selectedCategory === cat.id ? 'active' : ''}`}
+                  onClick={() => handleCategoryClick(cat.id)}
+                >
+                  <img
+                    src={cat.title ? `/img/${cat.title.toLowerCase().replace(/\s+/g, '')}.svg` : '/img/default.svg'}
+                    alt={cat.title || 'Категория'}
+                  /> {cat.title || 'Без названия'}
+                </button>
+              ))}
             </div>
-        </section>
-    );
+          </div>
+
+          {/* Карточки товаров */}
+          <div className="col-md-9">
+            <div className="row_card" id="products">
+              {filteredProducts.map(product => (
+                <ProductCard key={product.id || `prod-${Math.random()}`} product={product} />
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
 }
-    
+
 export default Shop;

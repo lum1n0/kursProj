@@ -1,34 +1,31 @@
 import React, { useEffect, useState } from 'react';
-import Cookies from 'js-cookie';
-import { ApiClient, getCategories } from '../api/ApiClient';
-import axios from 'axios'; // Для отправки файлов на сервер
+import { useForm } from 'react-hook-form';
+import { ApiClient, getCategories, postData, putData, deleteData } from '../api/ApiClient';
+import axios from 'axios';
+import { useDataStore } from '../store/dataStore';
 
 function AdminShop() {
-    const [products, setProducts] = useState([]);
-    const [categories, setCategories] = useState([]);
+    const { products, categories, setProducts, setCategories } = useDataStore();
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [editingProduct, setEditingProduct] = useState(null);
-    const [newProduct, setNewProduct] = useState({ name: '', price: '', categoryId: '', imageUrl: '' });
 
-    // Загрузка данных при монтировании компонента
+    const {
+        register,
+        handleSubmit,
+        setValue,
+        formState: { errors },
+    } = useForm();
+
     useEffect(() => {
         const fetchData = async () => {
-            const token = Cookies.get('jwtToken');
-            if (!token) {
-                setError('Нет доступа');
-                setLoading(false);
-                return;
-            }
-
             try {
+                setLoading(true);
                 const categoryData = await getCategories();
                 setCategories(categoryData);
 
-                const response = await ApiClient.get('/api/admin/product-services', {
-                    headers: { Authorization: `Bearer ${token}` },
-                });
-                setProducts(response.data);
+                const productData = await ApiClient.get('/api/admin/product-services');
+                setProducts(productData.data);
             } catch (err) {
                 setError('Ошибка при загрузке данных');
                 console.error(err);
@@ -38,10 +35,9 @@ function AdminShop() {
         };
 
         fetchData();
-    }, []);
+    }, [setProducts, setCategories]);
 
-    // Обработка загрузки файла
-    const handleFileUpload = async (e, isEditing = false) => {
+    const handleFileUpload = async (e, fieldName) => {
         const file = e.target.files[0];
         const formData = new FormData();
         formData.append('file', file);
@@ -51,53 +47,36 @@ function AdminShop() {
                 headers: { 'Content-Type': 'multipart/form-data' },
             });
             const imagePath = response.data;
-            if (isEditing) {
-                setEditingProduct({ ...editingProduct, imageUrl: imagePath });
-            } else {
-                setNewProduct({ ...newProduct, imageUrl: imagePath });
-            }
+            setValue(fieldName, imagePath);
         } catch (error) {
             console.error('Ошибка загрузки изображения:', error);
         }
     };
 
-    // Добавление нового товара
-    const handleAddProduct = async () => {
-        console.log("Отправляемый объект:", newProduct); // Логирование объекта
-        const token = Cookies.get('jwtToken');
+    const onSubmitNewProduct = async (data) => {
+        console.log("Отправляемый объект:", data); // Логирование объекта
         try {
-            const response = await ApiClient.post('/api/admin/product-services', newProduct, {
-                headers: { Authorization: `Bearer ${token}` },
-            });
-            setProducts([...products, response.data]);
-            setNewProduct({ name: '', price: '', categoryId: '', imageUrl: '' });
+            const response = await postData('/api/admin/product-services', data);
+            setProducts([...products, response]);
         } catch (err) {
             console.error('Ошибка при добавлении товара:', err);
         }
     };
 
-    // Сохранение отредактированного товара
-    const handleEditProduct = async () => {
-        const token = Cookies.get('jwtToken');
+    const onSubmitEditProduct = async (data) => {
         try {
-            const response = await ApiClient.put(`/api/admin/product-services/${editingProduct.id}`, editingProduct, {
-                headers: { Authorization: `Bearer ${token}` },
-            });
-            setProducts(products.map(p => (p.id === editingProduct.id ? response.data : p)));
+            const response = await putData(`/api/admin/product-services/${editingProduct.id}`, data);
+            setProducts(products.map(p => (p.id === editingProduct.id ? response : p)));
             setEditingProduct(null);
         } catch (err) {
             console.error('Ошибка при редактировании товара:', err);
         }
     };
 
-    // Удаление товара
     const handleDeleteProduct = async (id) => {
         if (window.confirm('Вы уверены, что хотите удалить этот товар?')) {
-            const token = Cookies.get('jwtToken');
             try {
-                await ApiClient.delete(`/api/admin/product-services/${id}`, {
-                    headers: { Authorization: `Bearer ${token}` },
-                });
+                await deleteData(`/api/admin/product-services/${id}`);
                 setProducts(products.filter(p => p.id !== id));
             } catch (err) {
                 console.error('Ошибка при удалении товара:', err);
@@ -105,9 +84,12 @@ function AdminShop() {
         }
     };
 
-    // Начало редактирования товара
     const startEditing = (product) => {
         setEditingProduct({ ...product });
+        setValue('editName', product.name);
+        setValue('editPrice', product.price);
+        setValue('editCategoryId', product.categoryId);
+        setValue('editImageUrl', product.imageUrl);
     };
 
     if (loading) return <div>Загрузка...</div>;
@@ -120,77 +102,87 @@ function AdminShop() {
             {/* Форма добавления нового товара */}
             <div>
                 <h2>Добавить новый товар</h2>
-                <input
-                    type="text"
-                    placeholder="Название"
-                    value={newProduct.name}
-                    onChange={(e) => setNewProduct({ ...newProduct, name: e.target.value })}
-                />
-                <input
-                    type="number"
-                    placeholder="Цена"
-                    value={newProduct.price}
-                    onChange={(e) => setNewProduct({ ...newProduct, price: e.target.value })}
-                />
-                <select
-                    value={newProduct.categoryId}
-                    onChange={(e) => setNewProduct({ ...newProduct, categoryId: Number(e.target.value) })}
-                >
-                    <option value="">Выберите категорию</option>
-                    {categories.map(cat => (
-                        <option key={cat.id} value={cat.id}>{cat.title}</option>
-                    ))}
-                </select>
-                <input
-                    type="text"
-                    placeholder="URL изображения"
-                    value={newProduct.imageUrl}
-                    onChange={(e) => setNewProduct({ ...newProduct, imageUrl: e.target.value })}
-                />
-                <input
-                    type="file"
-                    accept="image/*"
-                    onChange={(e) => handleFileUpload(e, false)}
-                />
-                <button onClick={handleAddProduct}>Добавить</button>
+                <form onSubmit={handleSubmit(onSubmitNewProduct)}>
+                    <input
+                        type="text"
+                        placeholder="Название"
+                        {...register("name", { required: true })}
+                    />
+                    {errors.name && <span>Это поле обязательно для заполнения</span>}
+
+                    <input
+                        type="number"
+                        placeholder="Цена"
+                        {...register("price", { required: true, valueAsNumber: true })}
+                    />
+                    {errors.price && <span>Цена должна быть числом</span>}
+
+                    <select {...register("categoryId", { required: true })}>
+                        <option value="">Выберите категорию</option>
+                        {categories.map(cat => (
+                            <option key={cat.id} value={cat.id}>{cat.title}</option>
+                        ))}
+                    </select>
+                    {errors.categoryId && <span>Выберите категорию</span>}
+
+                    <input
+                        type="text"
+                        placeholder="URL изображения"
+                        {...register("imageUrl")}
+                    />
+
+                    <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => handleFileUpload(e, 'imageUrl')}
+                    />
+
+                    <button type="submit">Добавить</button>
+                </form>
             </div>
 
             {/* Форма редактирования товара */}
             {editingProduct && (
                 <div>
                     <h2>Редактировать товар</h2>
-                    <input
-                        type="text"
-                        value={editingProduct.name}
-                        onChange={(e) => setEditingProduct({ ...editingProduct, name: e.target.value })}
-                    />
-                    <input
-                        type="number"
-                        value={editingProduct.price}
-                        onChange={(e) => setEditingProduct({ ...editingProduct, price: e.target.value })}
-                    />
-                    <select
-                        value={editingProduct.categoryId}
-                        onChange={(e) => setEditingProduct({ ...editingProduct, categoryId: Number(e.target.value) })}
-                    >
-                        <option value="">Выберите категорию</option>
-                        {categories.map(cat => (
-                            <option key={cat.id} value={cat.id}>{cat.title}</option>
-                        ))}
-                    </select>
-                    <input
-                        type="text"
-                        placeholder="URL изображения"
-                        value={editingProduct.imageUrl}
-                        onChange={(e) => setEditingProduct({ ...editingProduct, imageUrl: e.target.value })}
-                    />
-                    <input
-                        type="file"
-                        accept="image/*"
-                        onChange={(e) => handleFileUpload(e, true)}
-                    />
-                    <button onClick={handleEditProduct}>Сохранить</button>
-                    <button onClick={() => setEditingProduct(null)}>Отмена</button>
+                    <form onSubmit={handleSubmit(onSubmitEditProduct)}>
+                        <input
+                            type="text"
+                            defaultValue={editingProduct.name}
+                            {...register("editName", { required: true })}
+                        />
+                        {errors.editName && <span>Это поле обязательно для заполнения</span>}
+
+                        <input
+                            type="number"
+                            defaultValue={editingProduct.price}
+                            {...register("editPrice", { required: true, valueAsNumber: true })}
+                        />
+                        {errors.editPrice && <span>Цена должна быть числом</span>}
+
+                        <select defaultValue={editingProduct.categoryId} {...register("editCategoryId", { required: true })}>
+                            <option value="">Выберите категорию</option>
+                            {categories.map(cat => (
+                                <option key={cat.id} value={cat.id}>{cat.title}</option>
+                            ))}
+                        </select>
+                        {errors.editCategoryId && <span>Выберите категорию</span>}
+
+                        <input
+                            type="text"
+                            defaultValue={editingProduct.imageUrl}
+                            {...register("editImageUrl")}
+                        />
+
+                        <input
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => handleFileUpload(e, 'editImageUrl')}
+                        />
+
+                        <button type="submit">Сохранить</button>
+                        <button onClick={() => setEditingProduct(null)}>Отмена</button>
+                    </form>
                 </div>
             )}
 

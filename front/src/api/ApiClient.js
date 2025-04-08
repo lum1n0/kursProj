@@ -1,66 +1,85 @@
 import axios from 'axios';
-import Cookies from 'js-cookie';
 
 const API_BASE_URL = 'http://localhost:8080';
 
 const ApiClient = axios.create({
   baseURL: API_BASE_URL,
-  withCredentials: true,
+  withCredentials: true, // Отправка кук с запросами
 });
 
-ApiClient.interceptors.request.use(
-  (config) => {
-    const token = Cookies.get('jwtToken');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => Promise.reject(error)
-);
-
-export const register = async (userData) => {
-  try {
-    const response = await ApiClient.post('/auth/register', userData);
-    return response.data;
-  } catch (error) {
-    console.error("Registration failed:", error);
-    throw error;
+const handleResponse = async (response) => {
+  if (response.status < 200 || response.status >= 300) {
+    throw new Error(`Request failed with status: ${response.status}`);
   }
+  return response.data;
 };
+
+export { ApiClient };
 
 export const login = async (login, password) => {
   try {
     const response = await ApiClient.post('/auth/login', { login, password });
-    return response.data;
+    return handleResponse(response);
   } catch (error) {
     console.error("Login failed:", error);
     throw error;
   }
 };
 
-export const getCategories = async () => {
+export const register = async (userData) => {
   try {
-      const response = await ApiClient.get('/product-categories');
-      return response.data;
+    const response = await ApiClient.post('/auth/register', userData);
+    return handleResponse(response);
   } catch (error) {
-      console.error("Error fetching categories:", error);
-      throw error;
-  }
-};
-
-export const getProducts = async () => {
-  try {
-    const response = await ApiClient.get('/api/shop/products');
-    return response.data;
-  } catch (error) {
-    console.error("Error fetching products:", error);
+    console.error("Register failed:", error);
     throw error;
   }
 };
 
-export const logout = () => {
-  Cookies.remove('jwtToken', { path: '/' });
+export const fetchData = async (url) => {
+  try {
+    const response = await ApiClient.get(url);
+    return handleResponse(response);
+  } catch (error) {
+    console.error(`Fetch data failed from ${url}:`, error);
+    throw error;
+  }
 };
 
-export { ApiClient };
+export const postData = async (url, data) => {
+  try {
+    const response = await ApiClient.post(url, data);
+    return handleResponse(response);
+  } catch (error) {
+    console.error(`Post data failed to ${url}:`, error);
+    throw error;
+  }
+};
+
+export const putData = async (url, data) => {
+  try {
+    const response = await ApiClient.put(url, data);
+    return handleResponse(response);
+  } catch (error) {
+    console.error(`Put data failed to ${url}:`, error);
+    throw error;
+  }
+};
+
+export const deleteData = async (url) => {
+  try {
+    const response = await ApiClient.delete(url);
+    return handleResponse(response);
+  } catch (error) {
+    console.error(`Delete data failed from ${url}:`, error);
+    throw error;
+  }
+};
+
+export const getCategories = async () => {
+  return fetchData('/product-categories');
+};
+
+export const getProducts = async () => {
+  return fetchData('/api/shop/products');
+};
