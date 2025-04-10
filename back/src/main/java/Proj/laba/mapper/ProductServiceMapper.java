@@ -50,24 +50,23 @@ public class ProductServiceMapper extends GenericMapper<ProductService, ProductS
 
     @Override
     protected void mapSpecificFields(ProductServiceDTO source, ProductService destination) {
+        destination.setName(source.getName());
+        destination.setPrice(source.getPrice());
+        destination.setImageUrl(source.getImageUrl());
         if (source.getCategoryId() != null) {
-            System.out.println("Поиск категории с ID: " + source.getCategoryId());
             ProductCategory category = productCategoryRepository.findById(source.getCategoryId())
                     .orElseThrow(() -> new NotFoundException("Категория с ID " + source.getCategoryId() + " не найдена"));
             destination.setProductCategory(category);
-            System.out.println("Установлена категория: " + category.getId());
-        } else {
-            System.out.println("categoryId is null");
         }
     }
 
     @Override
     protected void mapSpecificFields(ProductService source, ProductServiceDTO destination) {
+        destination.setName(source.getName());
+        destination.setPrice(source.getPrice());
+        destination.setImageUrl(source.getImageUrl());
         if (source.getProductCategory() != null) {
             destination.setCategoryId(source.getProductCategory().getId());
-            System.out.println("Установлен categoryId: " + source.getProductCategory().getId());
-        } else {
-            System.out.println("Категория null для товара: " + source.getId());
         }
     }
 

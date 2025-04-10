@@ -12,6 +12,7 @@ function ProductCard({ product }) {
         <div className="card-body">
           <h5 className="card-title">{product.name || 'Без названия'}</h5>
           <p className="card-text">{product.description || 'Описание отсутствует'}</p>
+          <p className="card-text">Цена: {product.price !== null ? product.price : 'Не указана'}</p>
           <a href="#" className="btn btn-primary">Купить</a>
         </div>
       </div>

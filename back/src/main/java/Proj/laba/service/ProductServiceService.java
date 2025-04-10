@@ -8,6 +8,7 @@ import org.webjars.NotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Service
@@ -47,8 +48,8 @@ public class ProductServiceService extends GenericService<ProductService, Produc
     public ProductServiceDTO update(ProductServiceDTO updatedObject) {
         repository.findById(updatedObject.getId())
                 .orElseThrow(() -> new NotFoundException("ProductService с ID " + updatedObject.getId() + " не найден"));
-        if (updatedObject.getPrice() <= 0) {
-            throw new IllegalArgumentException("Цена должна быть положительной");
+        if (updatedObject.getPrice().compareTo(BigDecimal.ZERO) <= 0) {
+                throw new IllegalArgumentException("Цена должна быть положительной");
         }
         return super.update(updatedObject);
     }

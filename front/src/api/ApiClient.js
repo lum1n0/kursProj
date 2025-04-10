@@ -16,6 +16,17 @@ const handleResponse = async (response) => {
 
 export { ApiClient };
 
+// Проверка аутентификации
+export const checkAuth = async () => {
+  try {
+    const response = await ApiClient.get('/auth/me');
+    return handleResponse(response);
+  } catch (error) {
+    console.error('Ошибка проверки аутентификации:', error);
+    throw error; // Ошибка выбрасывается для обработки в authStore
+  }
+};
+
 export const login = async (login, password) => {
   try {
     const response = await ApiClient.post('/auth/login', { login, password });
@@ -52,6 +63,9 @@ export const postData = async (url, data) => {
     return handleResponse(response);
   } catch (error) {
     console.error(`Post data failed to ${url}:`, error);
+    if (error.response) {
+      console.error('Server response:', error.response.data);
+    }
     throw error;
   }
 };

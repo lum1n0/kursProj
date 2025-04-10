@@ -20,9 +20,6 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.http.ResponseCookie;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus; 
 import java.util.HashMap;
 import java.util.Map;
 
@@ -59,7 +56,6 @@ public class AuthController {
         }
     }
 
-
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
         try {
@@ -76,14 +72,13 @@ public class AuthController {
             UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
             Long roleId = userDetails.getRoleId(); // Получаем ID роли
 
-
             // Создание cookie
             ResponseCookie cookie = ResponseCookie.from("jwtToken", jwt)
-                    .httpOnly(false) // Делаем доступным для JavaScript
-                    .secure(false) // Для localhost без HTTPS (в production верни true)
+                    .httpOnly(false) // Доступно для JavaScript
+                    .secure(false) // Для localhost (в продакшене true)
                     .path("/") // Доступно для всего приложения
-                    .maxAge(10 * 60) // Время жизни cookie - 10 минут (в секундах)
-                    .sameSite("Lax") // Для локальной разработки (в production можно "Strict")
+                    .maxAge(10 * 60) // 10 минут
+                    .sameSite("Lax") // Для локальной разработки
                     .build();
     
             return ResponseEntity.ok()
@@ -93,7 +88,7 @@ public class AuthController {
                             userDetails.getId(),
                             userDetails.getUsername(),
                             userDetails.getRole(),
-                            roleId // Добавляем role_id в ответ
+                            roleId
                     ));
         } catch (AuthenticationException e) {
             return ResponseEntity
@@ -102,5 +97,20 @@ public class AuthController {
         }
     }
 
-
+    @GetMapping("/me")
+    public ResponseEntity<?> getCurrentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.isAuthenticated() && !"anonymousUser".equals(authentication.getPrincipal())) {
+            UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+            return ResponseEntity.ok(new JwtResponse(
+                    null, // Токен не возвращаем, он уже в куках
+                    userDetails.getId(),
+                    userDetails.getUsername(),
+                    userDetails.getRole(),
+                    userDetails.getRoleId()
+            ));
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not authenticated");
+        }
+    }
 }

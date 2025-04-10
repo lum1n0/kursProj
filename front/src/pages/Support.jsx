@@ -1,7 +1,11 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { useAuthStore } from '../store/authStore'; // Импорт хранилища
+import SupportForm from '../components/SupportForm'; // Импорт формы
 
 function Support() {
+  const { isLoggedIn } = useAuthStore(); // Получаем состояние авторизации
+
   return (
     <section className="conteiner" id="supp_z1">
       <h1 className="title_hero">Справочный центр СТМ</h1>
@@ -19,10 +23,13 @@ function Support() {
           </ul>
           <Link to="#" className="card-link">Подробнее</Link>
         </div>
-
-        {/* ... остальные карточки ... */}
-
+        {/* Здесь можно добавить остальные карточки */}
       </div>
+      {isLoggedIn ? (
+        <SupportForm />
+      ) : (
+        <p>Пожалуйста, авторизуйтесь, чтобы задать вопрос.</p>
+      )}
     </section>
   );
 }

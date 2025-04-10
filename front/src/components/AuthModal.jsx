@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { login, register } from '../api/ApiClient';
-import { useAuth } from '../store/authStore';
+import { useAuthStore } from '../store/authStore'; // Исправлено: useAuth → useAuthStore
 import { useModalStore } from '../store/modalStore';
 
 const loginSchema = yup.object({
@@ -19,7 +19,7 @@ const registerSchema = yup.object({
 }).required();
 
 function AuthModal() {
-  const { setIsLoggedIn, setIsAdmin } = useAuth();
+  const { setIsLoggedIn, setIsAdmin } = useAuthStore(); // Исправлено
   const { isAuthModalOpen, closeAuthModal } = useModalStore();
   const [isLogin, setIsLogin] = React.useState(true);
 

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import Header from './components/Header';
 import Footer from './components/Footer';
@@ -8,42 +8,44 @@ import LoginPage from './pages/LoginPage';
 import AdminPage from './pages/AdminPage';
 import Shop from './pages/Shop';
 import User from './pages/User';
-import Slider from './components/Slider';
-import { useAuth } from './store/authStore';
+import AdminAnswer from './components/AdminAnswer';
+import { useAuthStore } from './store/authStore';
 import { useModalStore } from './store/modalStore';
-import { ShopProvider } from './store/ShopContext';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import './assets/style__css/style.css';
 
 function App() {
-  const { isLoggedIn, setIsLoggedIn, isAdmin } = useAuth();
+  const { isLoggedIn, setIsLoggedIn, isAdmin, checkAuth } = useAuthStore();
   const { isAuthModalOpen } = useModalStore();
 
+  useEffect(() => {
+    checkAuth(); // Проверяем аутентификацию при монтировании
+  }, [checkAuth]);
+
   return (
-    <ShopProvider>
-      <div className="App">
-        <Header isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
-        <main>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/admin" element={isAdmin ? <AdminPage /> : <Home />} />
-            <Route path="/shop" element={<Shop />} />
-            <Route path="/profile" element={isLoggedIn ? <User /> : <Home />} />
-          </Routes>
-        </main>
-        <Footer />
-        {isAuthModalOpen && (
-          <AuthModal
-            onLoginSuccess={() => {
-              console.log('onLoginSuccess called');
-              setIsLoggedIn(true);
-            }}
-          />
-        )}
-      </div>
-    </ShopProvider>
+    <div className="App">
+      <Header isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
+      <main>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/admin" element={isAdmin ? <AdminPage /> : <Home />} />
+          <Route path="/admin/answer" element={isAdmin ? <AdminAnswer /> : <Home />} />
+          <Route path="/shop" element={<Shop />} />
+          <Route path="/profile" element={isLoggedIn ? <User /> : <Home />} />
+        </Routes>
+      </main>
+      <Footer />
+      {isAuthModalOpen && (
+        <AuthModal
+          onLoginSuccess={() => {
+            console.log('onLoginSuccess called');
+            setIsLoggedIn(true);
+          }}
+        />
+      )}
+    </div>
   );
 }
 

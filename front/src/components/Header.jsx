@@ -1,12 +1,12 @@
 import React, { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
-import { useAuth } from '../store/authStore';
+import { useAuthStore } from '../store/authStore'; // Исправлено: useAuth → useAuthStore
 import { useModalStore } from '../store/modalStore';
 
 function Header() {
     const navigate = useNavigate();
-    const { isLoggedIn, setIsLoggedIn, isAdmin, setIsAdmin } = useAuth();
+    const { isLoggedIn, setIsLoggedIn, isAdmin, setIsAdmin } = useAuthStore(); // Исправлено
     const { isAuthModalOpen, openAuthModal, closeAuthModal } = useModalStore();
 
     useEffect(() => {

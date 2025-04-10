@@ -258,4 +258,11 @@ public class UserService extends GenericService<User, UserResponseDTO> {
         }
         return "Нет тарифа";
     }
+
+    public User getUserById(Long id) {
+        return userRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Пользователь не найден"));
+    }
+
+
 }

@@ -42,6 +42,17 @@ a {
   background-color: #00aeef;
   color: #fff;
 }
+
+.red-circle {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  background-color: red;
+  border-radius: 50%;
+  margin-left: 5px;
+}
+
+
 .head_conteiner .right .bttn_entry {
   display: flex;
   gap: 0 5px;

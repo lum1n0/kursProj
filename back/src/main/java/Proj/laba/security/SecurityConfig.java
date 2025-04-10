@@ -33,16 +33,16 @@ public class SecurityConfig {
     }
     
     private static final String[] PUBLIC_ENDPOINTS = {
-            "/auth/**",
-            "/swagger-ui/**",
-            "/swagger-ui.html",
-            "/v3/api-docs/**",
-            "/swagger-resources/**",
-            "/webjars/**",
-            "/swagger-ui/index.html",
-            "/api-docs/**",
-            "/product-categories",
-            "/api/shop/**"
+        "/auth/**",
+        "/swagger-ui/**",
+        "/swagger-ui.html",
+        "/v3/api-docs/**",
+        "/swagger-resources/**",
+        "/webjars/**",
+        "/swagger-ui/index.html",
+        "/api-docs/**",
+        "/product-categories",
+        "/api/shop/**"
     };
     
     @Bean
@@ -69,7 +69,9 @@ public class SecurityConfig {
                 .requestMatchers("/api/profile/**").authenticated()
                 .requestMatchers("/api/orders/**").authenticated()
                 .requestMatchers("/api/admin/**", "/api/users/**", "/api/user-history/**").hasRole("ADMIN")
-                .requestMatchers("/api/users/paged").hasRole("ADMIN") // Исправленное правило
+                .requestMatchers("/api/users/paged").hasRole("ADMIN")
+                .requestMatchers("/api/support/send").authenticated() // Требуется аутентификация
+                .requestMatchers("/api/support/admin/**").hasRole("ADMIN") // Только для админов
                 .anyRequest().authenticated()
             )
             .authenticationProvider(authenticationProvider())

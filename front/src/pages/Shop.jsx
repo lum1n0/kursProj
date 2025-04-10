@@ -1,17 +1,14 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import ProductCard from '../components/ProductCard';
-import { useShop } from '../store/ShopContext.jsx';
+import { useShopStore } from '../store/shopStore';
 
 function Shop() {
-  const shopData = useShop();
+  const { products, selectedCategory, setSelectedCategory, fetchData, isLoading } = useShopStore();
 
-  // Проверка на undefined
-  if (!shopData) {
-    return <div>Загрузка...</div>;
-  }
-
-  const { products, categories, selectedCategory, setSelectedCategory } = shopData;
+  useEffect(() => {
+    fetchData(); // Загружаем данные при монтировании
+  }, [fetchData]);
 
   const handleCategoryClick = (catId) => {
     console.log('Выбрана категория:', catId);
@@ -21,18 +18,21 @@ function Shop() {
   const filteredProducts =
     selectedCategory === 'all'
       ? products
-      : products.filter((product) => Number(product.categoryId) === Number(selectedCategory));
+      : products.filter((product) => String(product.categoryId) === String(selectedCategory));
+
+  if (isLoading) {
+    return <div>Загрузка...</div>;
+  }
 
   return (
     <section className="conteiner" id="shop_z1">
       <h1 className="title_hero shop_title">Магазин СТМ</h1>
       <div className="container-fluid">
         <div className="row">
-          {/* Боковое меню */}
+          {/* Боковое меню с фиксированными кнопками */}
           <div className="col-md-3">
             <div className="list-group left_menu">
               <button
-                key="all-products"
                 className={`list-group-item list-group-item-action left_menu ${
                   selectedCategory === 'all' ? 'active' : ''
                 }`}
@@ -40,25 +40,30 @@ function Shop() {
               >
                 Все товары
               </button>
-              {categories.map((cat) => (
-                <button
-                  key={cat.id || `cat-${Math.random()}`}
-                  className={`list-group-item list-group-item-action left_menu ${
-                    selectedCategory === cat.id ? 'active' : ''
-                  }`}
-                  onClick={() => handleCategoryClick(cat.id)}
-                >
-                  <img
-                    src={
-                      cat.title
-                        ? `/img/${cat.title.toLowerCase().replace(/\s+/g, '')}.svg`
-                        : '/img/default.svg'
-                    }
-                    alt={cat.title || 'Категория'}
-                  />{' '}
-                  {cat.title || 'Без названия'}
-                </button>
-              ))}
+              <button
+                className={`list-group-item list-group-item-action left_menu ${
+                  selectedCategory === '1' ? 'active' : ''
+                }`}
+                onClick={() => handleCategoryClick('1')}
+              >
+                <img src="../../public/img/router3.svg" alt="Модемы и роутеры" /> Модемы и роутеры
+              </button>
+              <button
+                className={`list-group-item list-group-item-action left_menu ${
+                  selectedCategory === '2' ? 'active' : ''
+                }`}
+                onClick={() => handleCategoryClick('2')}
+              >
+                <img src="../../public/img/modem2.svg" alt="Приставки и ТВ" /> Приставки и ТВ
+              </button>
+              <button
+                className={`list-group-item list-group-item-action left_menu ${
+                  selectedCategory === '3' ? 'active' : ''
+                }`}
+                onClick={() => handleCategoryClick('3')}
+              >
+                <img src="../../public/img/sim4.svg" alt="Сим-карты" /> Сим-карты
+              </button>
             </div>
           </div>
 

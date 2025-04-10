@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { login } from '../api/ApiClient';
-import { useAuth } from '../store/authStore';
+import { useAuthStore } from '../store/authStore'; // Исправлено: useAuth → useAuthStore
 import { useNavigate } from 'react-router-dom';
 
 const schema = yup.object({
@@ -12,7 +12,7 @@ const schema = yup.object({
 }).required();
 
 function LoginPage() {
-  const { setIsLoggedIn, setIsAdmin } = useAuth();
+  const { setIsLoggedIn, setIsAdmin } = useAuthStore(); // Исправлено: useAuth → useAuthStore
   const navigate = useNavigate();
   const { register, handleSubmit, formState: { errors } } = useForm({
     resolver: yupResolver(schema),

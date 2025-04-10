@@ -97,6 +97,29 @@ function AdminShop() {
 
     return (
         <div>
+<header className="head_conteiner">
+    <nav className="nav_bar">
+        <div className="left">
+            <a href="/" className="logo">Админ-панель</a>
+        </div>
+        <div className="right">
+            <div className="links">
+                <a href="/admin" className="nav_link" onClick={() => setActiveTab("users")}>
+                    Пользователи
+                </a>
+                <a className="nav_link" href="/admin/shop">
+                    Товары и Услуги
+                </a>
+                <a className="nav_link" href="/admin/answer">
+                    Ответы на вопросы {unansweredCount > 0 && <span className="red-circle"></span>}
+                </a>
+                <a href="http://localhost:8080/swagger-ui/index.html" className="nav_link" target="_blank">
+                    Swagger
+                </a>
+            </div>
+        </div>
+    </nav>
+</header>
             <h1>Управление товарами и услугами</h1>
 
             {/* Форма добавления нового товара */}

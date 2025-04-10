@@ -17,12 +17,14 @@ public class ProductCategoryMapper extends GenericMapper<ProductCategory, Produc
 
     @Override
     protected void mapSpecificFields(ProductCategoryDTO source, ProductCategory destination) {
-        // Add specific mapping logic if needed
+        destination.setTitle(source.getTitle());
+        destination.setDescription(source.getDescription());
     }
 
     @Override
     protected void mapSpecificFields(ProductCategory source, ProductCategoryDTO destination) {
-        // Add specific mapping logic if needed
+        destination.setTitle(source.getTitle());
+        destination.setDescription(source.getDescription());
     }
 
     @Override
