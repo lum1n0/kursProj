@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import Header from './components/Header';
 import Footer from './components/Footer';
@@ -16,16 +16,12 @@ import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import './assets/style__css/style.css';
 
 function App() {
-  const { isLoggedIn, setIsLoggedIn, isAdmin, checkAuth } = useAuthStore();
+  const { isLoggedIn, setIsLoggedIn, isAdmin } = useAuthStore();
   const { isAuthModalOpen } = useModalStore();
-
-  useEffect(() => {
-    checkAuth(); // Проверяем аутентификацию при монтировании
-  }, [checkAuth]);
 
   return (
     <div className="App">
-      <Header isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
+      <Header />
       <main>
         <Routes>
           <Route path="/" element={<Home />} />

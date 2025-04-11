@@ -1,10 +1,13 @@
 package Proj.laba.controller.rest;
 
 import Proj.laba.dto.SupportMessageDTO;
+import Proj.laba.model.User;
 import Proj.laba.service.SupportMessageService;
+import Proj.laba.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -14,19 +17,27 @@ import java.util.List;
 public class SupportController {
 
     private final SupportMessageService supportMessageService;
+    private final UserService userService;
 
     @Autowired
-    public SupportController(SupportMessageService supportMessageService) {
+    public SupportController(SupportMessageService supportMessageService, UserService userService) {
         this.supportMessageService = supportMessageService;
+        this.userService = userService;
     }
 
     @PostMapping("/send")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<?> sendSupportMessage(@RequestBody SupportMessageDTO messageDTO) {
+    public ResponseEntity<?> sendSupportMessage(@RequestBody SupportMessageDTO messageDTO, Authentication authentication) {
+        String username = authentication.getName(); // Получаем имя пользователя из токена
+        User user = userService.findByLogin(username)
+                .orElseThrow(() -> new RuntimeException("Пользователь не найден"));
+        Long userId = user.getId(); // Получаем ID пользователя
+
         if (messageDTO.getMessage() == null || messageDTO.getMessage().trim().isEmpty()) {
             return ResponseEntity.badRequest().body("Сообщение не может быть пустым");
         }
         try {
+            messageDTO.setUserId(userId); // Устанавливаем userId из аутентификации
             supportMessageService.createMessage(messageDTO);
             return ResponseEntity.ok("Сообщение отправлено");
         } catch (Exception e) {

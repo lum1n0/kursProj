@@ -17,10 +17,9 @@ function AppRoutes() {
   const { isLoggedIn, isAdmin, checkAuth, isLoading } = useAuthStore();
 
   useEffect(() => {
-    checkAuth();
-  }, [checkAuth]);
+    checkAuth(); // Вызываем проверку один раз при монтировании
+  }, []); // Пустой массив зависимостей
 
-  // Показываем индикатор загрузки, пока данные пользователя загружаются
   if (isLoading) {
     return <div>Проверка аутентификации...</div>;
   }
@@ -32,7 +31,7 @@ function AppRoutes() {
         <Route path="/user" element={<User />} />
         <Route path="/shop" element={<Shop />} />
         <Route path="/pay" element={<Pay />} />
-        <Route path="/support" element={<Support />} /> {/* Доступен всем */}
+        <Route path="/support" element={<Support />} />
         <Route path="/modem" element={<Modem />} />
         <Route path="/login" element={<LoginPage />} />
         <Route

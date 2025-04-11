@@ -15,6 +15,26 @@ public class SupportMessageMapper extends GenericMapper<SupportMessage, SupportM
     }
 
     @Override
+    public SupportMessage toEntity(SupportMessageDTO dto) {
+        if (dto == null) {
+            return null;
+        }
+        SupportMessage message = new SupportMessage();
+        mapSpecificFields(dto, message); // Ручное копирование полей
+        return message;
+    }
+
+    @Override
+    public SupportMessageDTO toDTO(SupportMessage entity) {
+        if (entity == null) {
+            return null;
+        }
+        SupportMessageDTO dto = new SupportMessageDTO();
+        mapSpecificFields(entity, dto); // Ручное копирование полей
+        return dto;
+    }
+
+    @Override
     protected void mapSpecificFields(SupportMessageDTO source, SupportMessage destination) {
         destination.setUserId(source.getUserId());
         destination.setMessage(source.getMessage());
@@ -23,7 +43,10 @@ public class SupportMessageMapper extends GenericMapper<SupportMessage, SupportM
 
     @Override
     protected void mapSpecificFields(SupportMessage source, SupportMessageDTO destination) {
-        // Дополнительное маппинг, если нужно
+        destination.setId(source.getId()); // Копируем id
+        destination.setUserId(source.getUserId());
+        destination.setMessage(source.getMessage());
+        destination.setAnswered(source.isAnswered());
     }
 
     @Override

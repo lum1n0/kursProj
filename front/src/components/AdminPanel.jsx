@@ -112,7 +112,7 @@ function AdminPanel() {
                 </a>
                 <a className="nav_link" href="/admin/answer">
                     Ответы на вопросы 
-                    {unansweredCount > 0 && <span className="red-circle"></span>}
+                    {/* {unansweredCount > 0 && <span className="red-circle"></span>} */}
                 </a>
                 <a href="http://localhost:8080/swagger-ui/index.html" className="nav_link" target="_blank">
                     Swagger

@@ -15,7 +15,7 @@ public class SupportMessageService extends GenericService<SupportMessage, Suppor
 
     private final SupportMessageRepository repository;
     private final EmailService emailService;
-    private final UserService userService; // Предполагается, что UserService существует
+    private final UserService userService;
 
     @Autowired
     public SupportMessageService(SupportMessageRepository repository, SupportMessageMapper mapper,
@@ -42,9 +42,13 @@ public class SupportMessageService extends GenericService<SupportMessage, Suppor
 
     public void answerMessage(Long id, String answer) {
         SupportMessage message = repository.findById(id).orElseThrow(() -> new RuntimeException("Сообщение не найдено"));
-        User user = userService.getUserById(message.getUserId()); // Предполагается, что метод существует
-        emailService.sendEmail(user.getEmail(), "Ответ на ваш вопрос", answer);
-        message.setAnswered(true);
-        repository.save(message);
+        User user = userService.getUserById(message.getUserId());
+        try {
+            emailService.sendEmail(user.getEmail(), "Ответ на ваш вопрос", answer);
+            message.setAnswered(true);
+            repository.save(message);
+        } catch (Exception e) {
+            throw new RuntimeException("Не удалось отправить email: " + e.getMessage(), e);
+        }
     }
 }
