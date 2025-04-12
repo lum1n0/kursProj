@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { fetchData, postData } from '../api/ApiClient.js';
-import AdminHeader from '../components/AdminHeader.jsx';
+import AdminHeader from '../components/ AdminHeader.jsx';
 
 
 function AdminAnswer() {

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from "react-router-dom";
 import { fetchData, putData, deleteData } from "../api/ApiClient.js";
 import { useDataStore } from '../store/dataStore.js';
-import AdminHeader from '../components/AdminHeader.jsx';
+import AdminHeader from '../components/ AdminHeader.jsx';
 
 
 function AdminPanel() {
