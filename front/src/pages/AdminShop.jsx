@@ -4,6 +4,7 @@ import { ApiClient, getCategories, postData, putData, deleteData } from '../api/
 import axios from 'axios';
 import { useDataStore } from '../store/dataStore';
 import { useAuthStore } from '../store/authStore';
+import AdminHeader from '../components/ AdminHeader.jsx';
 
 function AdminShop() {
   const { products, categories, setProducts, setCategories } = useDataStore();
@@ -105,33 +106,7 @@ function AdminShop() {
 
   return (
     <div>
-      <header className="head_conteiner">
-        <nav className="nav_bar">
-          <div className="left">
-            <a href="/" className="logo">
-              Админ-панель
-            </a>
-          </div>
-          <div className="right">
-            <div className="links">
-              <a href="/admin" className="nav_link">
-                Пользователи
-              </a>
-              <a className="nav_link" href="/admin/shop">
-                Товары и Услуги
-              </a>
-              <a className="nav_link" href="/admin/answer">
-                Ответы на вопросы
-                {/* {unansweredCount > 0 && <span className="red-circle"></span>} */}
-
-              </a>
-              <a href="http://localhost:8080/swagger-ui/index.html" className="nav_link" target="_blank">
-                Swagger
-              </a>
-            </div>
-          </div>
-        </nav>
-      </header>
+<AdminHeader />
       <h1>Управление товарами и услугами</h1>
 
       {/* Форма добавления нового товара */}

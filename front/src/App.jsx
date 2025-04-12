@@ -8,7 +8,7 @@ import LoginPage from './pages/LoginPage';
 import AdminPage from './pages/AdminPage';
 import Shop from './pages/Shop';
 import User from './pages/User';
-import AdminAnswer from './components/AdminAnswer';
+import AdminAnswer from './pages/AdminAnswer.jsx';
 import { useAuthStore } from './store/authStore';
 import { useModalStore } from './store/modalStore';
 import 'bootstrap/dist/css/bootstrap.min.css';

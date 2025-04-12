@@ -1,7 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import Slider from '../components/Slider';
-import Header from '../components/Header'; 
 
 function Home() {
   return (

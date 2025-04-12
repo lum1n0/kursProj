@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { fetchData, postData } from '../api/ApiClient';
+import { fetchData, postData } from '../api/ApiClient.js';
+import AdminHeader from '../components/AdminHeader.jsx';
+
 
 function AdminAnswer() {
   const [messages, setMessages] = useState([]);
@@ -34,6 +36,7 @@ function AdminAnswer() {
 
   return (
     <div>
+      <AdminHeader />
       <h1>Неотвеченные сообщения</h1>
       {messages.length === 0 ? (
         <p>Нет неотвеченных сообщений</p>

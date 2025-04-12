@@ -5,12 +5,12 @@ import Pay from '../pages/Pay';
 import Support from '../pages/Support';
 import Modem from '../pages/Modem';
 import LoginPage from '../pages/LoginPage';
-import AdminPanel from '../components/AdminPanel';
+import AdminPanel from '../pages/AdminPanel';
 import AdminShop from '../pages/AdminShop';
 import Home from '../pages/Home';
 import App from '../App';
 import User from '../pages/User';
-import AdminAnswer from '../components/AdminAnswer';
+import AdminAnswer from '../pages/AdminAnswer';
 import { useAuthStore } from '../store/authStore';
 
 function AppRoutes() {
