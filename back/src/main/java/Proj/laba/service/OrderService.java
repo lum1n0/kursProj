@@ -15,20 +15,27 @@ import org.webjars.NotFoundException;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class OrderService extends GenericService<Order, OrderDTO> {
 
     private final UserRepository userRepository;
     private final ProductServiceRepository productServiceRepository;
+    private final OrderRepository orderRepository;
+    private final OrderMapper orderMapper;
 
     public OrderService(GenericRepository<Order> repository,
                         OrderMapper mapper,
                         UserRepository userRepository,
-                        ProductServiceRepository productServiceRepository) {
+                        ProductServiceRepository productServiceRepository,
+                        OrderRepository orderRepository) {
         super(repository, mapper);
         this.userRepository = userRepository;
         this.productServiceRepository = productServiceRepository;
+        this.orderRepository = orderRepository;
+        this.orderMapper = mapper;
     }
 
     @Override
@@ -91,8 +98,13 @@ public class OrderService extends GenericService<Order, OrderDTO> {
 
     @Transactional(readOnly = true)
     public OrderDTO findByOrderDateAndUserId(LocalDateTime orderDate, Long userId) {
-        return mapper.toDTO(((OrderRepository) repository)
-                .findByOrderDateAndUserId(orderDate, userId)
+        return mapper.toDTO(orderRepository.findByOrderDateAndUserId(orderDate, userId)
                 .orElseThrow(() -> new NotFoundException("Заказ не найден")));
+    }
+
+    @Transactional(readOnly = true)
+    public List<OrderDTO> findByUserId(Long userId) {
+        List<Order> orders = orderRepository.findByUserId(userId);
+        return orders.stream().map(orderMapper::toDTO).collect(Collectors.toList());
     }
 }

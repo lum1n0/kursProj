@@ -30,6 +30,4 @@ public class OrderDTO extends GenericDTO {
 
     @NotNull(message = "ID пользователя не может быть пустым")
     private Long userId;
-
-    public Object setFinalPrice;
 }

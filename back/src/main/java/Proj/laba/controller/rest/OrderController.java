@@ -10,9 +10,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @RestController
-@RequestMapping("/orders")
+@RequestMapping("/api/orders")
 @Tag(name = "Заказы", description = "Контроллер для работы с заказами")
 public class OrderController extends GenericController<Order, OrderDTO> {
 
@@ -21,6 +22,13 @@ public class OrderController extends GenericController<Order, OrderDTO> {
     public OrderController(OrderService orderService) {
         super(orderService);
         this.orderService = orderService;
+    }
+
+    @Operation(summary = "Получить заказы пользователя")
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<OrderDTO>> getOrdersByUserId(@PathVariable Long userId) {
+        List<OrderDTO> orders = orderService.findByUserId(userId);
+        return ResponseEntity.ok(orders);
     }
 
     @Operation(summary = "Поиск заказа по дате и ID пользователя")

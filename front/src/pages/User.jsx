@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { ApiClient } from '../api/ApiClient';
+import Header from '../components/Header';
 import { useAuthStore } from '../store/authStore';
+import '../assets/style__css/User.css';
 
 function User() {
     const { user } = useAuthStore();
@@ -10,6 +12,7 @@ function User() {
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
     const [phone, setPhone] = useState('');
+    const [ordersError, setOrdersError] = useState(null);
 
     const fetchUserData = async () => {
         try {
@@ -19,10 +22,17 @@ function User() {
             setLastName(response.data.lastName || '');
             setPhone(response.data.phone || '');
 
-            const ordersResponse = await ApiClient.get(`/api/orders?userId=${response.data.id}`);
-            setOrders(ordersResponse.data);
+            try {
+                const ordersResponse = await ApiClient.get(`/api/orders/user/${response.data.id}`);
+                setOrders(ordersResponse.data);
+                setOrdersError(null);
+            } catch (orderErr) {
+                console.error('Error fetching orders:', orderErr);
+                setOrdersError('Не удалось загрузить заказы. Попробуйте позже.');
+            }
         } catch (error) {
-            console.error('Error fetching data:', error);
+            console.error('Error fetching user data:', error);
+            setOrdersError('Ошибка при загрузке данных пользователя.');
         }
     };
 
@@ -49,6 +59,7 @@ function User() {
 
     return (
         <div className="coc">
+            <Header />
             <section className="conteiner" id="admin_z1">
                 <div className="user_id">
                     <h2 className="title_sect">Мой профиль</h2>
@@ -92,7 +103,7 @@ function User() {
                                 </>
                             )}
                         </div>
-                        <img src="/img/free-icon-profile-avatar-4794936.png" alt="" />
+                        <img src="/img/free-icon-profile-avatar-4794936.png" alt="Profile avatar" />
                     </div>
                     {editing ? (
                         <button onClick={handleSave}>Сохранить изменения</button>
@@ -100,16 +111,22 @@ function User() {
                         <button onClick={() => setEditing(true)}>Редактировать</button>
                     )}
                     <h2 className="title_sectic">Мои заказы</h2>
-                    <div className="new_cards" id="active_cart_mode">
-                        {orders.map((order) => (
-                            <div className="new_card" key={order.id}>
-                                <p>Дата: {new Date(order.orderDate).toLocaleString()}</p>
-                                <p>Услуга: {order.productServiceId}</p>
-                                <p>Количество: {order.quantity}</p>
-                                <p>Цена: {order.finalPrice}</p>
-                            </div>
-                        ))}
-                    </div>
+                    {ordersError ? (
+                        <p className="error-message">{ordersError}</p>
+                    ) : orders.length === 0 ? (
+                        <p>У вас пока нет заказов.</p>
+                    ) : (
+                        <div className="new_cards" id="active_cart_mode">
+                            {orders.map((order) => (
+                                <div className="new_card" key={order.id}>
+                                    <p>Дата: {new Date(order.orderDate).toLocaleString()}</p>
+                                    <p>Услуга: {order.productServiceId}</p>
+                                    <p>Количество: {order.quantity}</p>
+                                    <p>Цена: {order.finalPrice} руб.</p>
+                                </div>
+                            ))}
+                        </div>
+                    )}
                 </div>
             </section>
         </div>

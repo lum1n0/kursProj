@@ -2,7 +2,6 @@ import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Shop from '../pages/Shop';
 import Support from '../pages/Support';
-import Modem from '../pages/Modem';
 import LoginPage from '../pages/LoginPage';
 import AdminPanel from '../pages/AdminPanel';
 import AdminShop from '../pages/AdminShop';
@@ -31,7 +30,6 @@ function AppRoutes() {
                 <Route path="/user" element={<User />} />
                 <Route path="/shop" element={<Shop />} />
                 <Route path="/support" element={<Support />} />
-                <Route path="/modem" element={<Modem />} />
                 <Route path="/login" element={<LoginPage />} />
                 <Route
                     path="/topup"

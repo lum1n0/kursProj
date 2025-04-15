@@ -2,23 +2,27 @@ import React, { useState } from 'react';
 import { useAuthStore } from '../store/authStore';
 import { postData } from '../api/ApiClient';
 import Header from '../components/Header';
-import '../assets/style__css/TopUpForm.css'; // Подключим стили
+import '../assets/style__css/TopUpForm.css';
 
 function TopUpForm() {
-    const { user } = useAuthStore();
+    const { user, isLoading } = useAuthStore(); // Добавляем isLoading
     const [cardNumber, setCardNumber] = useState('');
     const [expiryDate, setExpiryDate] = useState('');
     const [cvv, setCvv] = useState('');
     const [amount, setAmount] = useState('');
 
+    if (isLoading) {
+        return <div>Проверка аутентификации...</div>; // Ждём завершения проверки
+    }
+
     if (!user) {
-        return <p>Пожалуйста, авторизуйтесь для пополнения баланса.</p>;
+        return <p>Пожалуйста, авторизуйтесь для пополнения баланса.</p>; // Это не должно отображаться, так как перенаправление происходит в AppRoutes
     }
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         const payload = {
-            amount: parseFloat(amount), // Отправляем объект с полем amount
+            amount: parseFloat(amount),
         };
         try {
             await postData('/api/users/topup', payload);

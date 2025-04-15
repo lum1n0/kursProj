@@ -20,9 +20,6 @@ function Footer() {
               <li>
                 <Link to="/support" className="text-dark nav_link">Поддержка</Link>
               </li>
-              <li>
-                <Link to="/modem" className="text-dark nav_link">Модем</Link>
-              </li>
             </ul>
             <p className="mt-3 text-center">
               Продолжая использовать наш сайт, вы даете согласие на обработку

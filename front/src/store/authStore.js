@@ -5,7 +5,7 @@ export const useAuthStore = create((set, get) => ({
   isLoggedIn: false,
   isAdmin: false,
   user: null,
-  isLoading: true,
+  isLoading: true, // Изначально true, чтобы показать загрузку
   isChecking: false, // Флаг для предотвращения повторных вызовов
   setIsLoggedIn: (loggedIn) => set({ isLoggedIn: loggedIn }),
   setIsAdmin: (admin) => set({ isAdmin: admin }),
