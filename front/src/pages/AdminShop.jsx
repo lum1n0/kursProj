@@ -1,14 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { ApiClient, getCategories, postData, putData, deleteData } from '../api/ApiClient';
-import axios from 'axios';
 import { useDataStore } from '../store/dataStore';
 import { useAuthStore } from '../store/authStore';
 import AdminHeader from '../components/AdminHeader';
 
 function AdminShop() {
   const { products, categories, setProducts, setCategories } = useDataStore();
-  const { isLoading: authLoading } = useAuthStore(); // Получаем состояние загрузки аутентификации
+  const { isLoading: authLoading } = useAuthStore();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [editingProduct, setEditingProduct] = useState(null);
@@ -24,25 +23,40 @@ function AdminShop() {
     const fetchData = async () => {
       try {
         setLoading(true);
+        // Попробуем загрузить категории через API
         const categoryData = await getCategories();
-        setCategories(categoryData);
+        console.log('Загруженные категории:', categoryData);
 
+        if (categoryData.every(cat => cat.id === null || cat.title === null)) {
+          // Если API возвращает null, используем временные категории
+          const fallbackCategories = [
+            { id: '1', title: 'Модемы и роутеры' },
+            { id: '2', title: 'Приставки и ТВ' },
+            { id: '3', title: 'Сим-карты' },
+          ];
+           setCategories(fallbackCategories);
+          console.warn('API вернул некорректные данные, используются временные категории');
+        } else {
+          setCategories(categoryData);
+        }
+
+        // Загружаем товары
         const productData = await ApiClient.get('/api/admin/product-services');
+        console.log('Загруженные товары:', productData.data);
         setProducts(productData.data);
       } catch (err) {
         setError('Ошибка при загрузке данных');
-        console.error(err);
+        console.error('Ошибка:', err);
       } finally {
         setLoading(false);
       }
     };
 
     if (!authLoading) {
-      fetchData(); // Загружаем данные только после завершения проверки аутентификации
+      fetchData();
     }
   }, [setProducts, setCategories, authLoading]);
 
-  // Показываем загрузку, если данные аутентификации или страницы еще не готовы
   if (authLoading || loading) {
     return <div>Загрузка...</div>;
   }
@@ -55,7 +69,7 @@ function AdminShop() {
     formData.append('file', file);
 
     try {
-      const response = await axios.post('/api/upload', formData, {
+      const response = await ApiClient.post('/api/upload', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
       const imagePath = response.data;
@@ -77,7 +91,12 @@ function AdminShop() {
 
   const onSubmitEditProduct = async (data) => {
     try {
-      const response = await putData(`/api/admin/product-services/${editingProduct.id}`, data);
+      const response = await putData(`/api/admin/product-services/${editingProduct.id}`, {
+        name: data.editName,
+        price: data.editPrice,
+        categoryId: data.editCategoryId,
+        imageUrl: data.editImageUrl,
+      });
       setProducts(products.map((p) => (p.id === editingProduct.id ? response : p)));
       setEditingProduct(null);
     } catch (err) {
@@ -99,15 +118,17 @@ function AdminShop() {
   const startEditing = (product) => {
     setEditingProduct({ ...product });
     setValue('editName', product.name);
-   applications.setValue('editPrice', product.price);
+    setValue('editPrice', product.price);
     setValue('editCategoryId', product.categoryId);
     setValue('editImageUrl', product.imageUrl);
   };
 
   return (
     <div>
-<AdminHeader />
+      <AdminHeader />
       <h1>Управление товарами и услугами</h1>
+
+      {/* <div>Категории: {JSON.stringify(categories)}</div> */}
 
       {/* Форма добавления нового товара */}
       <div>

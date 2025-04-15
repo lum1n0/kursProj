@@ -68,6 +68,7 @@ public class SecurityConfig {
                 .requestMatchers(PUBLIC_ENDPOINTS).permitAll()
                 .requestMatchers("/api/profile/**").authenticated()
                 .requestMatchers("/api/orders/**").authenticated()
+                .requestMatchers("/api/users/topup").authenticated()
                 .requestMatchers("/api/admin/**", "/api/users/**", "/api/user-history/**").hasRole("ADMIN")
                 .requestMatchers("/api/users/paged").hasRole("ADMIN")
                 .requestMatchers("/api/support/send").authenticated() // Требуется аутентификация

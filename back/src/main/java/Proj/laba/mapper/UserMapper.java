@@ -71,14 +71,18 @@ public class UserMapper extends GenericMapper<User, UserResponseDTO> {
     }
 
     @Override
+    protected void mapSpecificFields(User source, UserResponseDTO destination) {
+        destination.setRole(source.getRole() != null ? source.getRole().getTitle() : null);
+        destination.setTariffName(source.getTariff() != null ? source.getTariff().getName() : "Нет тарифа");
+        destination.setBalance(source.getBalance()); // Маппинг balance
+    }
+
+
+    @Override
     protected void mapSpecificFields(UserResponseDTO source, User destination) {
         // Не требуется, маппинг настроен в setupMapper
     }
 
-    @Override
-    protected void mapSpecificFields(User source, UserResponseDTO destination) {
-        // Не требуется, маппинг настроен в setupMapper
-    }
 
     @Override
     protected List<Long> getIds(User entity) {

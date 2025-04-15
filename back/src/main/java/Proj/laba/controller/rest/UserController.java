@@ -12,9 +12,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/users")
@@ -74,5 +77,24 @@ public class UserController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Page<UserResponseDTO>> getAllUsersPaged(@PageableDefault(size = 10) Pageable pageable) {
         return ResponseEntity.ok(userService.listAllPaged(pageable));
+    }
+
+    @Operation(summary = "Пополнить баланс пользователя")
+    @PostMapping("/topup")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<?> topUpBalance(@RequestBody Map<String, BigDecimal> requestBody, Authentication authentication) {
+        BigDecimal amount = requestBody.get("amount");
+        if (amount == null) {
+            return ResponseEntity.badRequest().body("Параметр 'amount' обязателен");
+        }
+        String username = authentication.getName();
+        User user = userService.findByLogin(username).orElseThrow(() -> new RuntimeException("Пользователь не найден"));
+        Long userId = user.getId();
+        try {
+            userService.topUpBalance(userId, amount);
+            return ResponseEntity.ok("Баланс успешно пополнен");
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Ошибка при пополнении баланса: " + e.getMessage());
+        }
     }
 }

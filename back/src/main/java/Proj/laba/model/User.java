@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -57,21 +58,8 @@ public class User extends GenericModel {
 
     @ManyToOne
     @JoinColumn(name = "tariff_id")
-    private ProductService tariff; // Текущий тариф пользователя
+    private ProductService tariff;
 
-    @CreationTimestamp
-    @Column(name = "created_when")
-    private LocalDateTime createWhen;
-
-    @Column(name = "created_by")
-    private String createdBy;
-
-    @Column(name = "deleted_when")
-    private LocalDateTime deletedWhen;
-
-    @Column(name = "deleted_by")
-    private String deletedBy;
-
-    @Column(name = "is_deleted", columnDefinition = "boolean default false")
-    private boolean isDeleted;
+    @Column(name = "balance", nullable = false)
+    private BigDecimal balance = BigDecimal.ZERO; // Баланс пользователя
 }

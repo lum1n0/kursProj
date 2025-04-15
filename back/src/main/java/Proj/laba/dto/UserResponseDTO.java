@@ -3,6 +3,7 @@ package Proj.laba.dto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
@@ -34,4 +35,7 @@ public class UserResponseDTO extends GenericDTO {
 
     @Schema(description = "Название тарифа")
     private String tariffName;
+
+    @Schema(description = "Название баланс")
+    private BigDecimal balance; // Добавлено поле balance
 }

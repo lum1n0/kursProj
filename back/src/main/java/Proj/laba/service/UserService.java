@@ -24,6 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import jakarta.annotation.PostConstruct;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -264,5 +265,11 @@ public class UserService extends GenericService<User, UserResponseDTO> {
             .orElseThrow(() -> new RuntimeException("Пользователь не найден"));
     }
 
-
+    // Метод для пополнения баланса
+    public void topUpBalance(Long userId, BigDecimal amount) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("Пользователь не найден"));
+        user.setBalance(user.getBalance().add(amount));
+        userRepository.save(user);
+    }
 }

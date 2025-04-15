@@ -55,17 +55,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private String parseJwt(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
-        System.out.println(cookies + "1");
         if (cookies != null) {
-            System.out.println(cookies + "2");
-            for (Cookie cookie : cookies) {
-                if ("jwtToken".equals(cookie.getName())) {
-                    System.out.println("Токен из куки: " + cookie.getValue());
-                    return cookie.getValue();
-                }
+          for (Cookie cookie : cookies) {
+            if ("jwtToken".equals(cookie.getName())) {
+              System.out.println("Токен из куки: " + cookie.getValue());
+              return cookie.getValue();
             }
+          }
+          System.out.println("Токен не найден в куках");
+        } else {
+          System.out.println("Куки отсутствуют в запросе");
         }
-        System.out.println(cookies + "4");
         return null;
-    }
+      }
 }

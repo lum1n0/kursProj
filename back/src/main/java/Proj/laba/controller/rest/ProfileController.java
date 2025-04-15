@@ -35,17 +35,10 @@ public class ProfileController {
             // Явно инициализируем tariff
             Hibernate.initialize(user.getTariff());
 
-            // Ручное заполнение UserResponseDTO
-            UserResponseDTO userDTO = new UserResponseDTO();
-            userDTO.setId(user.getId());
-            userDTO.setLogin(user.getLogin());
-            userDTO.setFirstName(user.getFirstName());
-            userDTO.setLastName(user.getLastName());
-            userDTO.setEmail(user.getEmail());
-            userDTO.setPhone(user.getPhone());
-            userDTO.setAddress(user.getAddress());
-            userDTO.setRole(user.getRole().getTitle());
-            userDTO.setTariffName(userService.getTariffName(user));
+            // Используем маппер для преобразования User в UserResponseDTO
+            UserResponseDTO userDTO = userService.getMapper().toDTO(user);
+            // Явно устанавливаем balance, чтобы гарантировать его наличие
+            userDTO.setBalance(user.getBalance());
 
             log.info("Профиль успешно преобразован для пользователя: {}", username);
             return ResponseEntity.ok(userDTO);
@@ -82,6 +75,7 @@ public class ProfileController {
 
             // Возвращаем обновленные данные пользователя
             UserResponseDTO updatedUserDTO = userService.getMapper().toDTO(user);
+            updatedUserDTO.setBalance(user.getBalance()); // Устанавливаем balance в ответе
             log.info("Профиль успешно обновлен для пользователя: {}", username);
             return ResponseEntity.ok(updatedUserDTO);
         } catch (DataIntegrityViolationException e) {

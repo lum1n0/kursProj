@@ -5,6 +5,9 @@ const API_BASE_URL = 'http://localhost:8080';
 const ApiClient = axios.create({
   baseURL: API_BASE_URL,
   withCredentials: true, // Отправка кук с запросами
+  headers: {
+    'Content-Type': 'application/json', // Устанавливаем JSON по умолчанию
+  },
 });
 
 const handleResponse = async (response) => {
@@ -23,7 +26,7 @@ export const checkAuth = async () => {
     return handleResponse(response);
   } catch (error) {
     console.error('Ошибка проверки аутентификации:', error);
-    throw error; // Ошибка выбрасывается для обработки в authStore
+    throw error;
   }
 };
 
@@ -32,7 +35,7 @@ export const login = async (login, password) => {
     const response = await ApiClient.post('/auth/login', { login, password });
     return handleResponse(response);
   } catch (error) {
-    console.error("Login failed:", error);
+    console.error('Login failed:', error);
     throw error;
   }
 };
@@ -42,7 +45,7 @@ export const register = async (userData) => {
     const response = await ApiClient.post('/auth/register', userData);
     return handleResponse(response);
   } catch (error) {
-    console.error("Register failed:", error);
+    console.error('Register failed:', error);
     throw error;
   }
 };
@@ -57,9 +60,12 @@ export const fetchData = async (url) => {
   }
 };
 
-export const postData = async (url, data) => {
+export const postData = async (url, data, config = {}) => {
   try {
-    const response = await ApiClient.post(url, data);
+    const response = await ApiClient.post(url, data, {
+      ...config,
+      headers: { 'Content-Type': 'application/json', ...config.headers },
+    });
     return handleResponse(response);
   } catch (error) {
     console.error(`Post data failed to ${url}:`, error);

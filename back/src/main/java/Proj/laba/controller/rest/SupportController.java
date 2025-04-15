@@ -4,7 +4,6 @@ import Proj.laba.dto.SupportMessageDTO;
 import Proj.laba.model.User;
 import Proj.laba.service.SupportMessageService;
 import Proj.laba.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -21,7 +20,7 @@ public class SupportController {
     private final SupportMessageService supportMessageService;
     private final UserService userService;
 
-    @Autowired
+    
     public SupportController(SupportMessageService supportMessageService, UserService userService) {
         this.supportMessageService = supportMessageService;
         this.userService = userService;

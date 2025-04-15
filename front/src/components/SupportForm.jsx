@@ -4,7 +4,7 @@ import { postData } from '../api/ApiClient';
 import { useAuthStore } from '../store/authStore';
 
 function SupportForm() {
-  const { user } = useAuthStore(); // Получаем данные пользователя
+  const { user } = useAuthStore();
   const { register, handleSubmit, formState: { errors } } = useForm();
 
   const onSubmit = async (data) => {

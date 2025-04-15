@@ -2,6 +2,7 @@ import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
 import { useModalStore } from '../store/modalStore';
+import Cookies from 'js-cookie';
 
 function Header() {
   const navigate = useNavigate();
@@ -9,7 +10,7 @@ function Header() {
   const { isAuthModalOpen, openAuthModal } = useModalStore();
 
   const handleLogout = () => {
-    localStorage.removeItem('jwtToken');
+    Cookies.remove('jwtToken');
     setIsLoggedIn(false);
     setIsAdmin(false);
     navigate('/');
@@ -29,7 +30,7 @@ function Header() {
               <div className="left">
                 <div className="links">
                   <Link to="/shop" className="nav_link">Shop</Link>
-                  <Link to="/pay" className="nav_link">Пополнение счёта</Link>
+                  <Link to="/topup" className="nav_link">Пополнение счёта</Link>
                   <Link to="/support" className="nav_link">Поддержка</Link>
                   <Link to="/modem" className="nav_link">Модем</Link>
                 </div>

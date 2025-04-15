@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { ApiClient } from '../api/ApiClient';
+import { useAuthStore } from '../store/authStore';
 
 function User() {
+    const { user } = useAuthStore();
     const [userData, setUserData] = useState(null);
     const [orders, setOrders] = useState([]);
     const [editing, setEditing] = useState(false);
@@ -84,8 +86,9 @@ function User() {
                             ) : (
                                 <>
                                     <p>ФИО: {userData.firstName} {userData.lastName}</p>
-                                    <p>Номер телефона: {userData.phone}</p>
+                                    <p>Номер телефона: {userData.phone || 'Не указан'}</p>
                                     <p>Тариф: {userData.tariffName}</p>
+                                    <p>Баланс: {userData.balance !== null && userData.balance !== undefined ? `${userData.balance} руб.` : '0 руб.'}</p>
                                 </>
                             )}
                         </div>

@@ -15,6 +15,7 @@ import { useModalStore } from './store/modalStore';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import './assets/style__css/style.css';
+import TopUpForm from './pages/TopUpForm.jsx';
 
 function App() {
   const { isLoggedIn, setIsLoggedIn, isAdmin } = useAuthStore();
@@ -30,6 +31,7 @@ function App() {
           <Route path="/admin" element={isAdmin ? <AdminPage /> : <Home />} />
           <Route path="/admin/answer" element={isAdmin ? <AdminAnswer /> : <Home />} />
           <Route path="/shop" element={<Shop />} />
+          <Route path="topup" element={<TopUpForm/>}/>
           <Route path="/support" element={<Support/>}/>
           <Route path="/profile" element={isLoggedIn ? <User /> : <Home />} />
         </Routes>
