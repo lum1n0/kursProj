@@ -19,11 +19,15 @@ public class SupportMessage extends GenericModel {
     @Column(name = "message", nullable = false)
     private String message;
 
+    @Column(name = "admin_response")
+    private String adminResponse;  // Новое поле для ответа администратора
+
     @Column(name = "is_answered", nullable = false)
     private boolean isAnswered = false;
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
-
+    @Column(name = "answered_at")
+    private LocalDateTime answeredAt;  // Время ответа
 }

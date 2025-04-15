@@ -29,7 +29,7 @@ function Header() {
               <div className="left">
                 <div className="links">
                   <Link to="/shop" className="nav_link">Shop</Link>
-                  <Link to="/pay" className="nav_link">Оплата услуг</Link>
+                  <Link to="/pay" className="nav_link">Пополнение счёта</Link>
                   <Link to="/support" className="nav_link">Поддержка</Link>
                   <Link to="/modem" className="nav_link">Модем</Link>
                 </div>

@@ -4,7 +4,7 @@ import { ApiClient, getCategories, postData, putData, deleteData } from '../api/
 import axios from 'axios';
 import { useDataStore } from '../store/dataStore';
 import { useAuthStore } from '../store/authStore';
-import AdminHeader from '../components/ AdminHeader';
+import AdminHeader from '../components/AdminHeader';
 
 function AdminShop() {
   const { products, categories, setProducts, setCategories } = useDataStore();

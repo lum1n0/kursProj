@@ -10,6 +10,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 @RestController
@@ -56,7 +58,9 @@ public class SupportController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> answerMessage(@PathVariable Long id, @RequestBody String answer) {
         try {
-            supportMessageService.answerMessage(id, answer);
+            // Декодируем URL-encoded строку в UTF-8
+            String decodedAnswer = URLDecoder.decode(answer, StandardCharsets.UTF_8.toString());
+            supportMessageService.answerMessage(id, decodedAnswer);
             return ResponseEntity.ok("Ответ отправлен");
         } catch (Exception e) {
             return ResponseEntity.status(500).body("Ошибка при отправке ответа: " + e.getMessage());

@@ -7,6 +7,7 @@ import Home from './pages/Home';
 import LoginPage from './pages/LoginPage';
 import AdminPage from './pages/AdminPage';
 import Shop from './pages/Shop';
+import Support from './pages/Support.jsx';
 import User from './pages/User';
 import AdminAnswer from './pages/AdminAnswer.jsx';
 import { useAuthStore } from './store/authStore';
@@ -29,6 +30,7 @@ function App() {
           <Route path="/admin" element={isAdmin ? <AdminPage /> : <Home />} />
           <Route path="/admin/answer" element={isAdmin ? <AdminAnswer /> : <Home />} />
           <Route path="/shop" element={<Shop />} />
+          <Route path="/support" element={<Support/>}/>
           <Route path="/profile" element={isLoggedIn ? <User /> : <Home />} />
         </Routes>
       </main>

@@ -8,6 +8,7 @@ import Proj.laba.reposirory.SupportMessageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -41,12 +42,16 @@ public class SupportMessageService extends GenericService<SupportMessage, Suppor
     }
 
     public void answerMessage(Long id, String answer) {
-        SupportMessage message = repository.findById(id).orElseThrow(() -> new RuntimeException("Сообщение не найдено"));
+        SupportMessage message = repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Сообщение не найдено"));
+        message.setAdminResponse(answer);
+        message.setAnswered(true);
+        message.setAnsweredAt(LocalDateTime.now());
+        repository.save(message);
+
         User user = userService.getUserById(message.getUserId());
         try {
             emailService.sendEmail(user.getEmail(), "Ответ на ваш вопрос", answer);
-            message.setAnswered(true);
-            repository.save(message);
         } catch (Exception e) {
             throw new RuntimeException("Не удалось отправить email: " + e.getMessage(), e);
         }

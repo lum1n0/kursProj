@@ -24,7 +24,7 @@ public class EmailService {
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
             helper.setTo(to);
             helper.setSubject(subject);
-            helper.setText("Ответ на ваш вопрос от поддержки: "+ text, false); // false - обычный текст, true - HTML
+            helper.setText("Ответ на ваш вопрос от поддержки: "+ text.substring(0, text.length() - 1), false); // false - обычный текст, true - HTML
             helper.setFrom("stm_comp@inbox.ru");
             mailSender.send(message);
         } catch (MailException | MessagingException e) {

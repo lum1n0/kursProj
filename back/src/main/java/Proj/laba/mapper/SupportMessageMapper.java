@@ -39,6 +39,8 @@ public class SupportMessageMapper extends GenericMapper<SupportMessage, SupportM
         destination.setUserId(source.getUserId());
         destination.setMessage(source.getMessage());
         destination.setAnswered(source.isAnswered());
+        destination.setAdminResponse(source.getAdminResponse());  // Добавлено копирование adminResponse
+        destination.setAnsweredAt(source.getCreatedWhen());        // Добавлено копирование answeredAt
     }
 
     @Override
@@ -47,6 +49,8 @@ public class SupportMessageMapper extends GenericMapper<SupportMessage, SupportM
         destination.setUserId(source.getUserId());
         destination.setMessage(source.getMessage());
         destination.setAnswered(source.isAnswered());
+        destination.setAdminResponse(source.getAdminResponse());  // Добавлено копирование adminResponse
+        destination.setCreatedWhen(source.getAnsweredAt());        // Добавлено копирование answeredAt
     }
 
     @Override

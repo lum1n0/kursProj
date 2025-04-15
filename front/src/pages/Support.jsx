@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore'; // Импорт хранилища
+import Header from '../components/Header';
 import SupportForm from '../components/SupportForm'; // Импорт формы
 
 function Support() {
@@ -8,6 +9,7 @@ function Support() {
 
   return (
     <section className="conteiner" id="supp_z1">
+      <Header/>
       <h1 className="title_hero">Справочный центр СТМ</h1>
       <h3 className="all_sect">Все разделы</h3>
       <div className="card-container">

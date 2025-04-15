@@ -71,7 +71,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/admin/**", "/api/users/**", "/api/user-history/**").hasRole("ADMIN")
                 .requestMatchers("/api/users/paged").hasRole("ADMIN")
                 .requestMatchers("/api/support/send").authenticated() // Требуется аутентификация
-                .requestMatchers("/api/support/admin/**").hasRole("ADMIN") // Только для админов
+                .requestMatchers("/api/support/admin/answer/**").hasRole("ADMIN") // Только для админов
                 .anyRequest().authenticated()
             )
             .authenticationProvider(authenticationProvider())
