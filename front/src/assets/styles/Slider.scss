@@ -1,0 +1,148 @@
+.carousel {
+  position: relative;
+  max-width: 1200px;
+  margin: 0 auto;
+
+  .carousel-inner {
+    overflow: hidden;
+
+    .carousel-item {
+      display: none;
+      background-color: #00aeef;
+      border-radius: 25px;
+      color: #fff;
+
+      &.active {
+        display: block;
+      }
+
+      .row {
+        display: flex;
+        height: 350px;
+
+        .content {
+          display: flex;
+          width: 100%;
+          align-items: center;
+          justify-content: space-between;
+
+          .text {
+            padding: 20px;
+            flex: 1;
+
+            h2 {
+              font-size: 42px;
+              margin: 0 0 20px;
+            }
+
+            p {
+              font-size: 20px;
+              margin: 0 0 20px;
+            }
+
+            .btn {
+              padding: 15px 38px;
+              background-color: #fff;
+              color: #00aeef;
+              border: none;
+              border-radius: 25px;
+              cursor: pointer;
+
+              &:hover {
+                background-color: #e0e0e0;
+              }
+            }
+          }
+
+          img {
+            width: 300px;
+            height: 250px;
+            object-fit: cover;
+          }
+        }
+      }
+    }
+  }
+
+  .carousel-control-prev,
+  .carousel-control-next {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+
+    .carousel-control-icon {
+      display: block;
+      width: 20px;
+      height: 20px;
+      background: url('../img/arrow-left.svg') no-repeat center;
+      background-size: contain;
+    }
+  }
+
+  .carousel-control-prev {
+    left: -5%;
+
+    .carousel-control-icon {
+      transform: rotate(180deg);
+    }
+  }
+
+  .carousel-control-next {
+    right: -5%;
+  }
+}
+
+@media (max-width: 768px) {
+  .carousel {
+    .carousel-item {
+      .row {
+        flex-direction: column;
+        height: auto;
+
+        .content {
+          flex-direction: column;
+          text-align: center;
+
+          .text {
+            h2 {
+              font-size: 32px;
+            }
+
+            p {
+              font-size: 16px;
+            }
+          }
+
+          img {
+            width: 250px;
+            height: 200px;
+          }
+        }
+      }
+    }
+  }
+}
+
+.dark_time {
+  .carousel {
+    .carousel-item {
+      background-color: #007acc;
+
+      .row {
+        .content {
+          .btn {
+            background-color: #2a2a2a;
+            color: #4db8ff;
+
+            &:hover {
+              background-color: #444;
+            }
+          }
+        }
+      }
+    }
+  }
+}

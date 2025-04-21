@@ -1,26 +1,27 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { postData } from '../api/ApiClient';
+import Swal from 'sweetalert2';
+import '../assets/styles/ForgotPassword.scss';
 
 function ForgotPassword() {
     const [email, setEmail] = useState('');
-    const [message, setMessage] = useState('');
     const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
             await postData('/auth/password/reset-request', { email });
-            setMessage('Ссылка для восстановления пароля отправлена на вашу почту.');
+            Swal.fire('Успех', 'Ссылка для восстановления пароля отправлена на вашу почту.', 'success');
+            setTimeout(() => navigate('/login'), 2000);
         } catch (error) {
-            setMessage('Ошибка: ' + (error.response?.data || error.message));
+            Swal.fire('Ошибка', error.message || 'Не удалось отправить запрос.', 'error');
         }
     };
 
     return (
-        <div>
+        <div className="forgot-password">
             <h1>Восстановление пароля</h1>
-            {message && <p>{message}</p>}
             <form onSubmit={handleSubmit}>
                 <input
                     type="email"
@@ -31,7 +32,6 @@ function ForgotPassword() {
                 />
                 <button type="submit">Отправить</button>
             </form>
-            <Link to="/login">Вернуться ко входу</Link>
         </div>
     );
 }

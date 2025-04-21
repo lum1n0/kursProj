@@ -3,8 +3,10 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { login } from '../api/ApiClient';
-import { useAuthStore } from '../store/authStore'; // Исправлено: useAuth → useAuthStore
+import { useAuthStore } from '../store/authStore';
 import { useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
+import '../assets/styles/Login.scss';
 
 const schema = yup.object({
   login: yup.string().required('Логин обязателен'),
@@ -12,7 +14,7 @@ const schema = yup.object({
 }).required();
 
 function Login() {
-  const { setIsLoggedIn, setIsAdmin } = useAuthStore(); // Исправлено: useAuth → useAuthStore
+  const { setIsLoggedIn, setIsAdmin } = useAuthStore();
   const navigate = useNavigate();
   const { register, handleSubmit, formState: { errors } } = useForm({
     resolver: yupResolver(schema),
@@ -23,25 +25,27 @@ function Login() {
       const response = await login(data.login, data.password);
       setIsLoggedIn(true);
       setIsAdmin(response.roleId === 2);
+      Swal.fire('Успех', 'Вы успешно вошли', 'success');
       navigate('/admin');
     } catch (error) {
-      console.error('Login failed', error);
-      alert('Неверное имя пользователя или пароль');
+      Swal.fire('Ошибка', 'Неверное имя пользователя или пароль', 'error');
     }
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <div>
-        <input {...register('login')} placeholder="Имя пользователя" />
-        {errors.login && <p>{errors.login.message}</p>}
+      <div className="login">
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <div>
+            <input {...register('login')} placeholder="Имя пользователя" />
+            {errors.login && <p>{errors.login.message}</p>}
+          </div>
+          <div>
+            <input type="password" {...register('password')} placeholder="Пароль" />
+            {errors.password && <p>{errors.password.message}</p>}
+          </div>
+          <button type="submit">Войти</button>
+        </form>
       </div>
-      <div>
-        <input type="password" {...register('password')} placeholder="Пароль" />
-        {errors.password && <p>{errors.password.message}</p>}
-      </div>
-      <button type="submit">Войти</button>
-    </form>
   );
 }
 

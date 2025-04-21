@@ -19,6 +19,11 @@ public class UserHistoryService extends GenericService<UserHistory, UserHistoryD
     }
 
     public List<UserHistoryDTO> findByUserId(Long userId) {
-        return mapper.toDTOs(repository.findByUserId(userId));
+        List<UserHistory> histories = repository.findByUserId(userId);
+        System.out.println("Найдено записей истории для userId " + userId + ": " + histories.size());
+        histories.forEach(h -> System.out.println("History: " + h.getFieldName() + ", " + h.getNewValue()));
+        List<UserHistoryDTO> dtos = mapper.toDTOs(histories);
+        dtos.forEach(dto -> System.out.println("DTO: " + dto.getFieldName() + ", " + dto.getNewValue()));
+        return dtos;
     }
 }

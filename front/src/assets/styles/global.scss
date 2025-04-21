@@ -1,0 +1,39 @@
+// Общие стили для всего приложения
+body {
+  font-family: 'Inter', sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #fff;
+  color: #333;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.blue_title {
+  color: #00aeef;
+}
+
+// Стили для тёмной темы
+.dark_time {
+  body {
+    background-color: #121212;
+    color: #e0e0e0;
+  }
+
+  a {
+    color: #fff;
+  }
+
+  .blue_title {
+    color: #4db8ff;
+  }
+
+
+
+  // Дополнительные стили для тёмной темы можно добавить здесь
+}
+
+// Другие общие стили...

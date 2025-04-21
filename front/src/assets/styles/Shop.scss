@@ -1,0 +1,120 @@
+.shop {
+  .conteiner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+
+    .title_hero {
+      font-size: 54px;
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .shop-content {
+      display: flex;
+      gap: 20px;
+
+      .left_menu {
+        width: 25%;
+
+        .menu-item {
+          display: flex;
+          align-items: center;
+          width: 100%;
+          padding: 15px;
+          background-color: #fff;
+          border: none;
+          border-radius: 15px;
+          cursor: pointer;
+          margin-bottom: 10px;
+          transition: background-color 0.3s;
+
+          img {
+            width: 20px;
+            margin-right: 10px;
+          }
+
+          &.active {
+            background-color: #00aeef;
+            color: #fff;
+          }
+
+          &:hover {
+            background-color: #e0e0e0;
+          }
+        }
+      }
+
+      .products {
+        width: 75%;
+
+        .search-filter {
+          display: flex;
+          gap: 10px;
+          margin-bottom: 20px;
+
+          input {
+            padding: 10px;
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+            flex: 1;
+          }
+        }
+
+        .row_card {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 25px;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .shop {
+    .conteiner {
+      .shop-content {
+        flex-direction: column;
+
+        .left_menu,
+        .products {
+          width: 100%;
+        }
+      }
+    }
+  }
+}
+
+.dark_time {
+  .shop {
+    .conteiner {
+      .shop-content {
+        .left_menu {
+          .menu-item {
+            background-color: #2a2a2a;
+            color: #e0e0e0;
+
+            &.active {
+              background-color: #007acc;
+            }
+
+            &:hover {
+              background-color: #444;
+            }
+          }
+        }
+
+        .products {
+          .search-filter {
+            input {
+              background-color: #1e1e1e;
+              color: #e0e0e0;
+              border-color: #444;
+            }
+          }
+        }
+      }
+    }
+  }
+}

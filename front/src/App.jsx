@@ -1,55 +1,15 @@
 import React from 'react';
-import { Routes, Route } from 'react-router-dom';
-import Header from './components/Header';
-import Footer from './components/Footer';
-import AuthModal from './components/AuthModal';
-import Home from './pages/Home';
-import LoginPage from './pages/LoginPage';
-import AdminPage from './pages/AdminPage';
-import Shop from './pages/Shop';
-import Support from './pages/Support.jsx';
-import User from './pages/User';
-import ForgotPassword from './components/ForgotPassword.jsx';
-import ResetPassword from './components/ResetPassword.jsx';
-import AdminAnswer from './pages/AdminAnswer.jsx';
-import { useAuthStore } from './store/authStore';
-import { useModalStore } from './store/modalStore';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import 'bootstrap/dist/js/bootstrap.bundle.min.js';
-import './assets/style__css/style.css';
-import TopUpForm from './pages/TopUpForm.jsx';
+import AppRoutes from './routs/AppRoutes';
+import { useThemeStore } from './store/themeStore';
+import './assets/styles/global.scss';
 
 function App() {
-  const { isLoggedIn, setIsLoggedIn, isAdmin } = useAuthStore();
-  const { isAuthModalOpen } = useModalStore();
+  const { isDarkTheme } = useThemeStore();
 
   return (
-    <div className="App">
-      <Header />
-      <main>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/admin" element={isAdmin ? <AdminPage /> : <Home />} />
-          <Route path="/admin/answer" element={isAdmin ? <AdminAnswer /> : <Home />} />
-          <Route path="/shop" element={<Shop />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route path="/reset-password" element={<ResetPassword />} />
-          <Route path="topup" element={<TopUpForm/>}/>
-          <Route path="/support" element={<Support/>}/>
-          <Route path="/profile" element={isLoggedIn ? <User /> : <Home />} />
-        </Routes>
-      </main>
-      <Footer />
-      {isAuthModalOpen && (
-        <AuthModal
-          onLoginSuccess={() => {
-            console.log('onLoginSuccess called');
-            setIsLoggedIn(true);
-          }}
-        />
-      )}
-    </div>
+      <div className={`App ${isDarkTheme ? 'dark_time' : ''}`}>
+        <AppRoutes />
+      </div>
   );
 }
 

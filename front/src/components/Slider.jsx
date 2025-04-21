@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import '../assets/styles/Slider.scss';
 
 function Slider() {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -32,7 +33,7 @@ function Slider() {
   useEffect(() => {
     const interval = setInterval(() => {
       setActiveIndex((prevIndex) => (prevIndex + 1) % items.length);
-    }, 5000); // Change slide every 5 seconds
+    }, 5000);
 
     return () => clearInterval(interval);
   }, [items.length]);
@@ -46,38 +47,32 @@ function Slider() {
   };
 
   return (
-    <div id="carouselExampleControls" className="carousel slide" data-bs-ride="carousel">
-      <div className="carousel-inner">
-        {items.map((item, index) => (
-          <div key={index} className={`carousel-item sl_br_rad ${index === activeIndex ? 'active' : ''}`}>
-            <div className="row no-gutters">
-              <div className="col-md-6 d-flex flex-column align-items-start justify-content-center sl_padding_text">
-                <div className="chil">
-                  <div className="sl_block_text">
-                    <h2>{item.title}</h2>
-                    <p>{item.description}</p>
-                  </div>
-                  <div className="sl_btn">
-                    <button className="btn btn-primary btn_wh">Подробнее</button>
+      <div className="carousel">
+        <div className="carousel-inner">
+          {items.map((item, index) => (
+              <div key={index} className={`carousel-item ${index === activeIndex ? 'active' : ''}`}>
+                <div className="row">
+                  <div className="content">
+                    <div className="text">
+                      <h2>{item.title}</h2>
+                      <p>{item.description}</p>
+                      <button className="btn">Подробнее</button>
+                    </div>
+                    <img src={item.image} alt={item.alt} />
                   </div>
                 </div>
               </div>
-              <div className="col-md-6">
-                <img src={item.image} className="img-fluid" alt={item.alt} />
-              </div>
-            </div>
-          </div>
-        ))}
+          ))}
+        </div>
+        <button className="carousel-control-prev" onClick={handlePrevClick}>
+          <span className="carousel-control-icon" aria-hidden="true"></span>
+          <span className="visually-hidden">Предыдущий</span>
+        </button>
+        <button className="carousel-control-next" onClick={handleNextClick}>
+          <span className="carousel-control-icon" aria-hidden="true"></span>
+          <span className="visually-hidden">Следующий</span>
+        </button>
       </div>
-      <button className="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev" onClick={handlePrevClick}>
-        <span className="carousel-control-prev-icon" aria-hidden="true"></span>
-        <span className="visually-hidden">Предыдущий</span>
-      </button>
-      <button className="carousel-control-next" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="next" onClick={handleNextClick}>
-        <span className="carousel-control-next-icon" aria-hidden="true"></span>
-        <span className="visually-hidden">Следующий</span>
-      </button>
-    </div>
   );
 }
 

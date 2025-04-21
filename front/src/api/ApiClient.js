@@ -6,7 +6,7 @@ const ApiClient = axios.create({
   baseURL: API_BASE_URL,
   withCredentials: true, // Отправка кук с запросами
   headers: {
-    'Content-Type': 'application/json', // Устанавливаем JSON по умолчанию
+    'Content-Type': 'application/json',
   },
 });
 
@@ -68,9 +68,6 @@ export const postData = async (url, data, config = {}) => {
     return handleResponse(response);
   } catch (error) {
     console.error(`Post data failed to ${url}:`, error);
-    if (error.response) {
-      console.error('Server response:', error.response.data);
-    }
     throw error;
   }
 };

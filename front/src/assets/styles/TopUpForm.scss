@@ -1,0 +1,134 @@
+.topup {
+  padding: 40px 0;
+
+  .conteiner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+
+    .topup-content {
+      display: flex;
+      justify-content: space-between;
+      gap: 40px;
+
+      .credit-card {
+        flex: 1;
+        min-width: 300px;
+        background: linear-gradient(135deg, #4a90e2, #357abd);
+        border-radius: 10px;
+        padding: 20px;
+        color: white;
+        position: relative;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+
+        .card-chip {
+          width: 40px;
+          height: 30px;
+          background: #d4af37;
+          border-radius: 5px;
+          margin-bottom: 20px;
+        }
+
+        .card-number {
+          font-size: 18px;
+          letter-spacing: 2px;
+          margin-bottom: 20px;
+        }
+
+        .card-details {
+          display: flex;
+          justify-content: space-between;
+
+          label {
+            font-size: 12px;
+            display: block;
+          }
+
+          span {
+            font-size: 16px;
+          }
+        }
+      }
+
+      .topup-form {
+        flex: 1;
+        min-width: 300px;
+
+        .form-group {
+          margin-bottom: 15px;
+
+          label {
+            display: block;
+            margin-bottom: 5px;
+          }
+
+          input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+          }
+        }
+
+        button {
+          background-color: #4a90e2;
+          color: white;
+          padding: 10px 20px;
+          border: none;
+          border-radius: 4px;
+          cursor: pointer;
+
+          &:hover {
+            background-color: #357abd;
+          }
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .topup {
+    .conteiner {
+      .topup-content {
+        flex-direction: column;
+        align-items: center;
+      }
+    }
+  }
+}
+
+.dark_time {
+  .topup {
+    .conteiner {
+      .topup-content {
+        .credit-card {
+          background: linear-gradient(135deg, #2a2a2a, #1e1e1e);
+          color: #e0e0e0;
+
+          .card-chip {
+            background: #b0b0b0;
+          }
+        }
+
+        .topup-form {
+          .form-group {
+            input {
+              background-color: #1e1e1e;
+              color: #e0e0e0;
+              border-color: #444;
+            }
+          }
+
+          button {
+            background-color: #007acc;
+
+            &:hover {
+              background-color: #0056b3;
+            }
+          }
+        }
+      }
+    }
+  }
+}

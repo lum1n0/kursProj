@@ -1,17 +1,17 @@
 import { create } from 'zustand';
-import { checkAuth } from '../api/ApiClient';
+import { checkAuth, login } from '../api/ApiClient';
 
 export const useAuthStore = create((set, get) => ({
   isLoggedIn: false,
   isAdmin: false,
   user: null,
-  isLoading: true, // Изначально true, чтобы показать загрузку
-  isChecking: false, // Флаг для предотвращения повторных вызовов
+  isLoading: true,
+  isChecking: false,
   setIsLoggedIn: (loggedIn) => set({ isLoggedIn: loggedIn }),
   setIsAdmin: (admin) => set({ isAdmin: admin }),
   checkAuth: async () => {
     const { isChecking } = get();
-    if (isChecking) return; // Если проверка уже идет, ничего не делаем
+    if (isChecking) return;
 
     set({ isChecking: true, isLoading: true });
     try {
@@ -31,6 +31,19 @@ export const useAuthStore = create((set, get) => ({
         isLoading: false,
         isChecking: false,
       });
+    }
+  },
+  login: async (loginData) => {
+    try {
+      const response = await login(loginData.login, loginData.password);
+      set({
+        isLoggedIn: true,
+        isAdmin: response.roleId === 2,
+        user: response,
+      });
+      return response;
+    } catch (error) {
+      throw error;
     }
   },
 }));
