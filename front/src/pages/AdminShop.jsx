@@ -5,6 +5,9 @@ import { useDataStore } from '../store/dataStore';
 import { useAuthStore } from '../store/authStore';
 import AdminHeader from '../components/AdminHeader';
 
+// Базовый URL бэкенда для изображений
+const API_BASE_URL = 'http://localhost:8080'; // Измените на порт вашего бэкенда
+
 function AdminShop() {
   const { products, categories, setProducts, setCategories } = useDataStore();
   const { isLoading: authLoading } = useAuthStore();
@@ -23,30 +26,43 @@ function AdminShop() {
     const fetchData = async () => {
       try {
         setLoading(true);
-        // Попробуем загрузить категории через API
+
+        // Загружаем категории
         const categoryData = await getCategories();
         console.log('Загруженные категории:', categoryData);
-
-        if (categoryData.every(cat => cat.id === null || cat.title === null)) {
-          // Если API возвращает null, используем временные категории
+        const validCategories = categoryData.filter(cat => cat.id !== null && cat.title !== null);
+        if (validCategories.length === 0) {
           const fallbackCategories = [
             { id: '1', title: 'Модемы и роутеры' },
             { id: '2', title: 'Приставки и ТВ' },
             { id: '3', title: 'Сим-карты' },
           ];
-           setCategories(fallbackCategories);
+          setCategories(fallbackCategories);
           console.warn('API вернул некорректные данные, используются временные категории');
         } else {
-          setCategories(categoryData);
+          setCategories(validCategories);
         }
 
         // Загружаем товары
-        const productData = await ApiClient.get('/api/admin/product-services');
-        console.log('Загруженные товары:', productData.data);
-        setProducts(productData.data);
+        const productResponse = await ApiClient.get('/api/admin/product-services');
+        const productData = productResponse.data;
+        console.log('Загруженные товары:', productData);
+        if (Array.isArray(productData)) {
+          // Добавляем временные ключи для товаров с id: null
+          const productsWithKeys = productData.map((p, index) => ({
+            ...p,
+            key: p.id !== null ? p.id : `temp-${index}-${Date.now()}`,
+          }));
+          console.log('Установленные товары:', productsWithKeys);
+          setProducts(productsWithKeys);
+        } else {
+          console.error('Данные товаров не являются массивом:', productData);
+          setProducts([]);
+        }
       } catch (err) {
         setError('Ошибка при загрузке данных');
         console.error('Ошибка:', err);
+        setProducts([]);
       } finally {
         setLoading(false);
       }
@@ -63,19 +79,33 @@ function AdminShop() {
 
   if (error) return <div>{error}</div>;
 
+  // Функция для получения полного URL изображения
+  const getImageUrl = (relativePath) => {
+    if (!relativePath) return '';
+    if (relativePath.startsWith('http')) return relativePath; // Уже полный URL
+    return `${API_BASE_URL}${relativePath}`;
+  };
+
   const handleFileUpload = async (e, fieldName) => {
     const file = e.target.files[0];
+    if (!file) {
+      alert('Пожалуйста, выберите файл');
+      return;
+    }
+
     const formData = new FormData();
     formData.append('file', file);
 
     try {
       const response = await ApiClient.post('/api/upload', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
+        withCredentials: true,
       });
       const imagePath = response.data;
       setValue(fieldName, imagePath);
     } catch (error) {
       console.error('Ошибка загрузки изображения:', error);
+      alert(`Не удалось загрузить файл: ${error.response?.data?.message || 'Проверьте сервер'}`);
     }
   };
 
@@ -83,9 +113,14 @@ function AdminShop() {
     console.log('Отправляемый объект:', data);
     try {
       const response = await postData('/api/admin/product-services', data);
-      setProducts([...products, response]);
+      const newProduct = {
+        ...response,
+        key: response.id || `temp-${products.length}-${Date.now()}`,
+      };
+      setProducts([...products, newProduct]);
     } catch (err) {
       console.error('Ошибка при добавлении товара:', err);
+      alert('Ошибка при добавлении товара');
     }
   };
 
@@ -97,10 +132,13 @@ function AdminShop() {
         categoryId: data.editCategoryId,
         imageUrl: data.editImageUrl,
       });
-      setProducts(products.map((p) => (p.id === editingProduct.id ? response : p)));
+      setProducts(products.map((p) =>
+        p.key === editingProduct.key ? { ...response, key: p.key } : p
+      ));
       setEditingProduct(null);
     } catch (err) {
       console.error('Ошибка при редактировании товара:', err);
+      alert('Ошибка при редактировании товара');
     }
   };
 
@@ -111,6 +149,7 @@ function AdminShop() {
         setProducts(products.filter((p) => p.id !== id));
       } catch (err) {
         console.error('Ошибка при удалении товара:', err);
+        alert('Ошибка при удалении товара');
       }
     }
   };
@@ -127,8 +166,6 @@ function AdminShop() {
     <div>
       <AdminHeader />
       <h1>Управление товарами и услугами</h1>
-
-      {/* <div>Категории: {JSON.stringify(categories)}</div> */}
 
       {/* Форма добавления нового товара */}
       <div>
@@ -214,18 +251,26 @@ function AdminShop() {
 
       {/* Список товаров */}
       <h2>Список товаров</h2>
-      <ul>
-        {products.map((product) => (
-          <li key={product.id}>
-            {product.imageUrl && (
-              <img src={product.imageUrl} alt={product.name} style={{ width: '50px', height: '50px' }} />
-            )}
-            {product.name} - {product.price} руб.
-            <button onClick={() => startEditing(product)}>Редактировать</button>
-            <button onClick={() => handleDeleteProduct(product.id)}>Удалить</button>
-          </li>
-        ))}
-      </ul>
+      {products.length > 0 ? (
+        <ul>
+          {products.map((product) => (
+            <li key={product.key}>
+              {product.imageUrl && (
+                <img 
+                  src={getImageUrl(product.imageUrl)} 
+                  alt={product.name} 
+                  style={{ width: '50px', height: '50px' }} 
+                />
+              )}
+              {product.name} - {product.price} руб.
+              <button onClick={() => startEditing(product)}>Редактировать</button>
+              <button onClick={() => handleDeleteProduct(product.id)}>Удалить</button>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p>Нет товаров для отображения</p>
+      )}
     </div>
   );
 }

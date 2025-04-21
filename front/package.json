@@ -3,6 +3,12 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "proxy": {
+    "/uploads": {
+      "target": "http://localhost:8080",
+      "changeOrigin": true
+    }
+  },
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -15,6 +21,7 @@
     "axios": "^1.8.2",
     "bootstrap": "^5.3.3",
     "cookie-parser": "^1.4.7",
+    "express": "^5.1.0",
     "js-cookie": "^3.0.5",
     "jwt-decode": "^4.0.0",
     "react": "^19.0.0",

@@ -1,14 +1,18 @@
 package Proj.laba.controller.rest;
 
+import Proj.laba.dto.ProductServiceDTO;
 import Proj.laba.dto.SupportMessageDTO;
 import Proj.laba.model.User;
 import Proj.laba.service.SupportMessageService;
 import Proj.laba.service.UserService;
+
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -65,4 +69,7 @@ public class SupportController {
             return ResponseEntity.status(500).body("Ошибка при отправке ответа: " + e.getMessage());
         }
     }
+
+
+
 }

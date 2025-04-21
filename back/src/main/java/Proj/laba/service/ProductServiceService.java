@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ProductServiceService extends GenericService<ProductService, ProductServiceDTO> {
@@ -49,7 +50,7 @@ public class ProductServiceService extends GenericService<ProductService, Produc
         repository.findById(updatedObject.getId())
                 .orElseThrow(() -> new NotFoundException("ProductService с ID " + updatedObject.getId() + " не найден"));
         if (updatedObject.getPrice().compareTo(BigDecimal.ZERO) <= 0) {
-                throw new IllegalArgumentException("Цена должна быть положительной");
+            throw new IllegalArgumentException("Цена должна быть положительной");
         }
         return super.update(updatedObject);
     }
@@ -58,5 +59,20 @@ public class ProductServiceService extends GenericService<ProductService, Produc
     public List<ProductServiceDTO> getAllProductsWithCategory() {
         List<ProductService> entities = repository.findAllWithCategory();
         return mapper.toDTOs(entities);
+    }
+
+    @Transactional(readOnly = true)
+    public List<ProductServiceDTO> searchProducts(String name, BigDecimal minPrice, BigDecimal maxPrice) {
+        List<ProductService> entities;
+        if (name != null && !name.isEmpty() && minPrice != null && maxPrice != null) {
+            entities = repository.findByNameContainingIgnoreCaseAndPriceBetween(name, minPrice, maxPrice);
+        } else if (name != null && !name.isEmpty()) {
+            entities = repository.findByNameContainingIgnoreCase(name);
+        } else if (minPrice != null && maxPrice != null) {
+            entities = repository.findByPriceBetween(minPrice, maxPrice);
+        } else {
+            entities = repository.findAllWithCategory();
+        }
+        return entities.stream().map(mapper::toDTO).collect(Collectors.toList());
     }
 }

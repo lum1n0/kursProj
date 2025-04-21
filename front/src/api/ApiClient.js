@@ -19,7 +19,6 @@ const handleResponse = async (response) => {
 
 export { ApiClient };
 
-// Проверка аутентификации
 export const checkAuth = async () => {
   try {
     const response = await ApiClient.get('/auth/me');

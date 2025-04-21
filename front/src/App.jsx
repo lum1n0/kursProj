@@ -9,6 +9,8 @@ import AdminPage from './pages/AdminPage';
 import Shop from './pages/Shop';
 import Support from './pages/Support.jsx';
 import User from './pages/User';
+import ForgotPassword from './components/ForgotPassword.jsx';
+import ResetPassword from './components/ResetPassword.jsx';
 import AdminAnswer from './pages/AdminAnswer.jsx';
 import { useAuthStore } from './store/authStore';
 import { useModalStore } from './store/modalStore';
@@ -31,6 +33,8 @@ function App() {
           <Route path="/admin" element={isAdmin ? <AdminPage /> : <Home />} />
           <Route path="/admin/answer" element={isAdmin ? <AdminAnswer /> : <Home />} />
           <Route path="/shop" element={<Shop />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="topup" element={<TopUpForm/>}/>
           <Route path="/support" element={<Support/>}/>
           <Route path="/profile" element={isLoggedIn ? <User /> : <Home />} />

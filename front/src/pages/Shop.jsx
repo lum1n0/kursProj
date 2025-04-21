@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Header from '../components/Header';
 import ProductCard from '../components/ProductCard';
@@ -6,10 +6,17 @@ import { useShopStore } from '../store/shopStore';
 
 function Shop() {
   const { products, selectedCategory, setSelectedCategory, fetchData, isLoading } = useShopStore();
+  const [searchName, setSearchName] = useState('');
+  const [minPrice, setMinPrice] = useState('');
+  const [maxPrice, setMaxPrice] = useState('');
 
   useEffect(() => {
-    fetchData(); // Загружаем данные при монтировании
-  }, [fetchData]);
+    const delayDebounceFn = setTimeout(() => {
+      fetchData(searchName, minPrice, maxPrice);
+    }, 300); // Задержка 300 мс для предотвращения частых запросов
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [searchName, minPrice, maxPrice, fetchData]);
 
   const handleCategoryClick = (catId) => {
     console.log('Выбрана категория:', catId);
@@ -27,7 +34,7 @@ function Shop() {
 
   return (
     <section className="conteiner" id="shop_z1">
-      <Header/>
+      <Header />
       <h1 className="title_hero shop_title">Магазин СТМ</h1>
       <div className="container-fluid">
         <div className="row">
@@ -48,7 +55,7 @@ function Shop() {
                 }`}
                 onClick={() => handleCategoryClick('1')}
               >
-                <img src="../../public/img/router3.svg" alt="Модемы и роутеры" /> Модемы и роутеры
+                <img src="/img/router3.svg" alt="Модемы и роутеры" /> Модемы и роутеры
               </button>
               <button
                 className={`list-group-item list-group-item-action left_menu ${
@@ -56,7 +63,7 @@ function Shop() {
                 }`}
                 onClick={() => handleCategoryClick('2')}
               >
-                <img src="../../public/img/modem2.svg" alt="Приставки и ТВ" /> Приставки и ТВ
+                <img src="/img/modem2.svg" alt="Приставки и ТВ" /> Приставки и ТВ
               </button>
               <button
                 className={`list-group-item list-group-item-action left_menu ${
@@ -64,13 +71,38 @@ function Shop() {
                 }`}
                 onClick={() => handleCategoryClick('3')}
               >
-                <img src="../../public/img/sim4.svg" alt="Сим-карты" /> Сим-карты
+                <img src="/img/sim4.svg" alt="Сим-карты" /> Сим-карты
               </button>
             </div>
           </div>
 
-          {/* Карточки товаров */}
+          {/* Поиск и фильтр */}
           <div className="col-md-9">
+            <div className="search-filter" style={{ marginBottom: '20px' }}>
+              <input
+                type="text"
+                placeholder="Поиск по имени"
+                value={searchName}
+                onChange={(e) => setSearchName(e.target.value)}
+                style={{ marginRight: '10px', padding: '5px' }}
+              />
+              <input
+                type="number"
+                placeholder="Мин. цена"
+                value={minPrice}
+                onChange={(e) => setMinPrice(e.target.value)}
+                style={{ marginRight: '10px', padding: '5px' }}
+              />
+              <input
+                type="number"
+                placeholder="Макс. цена"
+                value={maxPrice}
+                onChange={(e) => setMaxPrice(e.target.value)}
+                style={{ marginRight: '10px', padding: '5px' }}
+              />
+            </div>
+
+            {/* Карточки товаров */}
             <div className="row_card" id="products">
               {filteredProducts.map((product) => (
                 <ProductCard key={product.id || `prod-${Math.random()}`} product={product} />

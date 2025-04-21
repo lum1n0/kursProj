@@ -3,8 +3,9 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { login, register } from '../api/ApiClient';
-import { useAuthStore } from '../store/authStore'; // Исправлено: useAuth → useAuthStore
+import { useAuthStore } from '../store/authStore';
 import { useModalStore } from '../store/modalStore';
+import { Link } from 'react-router-dom'; // Import Link
 
 const loginSchema = yup.object({
   login: yup.string().required('Логин обязателен'),
@@ -19,7 +20,7 @@ const registerSchema = yup.object({
 }).required();
 
 function AuthModal() {
-  const { setIsLoggedIn, setIsAdmin } = useAuthStore(); // Исправлено
+  const { setIsLoggedIn, setIsAdmin } = useAuthStore();
   const { isAuthModalOpen, closeAuthModal } = useModalStore();
   const [isLogin, setIsLogin] = React.useState(true);
 
@@ -66,6 +67,7 @@ function AuthModal() {
           <div>
             <input type="password" {...formRegister('password')} placeholder="Пароль" />
             {errors.password && <p>{errors.password.message}</p>}
+
           </div>
           {!isLogin && (
             <div>
@@ -78,6 +80,8 @@ function AuthModal() {
         <button onClick={() => setIsLogin(!isLogin)}>
           {isLogin ? 'Создать аккаунт' : 'У меня есть аккаунт'}
         </button>
+        <Link to="/forgot-password">Забыли пароль?</Link> {/*  Add this line */}
+
       </div>
     </div>
   );

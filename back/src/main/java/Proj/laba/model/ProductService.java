@@ -35,6 +35,7 @@ public class ProductService extends GenericModel {
     @Column(name = "image_path")
 private String imageUrl;
 
+
     public List<Order> getOrders() {
         return orders;
     }

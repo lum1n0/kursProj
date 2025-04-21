@@ -41,8 +41,11 @@ public class SecurityConfig {
         "/webjars/**",
         "/swagger-ui/index.html",
         "/api-docs/**",
+        "/auth/password/reset-request",
         "/product-categories",
-        "/api/shop/**"
+        "/uploads/**",
+        "/api/shop/**",
+        "/api/shop/products-all/**" // Разрешаем все запросы к /api/shop/products
     };
     
     @Bean
@@ -69,10 +72,11 @@ public class SecurityConfig {
                 .requestMatchers("/api/profile/**").authenticated()
                 .requestMatchers("/api/orders/**").authenticated()
                 .requestMatchers("/api/users/topup").authenticated()
+                .requestMatchers("/api/upload").hasRole("ADMIN")
                 .requestMatchers("/api/admin/**", "/api/users/**", "/api/user-history/**").hasRole("ADMIN")
                 .requestMatchers("/api/users/paged").hasRole("ADMIN")
-                .requestMatchers("/api/support/send").authenticated() // Требуется аутентификация
-                .requestMatchers("/api/support/admin/answer/**").hasRole("ADMIN") // Только для админов
+                .requestMatchers("/api/support/send").authenticated()
+                .requestMatchers("/api/support/admin/answer/**").hasRole("ADMIN")
                 .anyRequest().authenticated()
             )
             .authenticationProvider(authenticationProvider())

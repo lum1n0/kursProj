@@ -11,6 +11,8 @@ import User from '../pages/User';
 import AdminAnswer from '../pages/AdminAnswer';
 import TopUpForm from '../pages/TopUpForm'; // Новый компонент
 import { useAuthStore } from '../store/authStore';
+import ForgotPassword from '../components/ForgotPassword';
+import ResetPassword from "../components/ResetPassword";
 
 function AppRoutes() {
     const { isLoggedIn, isAdmin, checkAuth, isLoading } = useAuthStore();
@@ -31,6 +33,8 @@ function AppRoutes() {
                 <Route path="/shop" element={<Shop />} />
                 <Route path="/support" element={<Support />} />
                 <Route path="/login" element={<LoginPage />} />
+                <Route path="/forgot-password" element={<ForgotPassword />} />
+                <Route path="/reset-password" element={<ResetPassword />} />
                 <Route
                     path="/topup"
                     element={isLoggedIn ? <TopUpForm /> : <Navigate to="/login" replace />}
