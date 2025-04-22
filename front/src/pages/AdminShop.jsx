@@ -17,6 +17,17 @@ function AdminShop() {
   const { register, handleSubmit, setValue, formState: { errors } } = useForm();
 
   useEffect(() => {
+
+      // Пример fetch-запроса
+      fetch('http://localhost:8080/product-categories')
+          .then(response => response.json())
+          .then(data => {
+            console.log('Данные категорий:', data);
+            setCategories(data);
+          })
+          .catch(error => console.error('Ошибка загрузки категорий:', error));
+
+
     const fetchData = async () => {
       try {
         setLoading(true);
@@ -137,11 +148,15 @@ function AdminShop() {
                 {errors.editName && <p>{errors.editName.message}</p>}
                 <input type="number" {...register('editPrice', { required: 'Цена обязательна', valueAsNumber: true })} defaultValue={editingProduct.price} />
                 {errors.editPrice && <p>{errors.editPrice.message}</p>}
-                <select {...register('editCategoryId', { required: 'Категория обязательна' })} defaultValue={editingProduct.categoryId}>
+                <select {...register('categoryId', { required: 'Категория обязательна' })}>
                   <option value="">Выберите категорию</option>
-                  {categories.map((cat) => (
+                  {categories && categories.length > 0 ? (
+                    categories.map((cat) => (
                       <option key={cat.id} value={cat.id}>{cat.title}</option>
-                  ))}
+                    ))
+                  ) : (
+                    <option disabled>Категории не загружены</option>
+                  )}
                 </select>
                 {errors.editCategoryId && <p>{errors.editCategoryId.message}</p>}
                 <input type="text" {...register('editImageUrl')} defaultValue={editingProduct.imageUrl} />
