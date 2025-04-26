@@ -40,6 +40,7 @@ function AdminPanel() {
             }
             if (!history[userId]) {
                 const data = await fetchData(`/api/user-history/by-user/${userId}`);
+                console.log(`История для userId ${userId}:`, data); // Добавлено для отладки
                 setHistory((prev) => ({ ...prev, [userId]: data }));
             }
             setOpenHistoryId(userId);

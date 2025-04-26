@@ -1,7 +1,6 @@
 package Proj.laba.controller.rest;
 
 import Proj.laba.service.PasswordResetService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,7 +12,6 @@ public class PasswordResetController {
 
     private final PasswordResetService passwordResetService;
 
-    @Autowired
     public PasswordResetController(PasswordResetService passwordResetService) {
         this.passwordResetService = passwordResetService;
     }

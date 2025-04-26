@@ -66,11 +66,11 @@ function Slider() {
         </div>
         <button className="carousel-control-prev" onClick={handlePrevClick}>
           <span className="carousel-control-icon" aria-hidden="true"></span>
-          <span className="visually-hidden">Предыдущий</span>
+          <span className="visually-hidden"></span>
         </button>
         <button className="carousel-control-next" onClick={handleNextClick}>
           <span className="carousel-control-icon" aria-hidden="true"></span>
-          <span className="visually-hidden">Следующий</span>
+          <span className="visually-hidden"></span>
         </button>
       </div>
   );

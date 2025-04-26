@@ -4,13 +4,11 @@ import Proj.laba.model.PasswordResetToken;
 import Proj.laba.model.User;
 import Proj.laba.reposirory.PasswordResetTokenRepository;
 import Proj.laba.reposirory.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -24,7 +22,6 @@ public class PasswordResetService {
     @Value("${app.frontend.url:http://localhost:3000}")
     private String frontendUrl;
 
-    @Autowired
     public PasswordResetService(
             PasswordResetTokenRepository tokenRepository,
             UserRepository userRepository,

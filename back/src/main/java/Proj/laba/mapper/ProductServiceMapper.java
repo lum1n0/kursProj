@@ -6,7 +6,6 @@ import Proj.laba.model.ProductService;
 import Proj.laba.reposirory.ProductCategoryRepository;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeMap;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.webjars.NotFoundException;
 
@@ -18,7 +17,6 @@ public class ProductServiceMapper extends GenericMapper<ProductService, ProductS
 
     private final ProductCategoryRepository productCategoryRepository;
 
-    @Autowired
     public ProductServiceMapper(ModelMapper modelMapper, ProductCategoryRepository productCategoryRepository) {
         super(ProductService.class, ProductServiceDTO.class, modelMapper);
         this.productCategoryRepository = productCategoryRepository;

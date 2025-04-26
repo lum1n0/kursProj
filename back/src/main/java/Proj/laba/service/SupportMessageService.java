@@ -5,7 +5,6 @@ import Proj.laba.mapper.SupportMessageMapper;
 import Proj.laba.model.SupportMessage;
 import Proj.laba.model.User;
 import Proj.laba.reposirory.SupportMessageRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -18,7 +17,6 @@ public class SupportMessageService extends GenericService<SupportMessage, Suppor
     private final EmailService emailService;
     private final UserService userService;
 
-    @Autowired
     public SupportMessageService(SupportMessageRepository repository, SupportMessageMapper mapper,
                                  EmailService emailService, UserService userService) {
         super(repository, mapper);

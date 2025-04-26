@@ -152,10 +152,13 @@ public class UserService extends GenericService<User, UserResponseDTO> {
     @Override
     @Transactional
     public UserResponseDTO update(UserResponseDTO updatedObject) {
+        log.info("Обновление пользователя с id={}", updatedObject.getId());
         User existingUser = userRepository.findById(updatedObject.getId())
                 .orElseThrow(() -> new NotFoundException("User с ID " + updatedObject.getId() + " не найден"));
 
+        // Сохраняем копию текущего состояния пользователя для сравнения
         User originalUser = new User();
+        originalUser.setId(existingUser.getId());
         originalUser.setFirstName(existingUser.getFirstName());
         originalUser.setLastName(existingUser.getLastName());
         originalUser.setEmail(existingUser.getEmail());
@@ -163,44 +166,65 @@ public class UserService extends GenericService<User, UserResponseDTO> {
         originalUser.setRole(existingUser.getRole());
         originalUser.setPassword(existingUser.getPassword());
 
-        if (updatedObject.getFirstName() != null) {
+        // Обновляем поля, если они переданы
+        if (updatedObject.getFirstName() != null && !updatedObject.getFirstName().equals(existingUser.getFirstName())) {
+            log.info("Обновление firstName: {} -> {}", existingUser.getFirstName(), updatedObject.getFirstName());
             existingUser.setFirstName(updatedObject.getFirstName());
         }
-        if (updatedObject.getLastName() != null) {
+        if (updatedObject.getLastName() != null && !updatedObject.getLastName().equals(existingUser.getLastName())) {
+            log.info("Обновление lastName: {} -> {}", existingUser.getLastName(), updatedObject.getLastName());
             existingUser.setLastName(updatedObject.getLastName());
         }
-        if (updatedObject.getEmail() != null) {
+        if (updatedObject.getEmail() != null && !updatedObject.getEmail().equals(existingUser.getEmail())) {
+            log.info("Обновление email: {} -> {}", existingUser.getEmail(), updatedObject.getEmail());
             existingUser.setEmail(updatedObject.getEmail());
         }
-        if (updatedObject.getPhone() != null) {
+        if (updatedObject.getPhone() != null && !updatedObject.getPhone().equals(existingUser.getPhone())) {
+            log.info("Обновление phone: {} -> {}", existingUser.getPhone(), updatedObject.getPhone());
             existingUser.setPhone(updatedObject.getPhone());
         }
         if (updatedObject.getRole() != null && !updatedObject.getRole().equals(existingUser.getRole().getTitle())) {
             Role role = roleRepository.findByTitle(updatedObject.getRole())
                     .orElseThrow(() -> new NotFoundException("Role " + updatedObject.getRole() + " not found"));
+            log.info("Обновление role: {} -> {}", existingUser.getRole().getTitle(), role.getTitle());
             existingUser.setRole(role);
         }
 
+        // Сохраняем историю изменений
         saveHistory(originalUser, existingUser, "admin");
 
-        return userMapper.toDTO(userRepository.save(existingUser));
+        // Сохраняем обновленного пользователя
+        User savedUser = userRepository.save(existingUser);
+        log.info("Пользователь обновлен: id={}", savedUser.getId());
+        return userMapper.toDTO(savedUser);
     }
 
     private void saveHistory(User oldUser, User newUser, String changedBy) {
-        if (!oldUser.getFirstName().equals(newUser.getFirstName())) {
-            userHistoryRepository.save(new UserHistory(null, newUser, "firstName", oldUser.getFirstName(), newUser.getFirstName(), changedBy, LocalDateTime.now()));
+        log.info("Проверка изменений для userId={}", newUser.getId());
+        if (oldUser.getFirstName() != null && !oldUser.getFirstName().equals(newUser.getFirstName())) {
+            UserHistory history = new UserHistory(null, newUser, "firstName", oldUser.getFirstName(), newUser.getFirstName(), changedBy, LocalDateTime.now());
+            userHistoryRepository.save(history);
+            log.info("Сохранена история для userId={}, field={}, oldValue={}, newValue={}", newUser.getId(), history.getFieldName(), history.getOldValue(), history.getNewValue());
         }
-        if (!oldUser.getLastName().equals(newUser.getLastName())) {
-            userHistoryRepository.save(new UserHistory(null, newUser, "lastName", oldUser.getLastName(), newUser.getLastName(), changedBy, LocalDateTime.now()));
+        if (oldUser.getLastName() != null && !oldUser.getLastName().equals(newUser.getLastName())) {
+            UserHistory history = new UserHistory(null, newUser, "lastName", oldUser.getLastName(), newUser.getLastName(), changedBy, LocalDateTime.now());
+            userHistoryRepository.save(history);
+            log.info("Сохранена история для userId={}, field={}, oldValue={}, newValue={}", newUser.getId(), history.getFieldName(), history.getOldValue(), history.getNewValue());
         }
         if (oldUser.getEmail() != null && !oldUser.getEmail().equals(newUser.getEmail())) {
-            userHistoryRepository.save(new UserHistory(null, newUser, "email", oldUser.getEmail(), newUser.getEmail(), changedBy, LocalDateTime.now()));
+            UserHistory history = new UserHistory(null, newUser, "email", oldUser.getEmail(), newUser.getEmail(), changedBy, LocalDateTime.now());
+            userHistoryRepository.save(history);
+            log.info("Сохранена история для userId={}, field={}, oldValue={}, newValue={}", newUser.getId(), history.getFieldName(), history.getOldValue(), history.getNewValue());
         }
         if (oldUser.getPhone() != null && !oldUser.getPhone().equals(newUser.getPhone())) {
-            userHistoryRepository.save(new UserHistory(null, newUser, "phone", oldUser.getPhone(), newUser.getPhone(), changedBy, LocalDateTime.now()));
+            UserHistory history = new UserHistory(null, newUser, "phone", oldUser.getPhone(), newUser.getPhone(), changedBy, LocalDateTime.now());
+            userHistoryRepository.save(history);
+            log.info("Сохранена история для userId={}, field={}, oldValue={}, newValue={}", newUser.getId(), history.getFieldName(), history.getOldValue(), history.getNewValue());
         }
         if (oldUser.getRole() != null && newUser.getRole() != null && !oldUser.getRole().getTitle().equals(newUser.getRole().getTitle())) {
-            userHistoryRepository.save(new UserHistory(null, newUser, "role", oldUser.getRole().getTitle(), newUser.getRole().getTitle(), changedBy, LocalDateTime.now()));
+            UserHistory history = new UserHistory(null, newUser, "role", oldUser.getRole().getTitle(), newUser.getRole().getTitle(), changedBy, LocalDateTime.now());
+            userHistoryRepository.save(history);
+            log.info("Сохранена история для userId={}, field={}, oldValue={}, newValue={}", newUser.getId(), history.getFieldName(), history.getOldValue(), history.getNewValue());
         }
     }
 
@@ -265,7 +289,6 @@ public class UserService extends GenericService<User, UserResponseDTO> {
             .orElseThrow(() -> new RuntimeException("Пользователь не найден"));
     }
 
-    // Метод для пополнения баланса
     public void topUpBalance(Long userId, BigDecimal amount) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("Пользователь не найден"));
