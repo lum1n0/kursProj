@@ -5,9 +5,13 @@ import Proj.laba.model.Order;
 import Proj.laba.service.OrderService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -33,6 +37,13 @@ public class OrderController extends GenericController<Order, OrderDTO> {
         return ResponseEntity.status(HttpStatus.CREATED).body(createdOrder);
     }
 
+    @Operation(summary = "Купить товар")
+    @PostMapping("/buy")
+    public ResponseEntity<OrderDTO> buyProduct(@RequestBody OrderDTO orderDTO) {
+        OrderDTO createdOrder = orderService.create(orderDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdOrder);
+    }
+
     @Operation(summary = "Получить заказы пользователя")
     @GetMapping("/user/{userId}")
     public ResponseEntity<List<OrderDTO>> getOrdersByUserId(@PathVariable Long userId) {
@@ -46,5 +57,22 @@ public class OrderController extends GenericController<Order, OrderDTO> {
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime orderDate,
             @RequestParam Long userId) {
         return ResponseEntity.ok(orderService.findByOrderDateAndUserId(orderDate, userId));
+    }
+
+    @Operation(summary = "Получить все заказы (для админа)")
+    @GetMapping("/admin")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Page<OrderDTO>> getAllOrders(@RequestParam int page, @RequestParam int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<OrderDTO> orders = orderService.getAllOrders(pageable);
+        return ResponseEntity.ok(orders);
+    }
+
+    @Operation(summary = "Обновить статус заказа (для админа)")
+    @PutMapping("/admin/status/{orderId}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<OrderDTO> updateOrderStatus(@PathVariable Long orderId, @RequestBody String status) {
+        OrderDTO updatedOrder = orderService.updateOrderStatus(orderId, status);
+        return ResponseEntity.ok(updatedOrder);
     }
 }

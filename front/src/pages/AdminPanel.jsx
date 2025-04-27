@@ -2,9 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { fetchData, putData, deleteData } from '../api/ApiClient';
 import AdminHeader from '../components/AdminHeader';
 import Swal from 'sweetalert2';
+import { useAuthStore } from '../store/authStore';
 import '../assets/styles/AdminPanel.scss';
 
 function AdminPanel() {
+    const { isAdmin } = useAuthStore(); // Получаем статус администратора
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -15,8 +17,13 @@ function AdminPanel() {
     const [openHistoryId, setOpenHistoryId] = useState(null);
 
     useEffect(() => {
-        fetchUsers();
-    }, [page]);
+        if (isAdmin) {
+            fetchUsers();
+        } else {
+            setError('У вас нет прав для доступа к этой странице');
+            setLoading(false);
+        }
+    }, [page, isAdmin]);
 
     const fetchUsers = async () => {
         try {
@@ -40,7 +47,7 @@ function AdminPanel() {
             }
             if (!history[userId]) {
                 const data = await fetchData(`/api/user-history/by-user/${userId}`);
-                console.log(`История для userId ${userId}:`, data); // Добавлено для отладки
+                console.log(`История для userId ${userId}:`, data);
                 setHistory((prev) => ({ ...prev, [userId]: data }));
             }
             setOpenHistoryId(userId);
@@ -86,6 +93,7 @@ function AdminPanel() {
         return `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
     };
 
+    if (!isAdmin) return <div>У вас нет прав для доступа к этой странице</div>;
     if (loading) return <div>Загрузка...</div>;
     if (error) return <div>{error}</div>;
 

@@ -1,13 +1,13 @@
 package Proj.laba.dto;
 
-import java.math.BigDecimal;
-
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.math.BigDecimal;
 
 @Getter
 @Setter
@@ -21,6 +21,10 @@ public class ProductServiceDTO extends GenericDTO {
     @Positive(message = "Цена должна быть положительным числом")
     private BigDecimal price;
 
+    @NotNull(message = "Количество не может быть пустым")
+    @Positive(message = "Количество должно быть положительным числом")
+    private Integer quantity; // Добавляем quantity
+
     private String imageUrl;
 
     private Long categoryId;
@@ -30,9 +34,8 @@ public class ProductServiceDTO extends GenericDTO {
     public String getTitle() {
         return title;
     }
-    
+
     public void setTitle(String title) {
         this.title = title;
     }
-
 }

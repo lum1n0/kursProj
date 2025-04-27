@@ -37,43 +37,9 @@ public class Order extends GenericModel {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    public BigDecimal getFinalPrice() {
-        return finalPrice;
-    }
+    @Column(name = "status")
+    private String status; // "в обработке", "доставляется", "доставлен"
 
-    public void setFinalPrice(BigDecimal finalPrice) {
-        this.finalPrice = finalPrice;
-    }
-
-    public Integer getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(Integer quantity) {
-        this.quantity = quantity;
-    }
-
-    public LocalDateTime getOrderDate() {
-        return orderDate;
-    }
-
-    public void setOrderDate(LocalDateTime orderDate) {
-        this.orderDate = orderDate;
-    }
-
-    public ProductService getProductService() {
-        return productService;
-    }
-
-    public void setProductService(ProductService productService) {
-        this.productService = productService;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
+    @Column(name = "delivery_address")
+    private String deliveryAddress;
 }

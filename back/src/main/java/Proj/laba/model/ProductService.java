@@ -1,4 +1,3 @@
-// File path: /home/gtr/Рабочий стол/kursProj/back/src/main/java/Proj/laba/model/ProductService.java
 package Proj.laba.model;
 
 import jakarta.persistence.*;
@@ -25,6 +24,9 @@ public class ProductService extends GenericModel {
     @Column(name = "price", nullable = false)
     private BigDecimal price;
 
+    @Column(name = "quantity", nullable = false) // Поле quantity
+    private Integer quantity;
+
     @OneToMany(mappedBy = "productService", cascade = CascadeType.ALL)
     private List<Order> orders;
 
@@ -32,11 +34,10 @@ public class ProductService extends GenericModel {
     @JoinColumn(name = "category_id")
     private ProductCategory productCategory;
 
-
     @Column(name = "image_path")
     private String imageUrl;
 
-
+    // Геттеры и сеттеры
     public List<Order> getOrders() {
         return orders;
     }
@@ -59,5 +60,13 @@ public class ProductService extends GenericModel {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Integer getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(Integer quantity) {
+        this.quantity = quantity;
     }
 }

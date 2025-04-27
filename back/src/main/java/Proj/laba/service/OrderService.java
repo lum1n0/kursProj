@@ -9,6 +9,8 @@ import Proj.laba.reposirory.GenericRepository;
 import Proj.laba.reposirory.OrderRepository;
 import Proj.laba.reposirory.ProductServiceRepository;
 import Proj.laba.reposirory.UserRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.webjars.NotFoundException;
@@ -48,14 +50,6 @@ public class OrderService extends GenericService<Order, OrderDTO> {
         ProductService productService = productServiceRepository.findById(newObject.getProductServiceId())
                 .orElseThrow(() -> new NotFoundException("ProductService с ID " + newObject.getProductServiceId() + " не найден"));
 
-        // Проверка на категорию 3
-        if (productService.getProductCategory() != null && productService.getProductCategory().getId() == 3) {
-            Optional<Order> existingOrder = orderRepository.findByUserAndProductServiceCategoryId(user, 3L);
-            if (existingOrder.isPresent()) {
-                throw new RuntimeException("У пользователя уже есть товар из категории 3");
-            }
-        }
-
         BigDecimal totalPrice = productService.getPrice().multiply(BigDecimal.valueOf(newObject.getQuantity()));
 
         if (user.getBalance().compareTo(totalPrice) < 0) {
@@ -70,6 +64,16 @@ public class OrderService extends GenericService<Order, OrderDTO> {
         order.setProductService(productService);
         order.setFinalPrice(totalPrice);
         order.setOrderDate(LocalDateTime.now());
+        order.setStatus("в обработке"); // Начальный статус
+
+        if (productService.getProductCategory() != null && productService.getProductCategory().getId() == 3) {
+            Optional<Order> existingOrder = orderRepository.findByUserAndProductServiceCategoryId(user, 3L);
+            if (existingOrder.isPresent()) {
+                throw new RuntimeException("У пользователя уже есть товар из категории 3");
+            }
+            user.setTariff(productService);
+            userRepository.save(user);
+        }
 
         Order savedOrder = repository.save(order);
         return orderMapper.toDTO(savedOrder);
@@ -95,6 +99,21 @@ public class OrderService extends GenericService<Order, OrderDTO> {
 
         Order updatedOrder = repository.save(orderToUpdate);
         return orderMapper.toDTO(updatedOrder);
+    }
+
+    @Transactional
+    public OrderDTO updateOrderStatus(Long orderId, String status) {
+        Order order = repository.findById(orderId)
+                .orElseThrow(() -> new NotFoundException("Order not found"));
+        order.setStatus(status);
+        Order updatedOrder = repository.save(order);
+        return orderMapper.toDTO(updatedOrder);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<OrderDTO> getAllOrders(Pageable pageable) {
+        Page<Order> orders = orderRepository.findAll(pageable);
+        return orders.map(orderMapper::toDTO);
     }
 
     @Override

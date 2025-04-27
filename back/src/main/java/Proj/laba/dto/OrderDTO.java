@@ -23,6 +23,7 @@ public class OrderDTO extends GenericDTO {
     @Min(value = 1, message = "Количество должно быть не менее 1")
     private Integer quantity;
 
+
     private LocalDateTime orderDate;
 
     @NotNull(message = "ID услуги не может быть пустым")

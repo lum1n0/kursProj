@@ -1,4 +1,3 @@
-// File path: /home/gtr/Рабочий стол/kursProj/back/src/main/java/Proj/laba/mapper/ProductServiceMapper.java
 package Proj.laba.mapper;
 
 import Proj.laba.dto.ProductServiceDTO;
@@ -6,7 +5,6 @@ import Proj.laba.model.ProductCategory;
 import Proj.laba.model.ProductService;
 import Proj.laba.reposirory.ProductCategoryRepository;
 import jakarta.annotation.PostConstruct;
-
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeMap;
 import org.springframework.stereotype.Component;
@@ -28,9 +26,8 @@ public class ProductServiceMapper extends GenericMapper<ProductService, ProductS
     @Override
     @PostConstruct
     protected void setupMapper() {
-        super.setupMapper(); // Вызываем общий маппинг из GenericMapper
+        super.setupMapper();
 
-        // Настройка маппинга специфических полей из сущности в DTO
         TypeMap<ProductService, ProductServiceDTO> entityToDtoMap = modelMapper.getTypeMap(ProductService.class, ProductServiceDTO.class);
         if (entityToDtoMap == null) {
             entityToDtoMap = modelMapper.createTypeMap(ProductService.class, ProductServiceDTO.class);
@@ -42,7 +39,6 @@ public class ProductServiceMapper extends GenericMapper<ProductService, ProductS
             return destination;
         });
 
-        // Настройка маппинга специфических полей из DTO в сущность
         TypeMap<ProductServiceDTO, ProductService> dtoToEntityMap = modelMapper.getTypeMap(ProductServiceDTO.class, ProductService.class);
         if (dtoToEntityMap == null) {
             dtoToEntityMap = modelMapper.createTypeMap(ProductServiceDTO.class, ProductService.class);
@@ -59,6 +55,7 @@ public class ProductServiceMapper extends GenericMapper<ProductService, ProductS
     protected void mapSpecificFields(ProductServiceDTO source, ProductService destination) {
         destination.setName(source.getName());
         destination.setPrice(source.getPrice());
+        destination.setQuantity(source.getQuantity()); // Маппим quantity
         destination.setImageUrl(source.getImageUrl());
         if (source.getCategoryId() != null) {
             ProductCategory category = productCategoryRepository.findById(source.getCategoryId())
@@ -71,11 +68,12 @@ public class ProductServiceMapper extends GenericMapper<ProductService, ProductS
     protected void mapSpecificFields(ProductService source, ProductServiceDTO destination) {
         destination.setName(source.getName());
         destination.setPrice(source.getPrice());
+        destination.setQuantity(source.getQuantity()); // Маппим quantity
         destination.setImageUrl(source.getImageUrl());
         if (source.getProductCategory() != null) {
             destination.setCategoryId(source.getProductCategory().getId());
         }
-        destination.setId(source.getId()); // Ensure ID is mapped
+        destination.setId(source.getId());
     }
 
     @Override

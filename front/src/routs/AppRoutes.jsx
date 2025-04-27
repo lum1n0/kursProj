@@ -13,8 +13,11 @@ import ForgotPassword from '../components/ForgotPassword';
 import ResetPassword from '../components/ResetPassword';
 import ProductDetails from '../components/ProductDetails';
 import AuthModal from '../components/AuthModal';
+import OrderForm from '../components/OrderForm'; // Новый компонент для выбора адреса доставки
+import AdminOrders from '../pages/AdminOrders';
 import { useAuthStore } from '../store/authStore';
 import { useModalStore } from '../store/modalStore';
+import ProtectedRoute from './ProtectedRoute'; // Импортируем ProtectedRoute
 
 function AppRoutes() {
     const { isLoggedIn, isAdmin, checkAuth, isLoading } = useAuthStore();
@@ -31,6 +34,7 @@ function AppRoutes() {
     return (
         <Router>
             <Routes>
+                {/* Общие маршруты */}
                 <Route path="/" element={<Home />} />
                 <Route path="/shop" element={<Shop />} />
                 <Route path="/product/:id" element={<ProductDetails />} />
@@ -38,6 +42,8 @@ function AppRoutes() {
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/forgot-password" element={<ForgotPassword />} />
                 <Route path="/reset-password" element={<ResetPassword />} />
+
+                {/* Защищенные маршруты для авторизованных пользователей */}
                 <Route
                     path="/topup"
                     element={isLoggedIn ? <TopUpForm /> : <Navigate to="/login" replace />}
@@ -47,17 +53,45 @@ function AppRoutes() {
                     element={isLoggedIn ? <User /> : <Navigate to="/login" replace />}
                 />
                 <Route
+                    path="/order/new"
+                    element={isLoggedIn ? <OrderForm /> : <Navigate to="/login" replace />}
+                />
+
+                {/* Защищенные маршруты для админов с использованием ProtectedRoute */}
+                <Route
                     path="/admin"
-                    element={isLoggedIn && isAdmin ? <AdminPanel /> : <Navigate to="/login" replace />}
+                    element={
+                        <ProtectedRoute>
+                            <AdminPanel />
+                        </ProtectedRoute>
+                    }
                 />
                 <Route
                     path="/admin/shop"
-                    element={isLoggedIn && isAdmin ? <AdminShop /> : <Navigate to="/login" replace />}
+                    element={
+                        <ProtectedRoute>
+                            <AdminShop />
+                        </ProtectedRoute>
+                    }
                 />
                 <Route
                     path="/admin/answer"
-                    element={isLoggedIn && isAdmin ? <AdminAnswer /> : <Navigate to="/login" replace />}
+                    element={
+                        <ProtectedRoute>
+                            <AdminAnswer />
+                        </ProtectedRoute>
+                    }
                 />
+                <Route
+                    path="/admin/orders"
+                    element={
+                        <ProtectedRoute>
+                            <AdminOrders />
+                        </ProtectedRoute>
+                    }
+                />
+
+                {/* Обработка неизвестных маршрутов */}
                 <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
             {isAuthModalOpen && <AuthModal />}

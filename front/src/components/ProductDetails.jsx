@@ -1,10 +1,9 @@
-// File path: /home/gtr/Рабочий стол/kursProj/front/src/pages/ProductDetails.jsx
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { ApiClient } from '../api/ApiClient';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
-import { getImageUrl } from '../utils/utils'; // Импортируем утилиту
+import { getImageUrl } from '../utils/utils';
 import '../assets/styles/ProductDetails.scss';
 
 function ProductDetails() {
@@ -34,9 +33,10 @@ function ProductDetails() {
       <Header />
       <div className="container">
         <h1>{product.name}</h1>
-        <img src={getImageUrl(product.imageUrl)} alt={product.name} /> {/* Применяем getImageUrl */}
+        <img src={getImageUrl(product.imageUrl)} alt={product.name} />
         <p>{product.description}</p>
         <p>Цена: {product.price} руб.</p>
+        <p>Количество: {product.quantity || 'Не указано'}</p>
       </div>
       <Footer />
     </div>
