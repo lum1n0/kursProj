@@ -24,8 +24,11 @@ public class ProductService extends GenericModel {
     @Column(name = "price", nullable = false)
     private BigDecimal price;
 
-    @Column(name = "quantity", nullable = false) // Поле quantity
-    private Integer quantity;
+    @Column(name = "status", nullable = false)
+    private String status; // "в наличии", "закончился"
+
+    @Column(name = "description")
+    private String description;
 
     @OneToMany(mappedBy = "productService", cascade = CascadeType.ALL)
     private List<Order> orders;
@@ -36,37 +39,4 @@ public class ProductService extends GenericModel {
 
     @Column(name = "image_path")
     private String imageUrl;
-
-    // Геттеры и сеттеры
-    public List<Order> getOrders() {
-        return orders;
-    }
-
-    public void setOrders(List<Order> orders) {
-        this.orders = orders;
-    }
-
-    public BigDecimal getPrice() {
-        return price;
-    }
-
-    public void setPrice(BigDecimal price) {
-        this.price = price;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Integer getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(Integer quantity) {
-        this.quantity = quantity;
-    }
 }

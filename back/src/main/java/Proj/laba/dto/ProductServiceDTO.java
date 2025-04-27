@@ -21,21 +21,14 @@ public class ProductServiceDTO extends GenericDTO {
     @Positive(message = "Цена должна быть положительным числом")
     private BigDecimal price;
 
-    @NotNull(message = "Количество не может быть пустым")
-    @Positive(message = "Количество должно быть положительным числом")
-    private Integer quantity; // Добавляем quantity
+    @NotBlank(message = "Статус не может быть пустым")
+    private String status; // "в наличии", "закончился"
+
+    private String description;
 
     private String imageUrl;
 
     private Long categoryId;
 
     private String title;
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
 }

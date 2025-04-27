@@ -55,7 +55,8 @@ public class ProductServiceMapper extends GenericMapper<ProductService, ProductS
     protected void mapSpecificFields(ProductServiceDTO source, ProductService destination) {
         destination.setName(source.getName());
         destination.setPrice(source.getPrice());
-        destination.setQuantity(source.getQuantity()); // Маппим quantity
+        destination.setStatus(source.getStatus());
+        destination.setDescription(source.getDescription());
         destination.setImageUrl(source.getImageUrl());
         if (source.getCategoryId() != null) {
             ProductCategory category = productCategoryRepository.findById(source.getCategoryId())
@@ -68,7 +69,8 @@ public class ProductServiceMapper extends GenericMapper<ProductService, ProductS
     protected void mapSpecificFields(ProductService source, ProductServiceDTO destination) {
         destination.setName(source.getName());
         destination.setPrice(source.getPrice());
-        destination.setQuantity(source.getQuantity()); // Маппим quantity
+        destination.setStatus(source.getStatus());
+        destination.setDescription(source.getDescription());
         destination.setImageUrl(source.getImageUrl());
         if (source.getProductCategory() != null) {
             destination.setCategoryId(source.getProductCategory().getId());

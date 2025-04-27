@@ -37,38 +37,40 @@ function ProductCard({ product, onBuy }) {
     }
   };
 
+  const isAvailable = product.status === 'в наличии';
+
   return (
-    <div className="product-card">
-      <div className="card">
-        <img
-          src={getImageUrl(product.imageUrl)}
-          className="card-img-top"
-          alt={product.name || 'Товар'}
-        />
-        <div className="card-body">
-          <h5 className="card-title">{product.name || 'Без названия'}</h5>
-          <p className="card-text">{product.description || 'Описание отсутствует'}</p>
-          <p className="card-price">
-            Цена: {product.price !== null ? `${product.price} руб.` : 'Не указана'}
-          </p>
-          <p className="card-quantity">
-            Количество: {product.quantity || 'Не указано'}
-          </p>
-          <button className="btn" onClick={handleBuy}>
-            Купить
-          </button>
-          {product.id ? (
-            <Link to={`/product/${product.id}`} className="btn btn-info">
-              Подробнее
-            </Link>
-          ) : (
-            <button className="btn btn-info" disabled>
-              Подробнее (ID отсутствует)
+      <div className="product-card">
+        <div className="card">
+          <img
+              src={getImageUrl(product.imageUrl)}
+              className="card-img-top"
+              alt={product.name || 'Товар'}
+          />
+          <div className="card-body">
+            <h5 className="card-title">{product.name || 'Без названия'}</h5>
+            <p className="card-text">{product.description || 'Описание отсутствует'}</p>
+            <p className="card-price">
+              Цена: {product.price !== null ? `${product.price} руб.` : 'Не указана'}
+            </p>
+            <p className="card-status">
+              Статус: {product.status || 'Не указано'}
+            </p>
+            <button className="btn" onClick={handleBuy} disabled={!isAvailable}>
+              {isAvailable ? 'Купить' : 'Недоступно'}
             </button>
-          )}
+            {product.id ? (
+                <Link to={`/product/${product.id}`} className="btn btn-info">
+                  Подробнее
+                </Link>
+            ) : (
+                <button className="btn btn-info" disabled>
+                  Подробнее (ID отсутствует)
+                </button>
+            )}
+          </div>
         </div>
       </div>
-    </div>
   );
 }
 

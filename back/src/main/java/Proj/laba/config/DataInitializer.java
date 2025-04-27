@@ -52,11 +52,12 @@ public class DataInitializer implements CommandLineRunner {
             ProductService initialProduct = new ProductService();
             initialProduct.setName("начальный тариф");
             initialProduct.setPrice(BigDecimal.ZERO);
+            initialProduct.setStatus("в наличии"); // Добавляем статус
             initialProduct.setImageUrl("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQBQY54bP2CxjmHdg_6yAGjR0Zjgc6d7v-_Ng&s");
 
             // Привязка к категории с id = 3
             ProductCategory category = productCategoryRepository.findById(3L)
-                .orElseThrow(() -> new IllegalArgumentException("Категория с id=1 не найдена"));
+                    .orElseThrow(() -> new IllegalArgumentException("Категория с id=3 не найдена"));
             initialProduct.setProductCategory(category);
 
             productServiceRepository.save(initialProduct);

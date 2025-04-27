@@ -1,9 +1,10 @@
-// File path: /home/gtr/Рабочий стол/kursProj/back/src/main/java/Proj/laba/service/ProductServiceService.java
 package Proj.laba.service;
 
 import Proj.laba.dto.ProductServiceDTO;
 import Proj.laba.mapper.ProductServiceMapper;
+import Proj.laba.model.ProductCategory;
 import Proj.laba.model.ProductService;
+import Proj.laba.reposirory.ProductCategoryRepository;
 import Proj.laba.reposirory.ProductServiceRepository;
 import org.webjars.NotFoundException;
 import org.springframework.stereotype.Service;
@@ -19,10 +20,16 @@ public class ProductServiceService extends GenericService<ProductService, Produc
     private final ProductServiceRepository repository;
     private final ProductServiceMapper mapper;
 
-    public ProductServiceService(ProductServiceRepository repository, ProductServiceMapper mapper) {
+    // Предполагается, что у вас есть репозиторий для категорий. Добавьте его в зависимости, если он еще не внедрен.
+    private final ProductCategoryRepository productCategoryRepository;
+
+    public ProductServiceService(ProductServiceRepository repository,
+                                 ProductServiceMapper mapper,
+                                 ProductCategoryRepository productCategoryRepository) {
         super(repository, mapper);
         this.repository = repository;
         this.mapper = mapper;
+        this.productCategoryRepository = productCategoryRepository;
     }
 
     @Override
@@ -49,12 +56,32 @@ public class ProductServiceService extends GenericService<ProductService, Produc
     @Override
     @Transactional
     public ProductServiceDTO update(ProductServiceDTO updatedObject) {
-        repository.findById(updatedObject.getId())
+        // Загружаем существующую сущность из базы данных
+        ProductService existingEntity = repository.findById(updatedObject.getId())
                 .orElseThrow(() -> new NotFoundException("ProductService с ID " + updatedObject.getId() + " не найден"));
+
+        // Проверяем, что цена положительная
         if (updatedObject.getPrice().compareTo(BigDecimal.ZERO) <= 0) {
             throw new IllegalArgumentException("Цена должна быть положительной");
         }
-        return super.update(updatedObject);
+
+        // Обновляем поля существующей сущности на основе DTO
+        existingEntity.setName(updatedObject.getName());
+        existingEntity.setPrice(updatedObject.getPrice());
+        existingEntity.setStatus(updatedObject.getStatus());
+        existingEntity.setDescription(updatedObject.getDescription());
+        existingEntity.setImageUrl(updatedObject.getImageUrl());
+
+        // Обновляем категорию, если она указана в DTO
+        if (updatedObject.getCategoryId() != null) {
+            ProductCategory category = productCategoryRepository.findById(updatedObject.getCategoryId())
+                    .orElseThrow(() -> new NotFoundException("Категория с ID " + updatedObject.getCategoryId() + " не найдена"));
+            existingEntity.setProductCategory(category);
+        }
+
+        // Сохраняем обновленную сущность
+        ProductService updatedEntity = repository.save(existingEntity);
+        return mapper.toDTO(updatedEntity);
     }
 
     @Transactional(readOnly = true)

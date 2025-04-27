@@ -3,6 +3,8 @@ import React, { useState, useEffect } from 'react';
 import { ApiClient } from '../api/ApiClient';
 import Swal from 'sweetalert2';
 
+import AdminHeader from "../components/AdminHeader.jsx";
+
 function AdminOrders() {
   const [orders, setOrders] = useState([]);
   const [page, setPage] = useState(0);
@@ -34,6 +36,7 @@ function AdminOrders() {
 
   return (
     <div>
+      <AdminHeader />
       <h2>Управление заказами</h2>
       <table>
         <thead>

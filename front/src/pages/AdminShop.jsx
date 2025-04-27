@@ -60,7 +60,7 @@ function AdminShop() {
       const response = await postData('/api/shop', {
         name: data.name,
         price: data.price,
-        quantity: data.quantity,
+        status: data.status || 'в наличии', // Значение по умолчанию "в наличии"
         categoryId: data.categoryId,
         imageUrl: data.imageUrl,
       });
@@ -76,7 +76,6 @@ function AdminShop() {
       const response = await putData(`/api/shop/${editingProduct.id}`, {
         name: data.editName,
         price: data.editPrice,
-        quantity: data.editQuantity,
         categoryId: data.editCategoryId,
         imageUrl: data.editImageUrl,
       });
@@ -104,7 +103,6 @@ function AdminShop() {
     setEditingProduct(product);
     setValue('editName', product.name);
     setValue('editPrice', product.price);
-    setValue('editQuantity', product.quantity);
     setValue('editCategoryId', product.categoryId);
     setValue('editImageUrl', product.imageUrl);
   };
@@ -113,77 +111,94 @@ function AdminShop() {
   if (error) return <div>{error}</div>;
 
   return (
-    <div className="admin-shop">
-      <AdminHeader />
-      <h1>Управление товарами и услугами</h1>
+      <div className="admin-shop">
+        <AdminHeader />
+        <h1>Управление товарами и услугами</h1>
 
-      <div className="form-section">
-        <h2>Добавить новый товар</h2>
-        <form onSubmit={handleSubmit(onSubmitNewProduct)}>
-          <input type="text" placeholder="Название" {...register('name', { required: 'Название обязательно' })} />
-          {errors.name && <p>{errors.name.message}</p>}
-          <input type="number" placeholder="Цена" {...register('price', { required: 'Цена обязательна', valueAsNumber: true })} />
-          {errors.price && <p>{errors.price.message}</p>}
-          <input type="number" placeholder="Количество" {...register('quantity', { required: 'Количество обязательно', valueAsNumber: true, min: { value: 1, message: 'Количество должно быть больше 0' } })} />
-          {errors.quantity && <p>{errors.quantity.message}</p>}
-          <select {...register('categoryId', { required: 'Категория обязательна' })}>
-            <option value="">Выберите категорию</option>
-            {categories.map((cat) => (
-              <option key={cat.id} value={cat.id}>{cat.title}</option>
-            ))}
-          </select>
-          {errors.categoryId && <p>{errors.categoryId.message}</p>}
-          <input type="text" placeholder="URL изображения" {...register('imageUrl')} />
-          <input type="file" accept="image/*" onChange={(e) => handleFileUpload(e, 'imageUrl')} />
-          <button type="submit">Добавить</button>
-        </form>
-      </div>
-
-      {editingProduct && (
         <div className="form-section">
-          <h2>Редактировать товар</h2>
-          <form onSubmit={handleSubmit(onSubmitEditProduct)}>
-            <input type="text" {...register('editName', { required: 'Название обязательно' })} defaultValue={editingProduct.name} />
-            {errors.editName && <p>{errors.editName.message}</p>}
-            <input type="number" {...register('editPrice', { required: 'Цена обязательна', valueAsNumber: true })} defaultValue={editingProduct.price} />
-            {errors.editPrice && <p>{errors.editPrice.message}</p>}
-            <input type="number" {...register('editQuantity', { required: 'Количество обязательно', valueAsNumber: true, min: { value: 1, message: 'Количество должно быть больше 0' } })} defaultValue={editingProduct.quantity} />
-            {errors.editQuantity && <p>{errors.editQuantity.message}</p>}
-            <select {...register('editCategoryId', { required: 'Категория обязательна' })}>
-              <option value="">Выберите категорию</option>
-              {categories && categories.length > 0 ? (
-                categories.map((cat) => (
-                  <option key={cat.id} value={cat.id}>{cat.title}</option>
-                ))
-              ) : (
-                <option disabled>Категории не загружены</option>
-              )}
+          <h2>Добавить новый товар</h2>
+          <form onSubmit={handleSubmit(onSubmitNewProduct)}>
+            <input
+                type="text"
+                placeholder="Название"
+                {...register('name', { required: 'Название обязательно' })}
+            />
+            {errors.name && <p>{errors.name.message}</p>}
+            <input
+                type="number"
+                placeholder="Цена"
+                {...register('price', { required: 'Цена обязательна', valueAsNumber: true })}
+            />
+            {errors.price && <p>{errors.price.message}</p>}
+            <select {...register('status', { required: 'Статус обязателен' })}>
+              <option value="в наличии">В наличии</option>
+              <option value="закончился">Закончился</option>
             </select>
-            {errors.editCategoryId && <p>{errors.editCategoryId.message}</p>}
-            <input type="text" {...register('editImageUrl')} defaultValue={editingProduct.imageUrl} />
-            <input type="file" accept="image/*" onChange={(e) => handleFileUpload(e, 'editImageUrl')} />
-            <button type="submit">Сохранить</button>
-            <button type="button" onClick={() => setEditingProduct(null)}>Отмена</button>
+            {errors.status && <p>{errors.status.message}</p>}
+            <select {...register('categoryId', { required: 'Категория обязательна' })}>
+              <option value="">Выберите категорию</option>
+              {categories.map((cat) => (
+                  <option key={cat.id} value={cat.id}>{cat.title}</option>
+              ))}
+            </select>
+            {errors.categoryId && <p>{errors.categoryId.message}</p>}
+            <input type="text" placeholder="URL изображения" {...register('imageUrl')} />
+            <input type="file" accept="image/*" onChange={(e) => handleFileUpload(e, 'imageUrl')} />
+            <button type="submit">Добавить</button>
           </form>
         </div>
-      )}
 
-      <h2>Список товаров</h2>
-      {products.length > 0 ? (
-        <ul className="product-list">
-          {products.map((product) => (
-            <li key={product.key}>
-              {product.imageUrl && <img src={getImageUrl(product.imageUrl)} alt={product.name} />}
-              {product.name} - {product.price} руб. - Количество: {product.quantity}
-              <button onClick={() => startEditing(product)}>Редактировать</button>
-              <button onClick={() => handleDeleteProduct(product.id)}>Удалить</button>
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <p>Нет товаров для отображения</p>
-      )}
-    </div>
+        {editingProduct && (
+            <div className="form-section">
+              <h2>Редактировать товар</h2>
+              <form onSubmit={handleSubmit(onSubmitEditProduct)}>
+                <input
+                    type="text"
+                    {...register('editName', { required: 'Название обязательно' })}
+                    defaultValue={editingProduct.name}
+                />
+                {errors.editName && <p>{errors.editName.message}</p>}
+                <input
+                    type="number"
+                    {...register('editPrice', { required: 'Цена обязательна', valueAsNumber: true })}
+                    defaultValue={editingProduct.price}
+                />
+                {errors.editPrice && <p>{errors.editPrice.message}</p>}
+                <select {...register('editCategoryId', { required: 'Категория обязательна' })}>
+                  <option value="">Выберите категорию</option>
+                  {categories && categories.length > 0 ? (
+                      categories.map((cat) => (
+                          <option key={cat.id} value={cat.id}>{cat.title}</option>
+                      ))
+                  ) : (
+                      <option disabled>Категории не загружены</option>
+                  )}
+                </select>
+                {errors.editCategoryId && <p>{errors.editCategoryId.message}</p>}
+                <input type="text" {...register('editImageUrl')} defaultValue={editingProduct.imageUrl} />
+                <input type="file" accept="image/*" onChange={(e) => handleFileUpload(e, 'editImageUrl')} />
+                <button type="submit">Сохранить</button>
+                <button type="button" onClick={() => setEditingProduct(null)}>Отмена</button>
+              </form>
+            </div>
+        )}
+
+        <h2>Список товаров</h2>
+        {products.length > 0 ? (
+            <ul className="product-list">
+              {products.map((product) => (
+                  <li key={product.key}>
+                    {product.imageUrl && <img src={getImageUrl(product.imageUrl)} alt={product.name} />}
+                    {product.name} - {product.price} руб.
+                    <button onClick={() => startEditing(product)}>Редактировать</button>
+                    <button onClick={() => handleDeleteProduct(product.id)}>Удалить</button>
+                  </li>
+              ))}
+            </ul>
+        ) : (
+            <p>Нет товаров для отображения</p>
+        )}
+      </div>
   );
 }
 
