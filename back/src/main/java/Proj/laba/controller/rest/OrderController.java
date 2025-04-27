@@ -33,6 +33,7 @@ public class OrderController extends GenericController<Order, OrderDTO> {
     @Operation(summary = "Создать заказ")
     @PostMapping
     public ResponseEntity<OrderDTO> create(@RequestBody OrderDTO orderDTO) {
+        System.out.println("Получен запрос на создание заказа: " + orderDTO);
         OrderDTO createdOrder = orderService.create(orderDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdOrder);
     }
@@ -40,6 +41,7 @@ public class OrderController extends GenericController<Order, OrderDTO> {
     @Operation(summary = "Купить товар")
     @PostMapping("/buy")
     public ResponseEntity<OrderDTO> buyProduct(@RequestBody OrderDTO orderDTO) {
+        System.out.println("Получен запрос на покупку товара: " + orderDTO);
         OrderDTO createdOrder = orderService.create(orderDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdOrder);
     }

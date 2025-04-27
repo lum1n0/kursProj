@@ -50,27 +50,35 @@ public class OrderService extends GenericService<Order, OrderDTO> {
         ProductService productService = productServiceRepository.findById(newObject.getProductServiceId())
                 .orElseThrow(() -> new NotFoundException("ProductService с ID " + newObject.getProductServiceId() + " не найден"));
 
-        BigDecimal totalPrice = productService.getPrice().multiply(BigDecimal.valueOf(newObject.getQuantity()));
+        // Убеждаемся, что quantity не null и больше 0
+        Integer quantity = newObject.getQuantity() != null && newObject.getQuantity() > 0 ? newObject.getQuantity() : 1;
+        BigDecimal totalPrice = productService.getPrice().multiply(BigDecimal.valueOf(quantity));
 
+        // Проверка баланса
         if (user.getBalance().compareTo(totalPrice) < 0) {
             throw new RuntimeException("Недостаточно средств на балансе");
         }
 
+        // Списание средств
         user.setBalance(user.getBalance().subtract(totalPrice));
         userRepository.save(user);
 
+        // Создание заказа
         Order order = orderMapper.toEntity(newObject);
+        order.setQuantity(quantity); // Явно устанавливаем quantity
         order.setUser(user);
         order.setProductService(productService);
         order.setFinalPrice(totalPrice);
         order.setOrderDate(LocalDateTime.now());
-        order.setStatus("в обработке"); // Начальный статус
+        order.setStatus("в обработке");
 
+        // Проверка категории товара
         if (productService.getProductCategory() != null && productService.getProductCategory().getId() == 3) {
+            // Находим и удаляем предыдущий заказ для категории 3, если он существует
             Optional<Order> existingOrder = orderRepository.findByUserAndProductServiceCategoryId(user, 3L);
-            if (existingOrder.isPresent()) {
-                throw new RuntimeException("У пользователя уже есть товар из категории 3");
-            }
+            existingOrder.ifPresent(orderRepository::delete);
+
+            // Обновляем тариф пользователя
             user.setTariff(productService);
             userRepository.save(user);
         }
@@ -91,9 +99,11 @@ public class OrderService extends GenericService<Order, OrderDTO> {
         ProductService productService = productServiceRepository.findById(updatedObject.getProductServiceId())
                 .orElseThrow(() -> new NotFoundException("ProductService с ID " + updatedObject.getProductServiceId() + " не найден"));
 
-        updatedObject.setFinalPrice(productService.getPrice().multiply(new BigDecimal(updatedObject.getQuantity())));
+        Integer quantity = updatedObject.getQuantity() != null && updatedObject.getQuantity() > 0 ? updatedObject.getQuantity() : 1;
+        updatedObject.setFinalPrice(productService.getPrice().multiply(new BigDecimal(quantity)));
 
         Order orderToUpdate = orderMapper.toEntity(updatedObject);
+        orderToUpdate.setQuantity(quantity); // Явно устанавливаем quantity
         orderToUpdate.setProductService(productService);
         orderToUpdate.setUser(user);
 

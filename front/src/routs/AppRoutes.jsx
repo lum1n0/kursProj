@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Shop from '../pages/Shop';
 import Support from '../pages/Support';
@@ -13,7 +13,7 @@ import ForgotPassword from '../components/ForgotPassword';
 import ResetPassword from '../components/ResetPassword';
 import ProductDetails from '../components/ProductDetails';
 import AuthModal from '../components/AuthModal';
-import OrderForm from '../components/OrderForm';
+import OrderPage from '../pages/OrderPage'; // Заменили OrderForm на OrderPage
 import AdminOrders from '../pages/AdminOrders';
 import AdminProduct from '../pages/AdminProduct';
 import { useAuthStore } from '../store/authStore';
@@ -21,16 +21,8 @@ import { useModalStore } from '../store/modalStore';
 import ProtectedRoute from './ProtectedRoute';
 
 function AppRoutes() {
-    const { isLoggedIn, isAdmin, checkAuth, isLoading } = useAuthStore();
+    const { isLoggedIn, isAdmin, isLoading } = useAuthStore();
     const { isAuthModalOpen } = useModalStore();
-
-    useEffect(() => {
-        checkAuth();
-    }, [checkAuth]);
-
-    if (isLoading) {
-        return <div>Проверка аутентификации...</div>;
-    }
 
     return (
         <Router>
@@ -45,15 +37,15 @@ function AppRoutes() {
 
                 <Route
                     path="/topup"
-                    element={isLoggedIn ? <TopUpForm /> : <Navigate to="/login" replace />}
+                    element={isLoggedIn && !isLoading ? <TopUpForm /> : <Navigate to="/login" replace />}
                 />
                 <Route
                     path="/user"
-                    element={isLoggedIn ? <User /> : <Navigate to="/login" replace />}
+                    element={isLoggedIn && !isLoading ? <User /> : <Navigate to="/login" replace />}
                 />
                 <Route
                     path="/order/new"
-                    element={isLoggedIn ? <OrderForm /> : <Navigate to="/login" replace />}
+                    element={isLoggedIn && !isLoading ? <OrderPage /> : <Navigate to="/login" replace />}
                 />
 
                 <Route

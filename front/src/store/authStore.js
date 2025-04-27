@@ -16,6 +16,7 @@ export const useAuthStore = create((set, get) => ({
     set({ isChecking: true, isLoading: true });
     try {
       const userData = await checkAuth();
+      console.log('Данные пользователя загружены:', userData); // Логируем данные
       set({
         isLoggedIn: true,
         isAdmin: userData.roleId === 2,
@@ -24,6 +25,7 @@ export const useAuthStore = create((set, get) => ({
         isChecking: false,
       });
     } catch (error) {
+      console.error('Ошибка при проверке аутентификации:', error); // Логируем ошибку
       set({
         isLoggedIn: false,
         isAdmin: false,
@@ -36,6 +38,7 @@ export const useAuthStore = create((set, get) => ({
   login: async (loginData) => {
     try {
       const response = await login(loginData.login, loginData.password);
+      console.log('Успешный вход, данные пользователя:', response); // Логируем успешный вход
       set({
         isLoggedIn: true,
         isAdmin: response.roleId === 2,
@@ -43,6 +46,7 @@ export const useAuthStore = create((set, get) => ({
       });
       return response;
     } catch (error) {
+      console.error('Ошибка при входе:', error); // Логируем ошибку входа
       throw error;
     }
   },

@@ -11,48 +11,42 @@ import '../assets/styles/ProductDetails.scss';
 function ProductDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { user, isLoggedIn } = useAuthStore();
+  const { user, isLoggedIn, isLoading } = useAuthStore();
   const [product, setProduct] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isProductLoading, setIsProductLoading] = useState(true);
 
   useEffect(() => {
     const fetchProduct = async () => {
       try {
+        console.log('Загрузка товара с ID:', id);
         const response = await ApiClient.get(`/api/shop/${id}`);
         setProduct(response.data);
       } catch (error) {
         console.error('Ошибка при загрузке товара:', error);
       } finally {
-        setIsLoading(false);
+        setIsProductLoading(false);
       }
     };
     fetchProduct();
   }, [id]);
 
-  const handleBuy = async () => {
-    if (!isLoggedIn) {
+  const handleBuy = () => {
+    if (isLoading) {
+      Swal.fire('Подождите', 'Данные пользователя загружаются', 'info');
+      return;
+    }
+
+    if (!isLoggedIn || !user) {
+      console.log('Пользователь не авторизован или данные пользователя отсутствуют', { isLoggedIn, user });
       Swal.fire('Ошибка', 'Войдите в систему, чтобы совершать покупки', 'error');
       return;
     }
 
-    try {
-      const response = await ApiClient.post('/api/orders/buy', {
-        userId: user.id,
-        productServiceId: product.id,
-        quantity: 1,
-      });
-
-      if (product.categoryId === 1 || product.categoryId === 2) {
-        navigate('/order-form', { state: { orderId: response.data.id } });
-      } else {
-        Swal.fire('Успех', 'Покупка совершена', 'success');
-      }
-    } catch (error) {
-      Swal.fire('Ошибка', error.response?.data?.message || 'Не удалось совершить покупку', 'error');
-    }
+    // Перенаправляем на страницу оформления заказа с данными о товаре
+    navigate('/order/new', { state: { product } });
   };
 
-  if (isLoading) return <div>Загрузка...</div>;
+  if (isProductLoading) return <div>Загрузка товара...</div>;
   if (!product) return <div>Товар не найден</div>;
 
   const isAvailable = product.status === 'в наличии';
@@ -66,7 +60,7 @@ function ProductDetails() {
           <p>{product.description || 'Описание отсутствует'}</p>
           <p>Цена: {product.price} руб.</p>
           <p>Статус: {product.status || 'Не указано'}</p>
-          <button onClick={handleBuy} disabled={!isAvailable}>
+          <button onClick={handleBuy} disabled={!isAvailable || isLoading}>
             {isAvailable ? 'Купить' : 'Недоступно'}
           </button>
         </div>
