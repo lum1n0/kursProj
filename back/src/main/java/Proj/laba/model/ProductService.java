@@ -1,3 +1,4 @@
+// File path: /home/gtr/Рабочий стол/kursProj/back/src/main/java/Proj/laba/model/ProductService.java
 package Proj.laba.model;
 
 import jakarta.persistence.*;
@@ -33,7 +34,7 @@ public class ProductService extends GenericModel {
 
 
     @Column(name = "image_path")
-private String imageUrl;
+    private String imageUrl;
 
 
     public List<Order> getOrders() {

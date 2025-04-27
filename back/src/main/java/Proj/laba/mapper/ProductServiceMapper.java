@@ -1,9 +1,12 @@
+// File path: /home/gtr/Рабочий стол/kursProj/back/src/main/java/Proj/laba/mapper/ProductServiceMapper.java
 package Proj.laba.mapper;
 
 import Proj.laba.dto.ProductServiceDTO;
 import Proj.laba.model.ProductCategory;
 import Proj.laba.model.ProductService;
 import Proj.laba.reposirory.ProductCategoryRepository;
+import jakarta.annotation.PostConstruct;
+
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeMap;
 import org.springframework.stereotype.Component;
@@ -20,20 +23,14 @@ public class ProductServiceMapper extends GenericMapper<ProductService, ProductS
     public ProductServiceMapper(ModelMapper modelMapper, ProductCategoryRepository productCategoryRepository) {
         super(ProductService.class, ProductServiceDTO.class, modelMapper);
         this.productCategoryRepository = productCategoryRepository;
+    }
 
-        // Настройка маппинга из DTO в сущность
-        TypeMap<ProductServiceDTO, ProductService> dtoToEntityMap = modelMapper.getTypeMap(ProductServiceDTO.class, ProductService.class);
-        if (dtoToEntityMap == null) {
-            dtoToEntityMap = modelMapper.createTypeMap(ProductServiceDTO.class, ProductService.class);
-        }
-        dtoToEntityMap.setPostConverter(converter -> {
-            ProductServiceDTO source = converter.getSource();
-            ProductService destination = converter.getDestination();
-            mapSpecificFields(source, destination);
-            return destination;
-        });
+    @Override
+    @PostConstruct
+    protected void setupMapper() {
+        super.setupMapper(); // Вызываем общий маппинг из GenericMapper
 
-        // Настройка маппинга из сущности в DTO
+        // Настройка маппинга специфических полей из сущности в DTO
         TypeMap<ProductService, ProductServiceDTO> entityToDtoMap = modelMapper.getTypeMap(ProductService.class, ProductServiceDTO.class);
         if (entityToDtoMap == null) {
             entityToDtoMap = modelMapper.createTypeMap(ProductService.class, ProductServiceDTO.class);
@@ -41,6 +38,18 @@ public class ProductServiceMapper extends GenericMapper<ProductService, ProductS
         entityToDtoMap.setPostConverter(converter -> {
             ProductService source = converter.getSource();
             ProductServiceDTO destination = converter.getDestination();
+            mapSpecificFields(source, destination);
+            return destination;
+        });
+
+        // Настройка маппинга специфических полей из DTO в сущность
+        TypeMap<ProductServiceDTO, ProductService> dtoToEntityMap = modelMapper.getTypeMap(ProductServiceDTO.class, ProductService.class);
+        if (dtoToEntityMap == null) {
+            dtoToEntityMap = modelMapper.createTypeMap(ProductServiceDTO.class, ProductService.class);
+        }
+        dtoToEntityMap.setPostConverter(converter -> {
+            ProductServiceDTO source = converter.getSource();
+            ProductService destination = converter.getDestination();
             mapSpecificFields(source, destination);
             return destination;
         });
@@ -66,6 +75,7 @@ public class ProductServiceMapper extends GenericMapper<ProductService, ProductS
         if (source.getProductCategory() != null) {
             destination.setCategoryId(source.getProductCategory().getId());
         }
+        destination.setId(source.getId()); // Ensure ID is mapped
     }
 
     @Override

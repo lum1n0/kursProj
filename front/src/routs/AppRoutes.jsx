@@ -11,6 +11,7 @@ import AdminAnswer from '../pages/AdminAnswer';
 import TopUpForm from '../pages/TopUpForm';
 import ForgotPassword from '../components/ForgotPassword';
 import ResetPassword from '../components/ResetPassword';
+import ProductDetails from '../components/ProductDetails';
 import AuthModal from '../components/AuthModal';
 import { useAuthStore } from '../store/authStore';
 import { useModalStore } from '../store/modalStore';
@@ -32,6 +33,7 @@ function AppRoutes() {
             <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/shop" element={<Shop />} />
+                <Route path="/product/:id" element={<ProductDetails />} />
                 <Route path="/support" element={<Support />} />
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/forgot-password" element={<ForgotPassword />} />

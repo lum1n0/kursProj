@@ -16,6 +16,7 @@ import org.webjars.NotFoundException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -47,6 +48,14 @@ public class OrderService extends GenericService<Order, OrderDTO> {
         ProductService productService = productServiceRepository.findById(newObject.getProductServiceId())
                 .orElseThrow(() -> new NotFoundException("ProductService с ID " + newObject.getProductServiceId() + " не найден"));
 
+        // Проверка на категорию 3
+        if (productService.getProductCategory() != null && productService.getProductCategory().getId() == 3) {
+            Optional<Order> existingOrder = orderRepository.findByUserAndProductServiceCategoryId(user, 3L);
+            if (existingOrder.isPresent()) {
+                throw new RuntimeException("У пользователя уже есть товар из категории 3");
+            }
+        }
+
         BigDecimal totalPrice = productService.getPrice().multiply(BigDecimal.valueOf(newObject.getQuantity()));
 
         if (user.getBalance().compareTo(totalPrice) < 0) {
@@ -56,14 +65,14 @@ public class OrderService extends GenericService<Order, OrderDTO> {
         user.setBalance(user.getBalance().subtract(totalPrice));
         userRepository.save(user);
 
-        Order order = mapper.toEntity(newObject);
+        Order order = orderMapper.toEntity(newObject);
         order.setUser(user);
         order.setProductService(productService);
         order.setFinalPrice(totalPrice);
         order.setOrderDate(LocalDateTime.now());
 
         Order savedOrder = repository.save(order);
-        return mapper.toDTO(savedOrder);
+        return orderMapper.toDTO(savedOrder);
     }
 
     @Override
@@ -80,12 +89,12 @@ public class OrderService extends GenericService<Order, OrderDTO> {
 
         updatedObject.setFinalPrice(productService.getPrice().multiply(new BigDecimal(updatedObject.getQuantity())));
 
-        Order orderToUpdate = mapper.toEntity(updatedObject);
+        Order orderToUpdate = orderMapper.toEntity(updatedObject);
         orderToUpdate.setProductService(productService);
         orderToUpdate.setUser(user);
 
         Order updatedOrder = repository.save(orderToUpdate);
-        return mapper.toDTO(updatedOrder);
+        return orderMapper.toDTO(updatedOrder);
     }
 
     @Override
@@ -98,7 +107,7 @@ public class OrderService extends GenericService<Order, OrderDTO> {
 
     @Transactional(readOnly = true)
     public OrderDTO findByOrderDateAndUserId(LocalDateTime orderDate, Long userId) {
-        return mapper.toDTO(orderRepository.findByOrderDateAndUserId(orderDate, userId)
+        return orderMapper.toDTO(orderRepository.findByOrderDateAndUserId(orderDate, userId)
                 .orElseThrow(() -> new NotFoundException("Заказ не найден")));
     }
 

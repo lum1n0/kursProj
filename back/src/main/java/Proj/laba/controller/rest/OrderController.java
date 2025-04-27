@@ -6,6 +6,7 @@ import Proj.laba.service.OrderService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,6 +23,14 @@ public class OrderController extends GenericController<Order, OrderDTO> {
     public OrderController(OrderService orderService) {
         super(orderService);
         this.orderService = orderService;
+    }
+
+    @Override
+    @Operation(summary = "Создать заказ")
+    @PostMapping
+    public ResponseEntity<OrderDTO> create(@RequestBody OrderDTO orderDTO) {
+        OrderDTO createdOrder = orderService.create(orderDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdOrder);
     }
 
     @Operation(summary = "Получить заказы пользователя")

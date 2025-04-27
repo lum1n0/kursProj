@@ -1,3 +1,4 @@
+// File path: /home/gtr/Рабочий стол/kursProj/back/src/main/java/Proj/laba/controller/rest/ProductServiceController.java
 package Proj.laba.controller.rest;
 
 import Proj.laba.dto.ProductServiceDTO;
@@ -8,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -39,5 +41,11 @@ public class ProductServiceController extends GenericController<ProductService, 
         System.out.println("Получен DTO: " + dto.getName() + ", categoryId: " + dto.getCategoryId());
         ProductServiceDTO created = service.create(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
+    }
+
+    // Обработка исключений для некорректных параметров
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<String> handleTypeMismatch(MethodArgumentTypeMismatchException ex) {
+        return ResponseEntity.badRequest().body("Неверный параметр: " + ex.getMessage());
     }
 }

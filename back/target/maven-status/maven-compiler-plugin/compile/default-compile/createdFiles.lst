@@ -57,6 +57,7 @@ Proj/laba/reposirory/SupportMessageRepository.class
 Proj/laba/reposirory/UserHistoryRepository.class
 Proj/laba/dto/UserResponseDTO.class
 Proj/laba/mapper/RoleMapper.class
+META-INF/spring-configuration-metadata.json
 Proj/laba/controller/rest/SupportController.class
 Proj/laba/model/Order.class
 Proj/laba/security/CustomUserDetailsService.class

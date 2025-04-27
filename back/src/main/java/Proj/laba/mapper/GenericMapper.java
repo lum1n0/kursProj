@@ -29,14 +29,32 @@ public abstract class GenericMapper<E extends GenericModel, D extends GenericDTO
         // Создаём TypeMap для маппинга из сущности в DTO
         TypeMap<E, D> entityToDtoMap = modelMapper.getTypeMap(entityClass, dtoClass);
         if (entityToDtoMap == null) {
-            modelMapper.createTypeMap(entityClass, dtoClass);
+            entityToDtoMap = modelMapper.createTypeMap(entityClass, dtoClass);
         }
+        // Маппинг общих полей из GenericModel в GenericDTO
+        entityToDtoMap.addMappings(mapper -> {
+            mapper.map(GenericModel::getId, GenericDTO::setId);
+            mapper.map(GenericModel::getCreatedBy, GenericDTO::setCreatedBy);
+            mapper.map(GenericModel::getCreateWhen, GenericDTO::setCreatedWhen);
+            mapper.map(GenericModel::getDeletedWhen, GenericDTO::setDeletedWhen);
+            mapper.map(GenericModel::getDeletedBy, GenericDTO::setDeletedBy);
+            mapper.map(GenericModel::isDeleted, GenericDTO::setDeleted);
+        });
 
         // Создаём TypeMap для маппинга из DTO в сущность
         TypeMap<D, E> dtoToEntityMap = modelMapper.getTypeMap(dtoClass, entityClass);
         if (dtoToEntityMap == null) {
-            modelMapper.createTypeMap(dtoClass, entityClass);
+            dtoToEntityMap = modelMapper.createTypeMap(dtoClass, entityClass);
         }
+        // Маппинг общих полей из GenericDTO в GenericModel
+        dtoToEntityMap.addMappings(mapper -> {
+            mapper.map(GenericDTO::getId, GenericModel::setId);
+            mapper.map(GenericDTO::getCreatedBy, GenericModel::setCreatedBy);
+            mapper.map(GenericDTO::getCreatedWhen, GenericModel::setCreateWhen);
+            mapper.map(GenericDTO::getDeletedWhen, GenericModel::setDeletedWhen);
+            mapper.map(GenericDTO::getDeletedBy, GenericModel::setDeletedBy);
+            mapper.map(GenericDTO::isDeleted, GenericModel::setDeleted);
+        });
     }
 
     public E toEntity(D dto) {
@@ -63,14 +81,9 @@ public abstract class GenericMapper<E extends GenericModel, D extends GenericDTO
                 .collect(Collectors.toList());
     }
 
-    
-
     protected abstract void mapSpecificFields(D source, E destination);
 
     protected abstract void mapSpecificFields(E source, D destination);
 
     protected abstract List<Long> getIds(E entity);
-
-
-    
 }

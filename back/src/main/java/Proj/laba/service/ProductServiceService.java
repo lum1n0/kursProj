@@ -1,3 +1,4 @@
+// File path: /home/gtr/Рабочий стол/kursProj/back/src/main/java/Proj/laba/service/ProductServiceService.java
 package Proj.laba.service;
 
 import Proj.laba.dto.ProductServiceDTO;
@@ -41,7 +42,8 @@ public class ProductServiceService extends GenericService<ProductService, Produc
     @Transactional
     public ProductServiceDTO create(ProductServiceDTO newObject) {
         ProductService entity = mapper.toEntity(newObject);
-        return mapper.toDTO(repository.save(entity));
+        ProductService savedEntity = repository.save(entity);
+        return mapper.toDTO(savedEntity);
     }
 
     @Override
