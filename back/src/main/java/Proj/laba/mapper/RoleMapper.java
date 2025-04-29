@@ -3,6 +3,7 @@ package Proj.laba.mapper;
 import Proj.laba.dto.RoleDTO;
 import Proj.laba.model.Role;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import java.util.Collections;
@@ -11,7 +12,7 @@ import java.util.List;
 @Component
 public class RoleMapper extends GenericMapper<Role, RoleDTO> {
 
-    public RoleMapper(ModelMapper modelMapper) {
+    public RoleMapper(@Qualifier("manualModelMapper") ModelMapper modelMapper) {
         super(Role.class, RoleDTO.class, modelMapper);
     }
 

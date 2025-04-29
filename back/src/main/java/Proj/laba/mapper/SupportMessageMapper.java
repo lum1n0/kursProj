@@ -3,6 +3,7 @@ package Proj.laba.mapper;
 import Proj.laba.dto.SupportMessageDTO;
 import Proj.laba.model.SupportMessage;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -10,7 +11,7 @@ import java.util.List;
 @Component
 public class SupportMessageMapper extends GenericMapper<SupportMessage, SupportMessageDTO> {
 
-    public SupportMessageMapper(ModelMapper modelMapper) {
+    public SupportMessageMapper(@Qualifier("manualModelMapper") ModelMapper modelMapper) {
         super(SupportMessage.class, SupportMessageDTO.class, modelMapper);
     }
 

@@ -8,15 +8,26 @@ import org.modelmapper.config.Configuration.AccessLevel;
 
 @Configuration
 public class ModelMapperConfig {
-    @Bean
-    public ModelMapper modelMapper() {
+    @Bean("manualModelMapper")
+    public ModelMapper manualModelMapper() {
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.getConfiguration()
-                .setMatchingStrategy(MatchingStrategies.STRICT) // Строгое соответствие
+                .setMatchingStrategy(MatchingStrategies.STRICT)
                 .setFieldMatchingEnabled(false)
                 .setSkipNullEnabled(true)
                 .setFieldAccessLevel(AccessLevel.PRIVATE)
                 .setPropertyCondition(context -> false); // Отключаем автоматический маппинг
+        return modelMapper;
+    }
+
+    @Bean("autoModelMapper")
+    public ModelMapper autoModelMapper() {
+        ModelMapper modelMapper = new ModelMapper();
+        modelMapper.getConfiguration()
+                .setMatchingStrategy(MatchingStrategies.STANDARD)
+                .setFieldMatchingEnabled(true)
+                .setSkipNullEnabled(true)
+                .setFieldAccessLevel(AccessLevel.PRIVATE);
         return modelMapper;
     }
 }

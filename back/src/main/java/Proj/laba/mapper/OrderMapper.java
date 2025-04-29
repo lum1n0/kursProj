@@ -3,49 +3,58 @@ package Proj.laba.mapper;
 import Proj.laba.dto.OrderDTO;
 import Proj.laba.model.Order;
 import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import java.util.Collections;
 import java.util.List;
 
 @Component
 public class OrderMapper extends GenericMapper<Order, OrderDTO> {
 
-    public OrderMapper(ModelMapper modelMapper) {
+    private static final Logger log = LoggerFactory.getLogger(OrderMapper.class);
+
+    @Autowired
+    public OrderMapper(@Qualifier("autoModelMapper") ModelMapper modelMapper) {
         super(Order.class, OrderDTO.class, modelMapper);
     }
 
-    @Override
+    @PostConstruct
     protected void setupMapper() {
-        modelMapper.createTypeMap(Order.class, OrderDTO.class)
+        // Создаем пустую карту типов и настраиваем явные маппинги
+        modelMapper.createTypeMap(Order.class, OrderDTO.class, "orderToOrderDTOMap")
                 .addMappings(mapper -> {
-                    mapper.map(Order::getId, OrderDTO::setId);
-                    mapper.map(src -> src.getProductService().getId(), OrderDTO::setProductServiceId);
-                    mapper.map(src -> src.getUser().getId(), OrderDTO::setUserId);
-                    mapper.map(Order::getQuantity, OrderDTO::setQuantity);
-                    mapper.map(Order::getFinalPrice, OrderDTO::setFinalPrice);
-                    mapper.map(Order::getOrderDate, OrderDTO::setOrderDate);
-                    mapper.map(Order::getCreatedBy, OrderDTO::setCreatedBy);
-                    mapper.map(Order::getDeletedBy, OrderDTO::setDeletedBy);
-                    mapper.map(Order::getDeletedWhen, OrderDTO::setDeletedWhen);
-                    mapper.map(Order::isDeleted, OrderDTO::setDeleted);
-                });
+                    // Маппим ID сервиса продукта
+                    mapper.map(src -> src.getProductService() != null ?
+                                    src.getProductService().getId() : null,
+                            OrderDTO::setProductServiceId);
 
-        modelMapper.createTypeMap(OrderDTO.class, Order.class)
-                .addMappings(mapper -> {
-                    mapper.skip(Order::setProductService);
-                    mapper.skip(Order::setUser);
-                });
+                    // Маппим ID пользователя
+                    mapper.map(src -> src.getUser() != null ?
+                                    src.getUser().getId() : null,
+                            OrderDTO::setUserId);
+                })
+                .implicitMappings();  // Включаем неявные маппинги после явных
+
+        // Создаем пустую карту для обратного маппинга
+        modelMapper.createTypeMap(OrderDTO.class, Order.class, "orderDTOToOrderMap");
+        // Не выполняем skip, так как установка полей будет происходить в сервисе
     }
 
     @Override
     protected void mapSpecificFields(OrderDTO source, Order destination) {
-        // При необходимости добавьте специфическую логику маппинга
+        // Здесь можно добавить специфическую логику маппинга, если необходимо
+        log.debug("Mapping from OrderDTO to Order: {}", source);
     }
 
     @Override
     protected void mapSpecificFields(Order source, OrderDTO destination) {
-        // При необходимости добавьте специфическую логику маппинга
+        // Здесь можно добавить специфическую логику маппинга, если необходимо
+        log.debug("Mapping from Order to OrderDTO: {}", source);
     }
 
     @Override

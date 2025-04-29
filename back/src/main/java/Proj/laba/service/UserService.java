@@ -286,7 +286,7 @@ public class UserService extends GenericService<User, UserResponseDTO> {
 
     public User getUserById(Long id) {
         return userRepository.findById(id)
-            .orElseThrow(() -> new RuntimeException("Пользователь не найден"));
+                .orElseThrow(() -> new RuntimeException("Пользователь не найден"));
     }
 
     public void topUpBalance(Long userId, BigDecimal amount) {

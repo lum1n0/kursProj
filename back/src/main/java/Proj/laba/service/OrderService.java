@@ -30,15 +30,15 @@ public class OrderService extends GenericService<Order, OrderDTO> {
     private final OrderMapper orderMapper;
 
     public OrderService(GenericRepository<Order> repository,
-                        OrderMapper mapper,
+                        OrderMapper orderMapper,
                         UserRepository userRepository,
                         ProductServiceRepository productServiceRepository,
                         OrderRepository orderRepository) {
-        super(repository, mapper);
+        super(repository, orderMapper);
         this.userRepository = userRepository;
         this.productServiceRepository = productServiceRepository;
         this.orderRepository = orderRepository;
-        this.orderMapper = mapper;
+        this.orderMapper = orderMapper;
     }
 
     @Override
@@ -64,7 +64,7 @@ public class OrderService extends GenericService<Order, OrderDTO> {
         userRepository.save(user);
 
         // Создание заказа
-        Order order = orderMapper.toEntity(newObject);
+        Order order = mapper.toEntity(newObject);
         order.setQuantity(quantity); // Явно устанавливаем quantity
         order.setUser(user);
         order.setProductService(productService);
@@ -84,7 +84,7 @@ public class OrderService extends GenericService<Order, OrderDTO> {
         }
 
         Order savedOrder = repository.save(order);
-        return orderMapper.toDTO(savedOrder);
+        return mapper.toDTO(savedOrder);
     }
 
     @Override
@@ -102,13 +102,13 @@ public class OrderService extends GenericService<Order, OrderDTO> {
         Integer quantity = updatedObject.getQuantity() != null && updatedObject.getQuantity() > 0 ? updatedObject.getQuantity() : 1;
         updatedObject.setFinalPrice(productService.getPrice().multiply(new BigDecimal(quantity)));
 
-        Order orderToUpdate = orderMapper.toEntity(updatedObject);
+        Order orderToUpdate = mapper.toEntity(updatedObject);
         orderToUpdate.setQuantity(quantity); // Явно устанавливаем quantity
         orderToUpdate.setProductService(productService);
         orderToUpdate.setUser(user);
 
         Order updatedOrder = repository.save(orderToUpdate);
-        return orderMapper.toDTO(updatedOrder);
+        return mapper.toDTO(updatedOrder);
     }
 
     @Transactional
@@ -117,13 +117,13 @@ public class OrderService extends GenericService<Order, OrderDTO> {
                 .orElseThrow(() -> new NotFoundException("Order not found"));
         order.setStatus(status);
         Order updatedOrder = repository.save(order);
-        return orderMapper.toDTO(updatedOrder);
+        return mapper.toDTO(updatedOrder);
     }
 
     @Transactional(readOnly = true)
     public Page<OrderDTO> getAllOrders(Pageable pageable) {
         Page<Order> orders = orderRepository.findAll(pageable);
-        return orders.map(orderMapper::toDTO);
+        return orders.map(mapper::toDTO);
     }
 
     @Override
@@ -136,13 +136,13 @@ public class OrderService extends GenericService<Order, OrderDTO> {
 
     @Transactional(readOnly = true)
     public OrderDTO findByOrderDateAndUserId(LocalDateTime orderDate, Long userId) {
-        return orderMapper.toDTO(orderRepository.findByOrderDateAndUserId(orderDate, userId)
+        return mapper.toDTO(orderRepository.findByOrderDateAndUserId(orderDate, userId)
                 .orElseThrow(() -> new NotFoundException("Заказ не найден")));
     }
 
     @Transactional(readOnly = true)
     public List<OrderDTO> findByUserId(Long userId) {
         List<Order> orders = orderRepository.findByUserId(userId);
-        return orders.stream().map(orderMapper::toDTO).collect(Collectors.toList());
+        return orders.stream().map(mapper::toDTO).collect(Collectors.toList());
     }
 }

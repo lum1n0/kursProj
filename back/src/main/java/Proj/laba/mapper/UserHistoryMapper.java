@@ -3,6 +3,7 @@ package Proj.laba.mapper;
 import Proj.laba.dto.UserHistoryDTO;
 import Proj.laba.model.UserHistory;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import java.util.Collections;
@@ -11,7 +12,7 @@ import java.util.List;
 @Component
 public class UserHistoryMapper extends GenericMapper<UserHistory, UserHistoryDTO> {
 
-    public UserHistoryMapper(ModelMapper modelMapper) {
+    public UserHistoryMapper(@Qualifier("manualModelMapper") ModelMapper modelMapper) {
         super(UserHistory.class, UserHistoryDTO.class, modelMapper);
     }
 

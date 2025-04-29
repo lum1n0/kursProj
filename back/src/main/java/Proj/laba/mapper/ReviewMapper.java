@@ -3,6 +3,7 @@ package Proj.laba.mapper;
 import Proj.laba.dto.ReviewDTO;
 import Proj.laba.model.Review;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import java.util.Collections;
@@ -11,7 +12,7 @@ import java.util.List;
 @Component
 public class ReviewMapper extends GenericMapper<Review, ReviewDTO> {
 
-    public ReviewMapper(ModelMapper modelMapper) {
+    public ReviewMapper(@Qualifier("manualModelMapper") ModelMapper modelMapper) {
         super(Review.class, ReviewDTO.class, modelMapper);
     }
 

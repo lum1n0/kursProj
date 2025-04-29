@@ -6,6 +6,7 @@ import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import java.util.Collections;
@@ -16,7 +17,7 @@ public class UserMapper extends GenericMapper<User, UserResponseDTO> {
 
     private static final Logger log = LoggerFactory.getLogger(UserMapper.class);
 
-    public UserMapper(ModelMapper modelMapper) {
+    public UserMapper(@Qualifier("manualModelMapper") ModelMapper modelMapper) {
         super(User.class, UserResponseDTO.class, modelMapper);
     }
 

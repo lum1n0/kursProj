@@ -31,4 +31,7 @@ public class OrderDTO extends GenericDTO {
 
     @NotNull(message = "ID пользователя не может быть пустым")
     private Long userId;
+
+    private String status; // "в обработке", "доставляется", "доставлен"
+    private String deliveryAddress;
 }
