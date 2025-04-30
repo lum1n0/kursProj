@@ -53,6 +53,13 @@ public class OrderController extends GenericController<Order, OrderDTO> {
         return ResponseEntity.ok(orders);
     }
 
+    @Operation(summary = "Получить заказы пользователя с категориями 1 и 2")
+    @GetMapping("/user/{userId}/categories/1-2")
+    public ResponseEntity<List<OrderDTO>> getOrdersByUserIdAndCategories(@PathVariable Long userId) {
+        List<OrderDTO> orders = orderService.findByUserIdAndCategoryIds(userId);
+        return ResponseEntity.ok(orders);
+    }
+
     @Operation(summary = "Поиск заказа по дате и ID пользователя")
     @GetMapping("/by-date-and-user")
     public ResponseEntity<OrderDTO> findByDateAndUser(

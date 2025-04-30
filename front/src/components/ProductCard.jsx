@@ -3,13 +3,14 @@ import { Link, useNavigate } from 'react-router-dom';
 import { getImageUrl } from '../utils/utils';
 import { useAuthStore } from '../store/authStore';
 import Swal from 'sweetalert2';
+import { ApiClient } from '../api/ApiClient';
 import '../assets/styles/ProductCard.scss';
 
 function ProductCard({ product }) {
   const navigate = useNavigate();
   const { user, isLoggedIn, isLoading } = useAuthStore();
 
-  const handleBuy = () => {
+  const handleBuy = async () => {
     if (isLoading) {
       Swal.fire('Подождите', 'Данные пользователя загружаются', 'info');
       return;
@@ -21,8 +22,26 @@ function ProductCard({ product }) {
       return;
     }
 
-    // Перенаправляем на страницу оформления заказа с данными о товаре
-    navigate('/order/new', { state: { product } });
+    if (product.categoryId === 3) {
+      // Для товаров с категорией ID 3 создаем заказ напрямую
+      const quantity = 1;
+      const finalPrice = product.price * quantity; // Вычисляем finalPrice
+      try {
+        const response = await ApiClient.post('/api/orders', {
+          userId: user.id,
+          productServiceId: product.id,
+          quantity: quantity,
+          finalPrice: finalPrice, // Добавляем обязательное поле
+          deliveryAddress: null, // Устанавливаем адрес доставки как null
+        });
+        Swal.fire('Успех', 'Товар успешно куплен', 'success');
+      } catch (error) {
+        Swal.fire('Ошибка', error.response?.data?.message || 'Не удалось совершить покупку', 'error');
+      }
+    } else {
+      // Для остальных товаров перенаправляем на страницу оформления
+      navigate('/order/new', { state: { product } });
+    }
   };
 
   const isAvailable = product.status === 'в наличии';

@@ -1,6 +1,5 @@
-// File path: /home/gtr/Рабочий стол/kursProj/front/src/pages/User.jsx
 import React, { useState, useEffect } from 'react';
-import { ApiClient } from '../api/ApiClient';
+import { ApiClient, getUserOrdersByCategories } from '../api/ApiClient';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { useAuthStore } from '../store/authStore';
@@ -27,8 +26,8 @@ function User() {
         setPhone(response.data.phone || '');
 
         try {
-          const ordersResponse = await ApiClient.get(`/api/orders/user/${response.data.id}`);
-          setOrders(ordersResponse.data);
+          const ordersResponse = await getUserOrdersByCategories(response.data.id);
+          setOrders(ordersResponse);
           setOrdersError(null);
         } catch (orderErr) {
           setOrdersError('Не удалось загрузить заказы. Попробуйте позже.');
@@ -71,78 +70,77 @@ function User() {
   if (!userData) return <p>Загрузка...</p>;
 
   return (
-    <div className="user">
-      <Header />
-      <section className="conteiner">
-        <h2 className="title_sect">Мой профиль</h2>
-        <div className="card_profil">
-          <div className="left_prof">
-            <p>Логин: {userData.login}</p>
-            <p>Почта: {userData.email}</p>
-            {editing ? (
-              <>
-                <p>
-                  Имя:
-                  <input
-                    type="text"
-                    value={firstName}
-                    onChange={(e) => setFirstName(e.target.value)}
-                  />
-                </p>
-                <p>
-                  Фамилия:
-                  <input
-                    type="text"
-                    value={lastName}
-                    onChange={(e) => setLastName(e.target.value)}
-                  />
-                </p>
-                <p>
-                  Телефон:
-                  <input
-                    type="text"
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                  />
-                </p>
-              </>
-            ) : (
-              <>
-                <p>ФИО: {userData.firstName} {userData.lastName}</p>
-                <p>Номер телефона: {userData.phone || 'Не указан'}</p>
-                <p>Тариф: {userData.tariffName}</p>
-                <p>Баланс: {userData.balance !== null ? `${userData.balance} руб.` : '0 руб.'}</p>
-              </>
-            )}
+      <div className="user">
+        <Header />
+        <section className="conteiner">
+          <h2 className="title_sect">Мой профиль</h2>
+          <div className="card_profil">
+            <div className="left_prof">
+              <p>Логин: {userData.login}</p>
+              <p>Почта: {userData.email}</p>
+              {editing ? (
+                  <>
+                    <p>
+                      Имя:
+                      <input
+                          type="text"
+                          value={firstName}
+                          onChange={(e) => setFirstName(e.target.value)}
+                      />
+                    </p>
+                    <p>
+                      Фамилия:
+                      <input
+                          type="text"
+                          value={lastName}
+                          onChange={(e) => setLastName(e.target.value)}
+                      />
+                    </p>
+                    <p>
+                      Телефон:
+                      <input
+                          type="text"
+                          value={phone}
+                          onChange={(e) => setPhone(e.target.value)}
+                      />
+                    </p>
+                  </>
+              ) : (
+                  <>
+                    <p>ФИО: {userData.firstName} {userData.lastName}</p>
+                    <p>Номер телефона: {userData.phone || 'Не указан'}</p>
+                    <p>Тариф: {userData.tariffName}</p>
+                    <p>Баланс: {userData.balance !== null ? `${userData.balance} руб.` : '0 руб.'}</p>
+                  </>
+              )}
+            </div>
+            <img src="/img/free-icon-profile-avatar-4794936.png" alt="Profile avatar" />
           </div>
-          <img src="/img/free-icon-profile-avatar-4794936.png" alt="Profile avatar" />
-        </div>
-        {editing ? (
-          <button onClick={handleSave}>Сохранить изменения</button>
-        ) : (
-          <button onClick={() => setEditing(true)}>Редактировать</button>
-        )}
-        <h2 className="title_sectic">Мои заказы</h2>
-        {ordersError ? (
-          <p className="error-message">{ordersError}</p>
-        ) : orders.length === 0 ? (
-          <p>У вас пока нет заказов.</p>
-        ) : (
-          <div className="new_cards">
-            {orders.map((order) => (
-              <div className="new_card" key={order.id}>
-                <p>Дата: {new Date(order.orderDate).toLocaleString()}</p>
-                <p>Услуга: {order.productServiceId}</p>
-                <p>Количество: {order.quantity}</p>
-                <p>Цена: {order.finalPrice} руб.</p>
-                <p>Статус: <span style={{ color: getStatusColor(order.status) }}>{order.status}</span></p>
+          {editing ? (
+              <button onClick={handleSave}>Сохранить изменения</button>
+          ) : (
+              <button onClick={() => setEditing(true)}>Редактировать</button>
+          )}
+          <h2 className="title_sectic">Мои заказы</h2>
+          {ordersError ? (
+              <p className="error-message">{ordersError}</p>
+          ) : orders.length === 0 ? (
+              <p>У вас пока нет заказов.</p>
+          ) : (
+              <div className="new_cards">
+                {orders.map((order) => (
+                    <div className="new_card" key={order.id}>
+                      <p>Дата: {new Date(order.orderDate).toLocaleString()}</p>
+                      <p>Услуга: {order.productServiceName || 'Не указано'}</p>
+                      <p>Цена: {order.finalPrice} руб.</p>
+                      <p>Статус: <span style={{ color: getStatusColor(order.status) }}>{order.status}</span></p>
+                    </div>
+                ))}
               </div>
-            ))}
-          </div>
-        )}
-      </section>
-      <Footer />
-    </div>
+          )}
+        </section>
+        <Footer />
+      </div>
   );
 }
 

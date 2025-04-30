@@ -23,15 +23,19 @@ public class OrderDTO extends GenericDTO {
     @Min(value = 1, message = "Количество должно быть не менее 1")
     private Integer quantity;
 
-
     private LocalDateTime orderDate;
 
     @NotNull(message = "ID услуги не может быть пустым")
     private Long productServiceId;
 
+    private String productServiceName;
+
     @NotNull(message = "ID пользователя не может быть пустым")
     private Long userId;
 
-    private String status; // "в обработке", "доставляется", "доставлен"
+    private String userLogin;
+
+    private String status;
+
     private String deliveryAddress;
 }

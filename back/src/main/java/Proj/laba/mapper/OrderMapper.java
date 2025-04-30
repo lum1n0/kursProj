@@ -25,35 +25,26 @@ public class OrderMapper extends GenericMapper<Order, OrderDTO> {
 
     @PostConstruct
     protected void setupMapper() {
-        // Создаем пустую карту типов и настраиваем явные маппинги
         modelMapper.createTypeMap(Order.class, OrderDTO.class, "orderToOrderDTOMap")
                 .addMappings(mapper -> {
-                    // Маппим ID сервиса продукта
-                    mapper.map(src -> src.getProductService() != null ?
-                                    src.getProductService().getId() : null,
-                            OrderDTO::setProductServiceId);
-
-                    // Маппим ID пользователя
-                    mapper.map(src -> src.getUser() != null ?
-                                    src.getUser().getId() : null,
-                            OrderDTO::setUserId);
+                    mapper.map(src -> src.getProductService() != null ? src.getProductService().getId() : null, OrderDTO::setProductServiceId);
+                    mapper.map(src -> src.getProductService() != null ? src.getProductService().getName() : null, OrderDTO::setProductServiceName);
+                    mapper.map(src -> src.getUser() != null ? src.getUser().getId() : null, OrderDTO::setUserId);
+                    mapper.map(src -> src.getUser() != null ? src.getUser().getLogin() : null, OrderDTO::setUserLogin);
+                    mapper.map(Order::getDeliveryAddress, OrderDTO::setDeliveryAddress);
                 })
-                .implicitMappings();  // Включаем неявные маппинги после явных
+                .implicitMappings();
 
-        // Создаем пустую карту для обратного маппинга
         modelMapper.createTypeMap(OrderDTO.class, Order.class, "orderDTOToOrderMap");
-        // Не выполняем skip, так как установка полей будет происходить в сервисе
     }
 
     @Override
     protected void mapSpecificFields(OrderDTO source, Order destination) {
-        // Здесь можно добавить специфическую логику маппинга, если необходимо
         log.debug("Mapping from OrderDTO to Order: {}", source);
     }
 
     @Override
     protected void mapSpecificFields(Order source, OrderDTO destination) {
-        // Здесь можно добавить специфическую логику маппинга, если необходимо
         log.debug("Mapping from Order to OrderDTO: {}", source);
     }
 

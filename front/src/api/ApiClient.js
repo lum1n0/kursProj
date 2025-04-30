@@ -4,7 +4,7 @@ const API_BASE_URL = 'http://localhost:8080';
 
 const ApiClient = axios.create({
   baseURL: API_BASE_URL,
-  withCredentials: true, // Отправка кук с запросами
+  withCredentials: true,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -98,4 +98,14 @@ export const getCategories = async () => {
 
 export const getProducts = async () => {
   return fetchData('/api/shop/products');
+};
+
+export const getUserOrdersByCategories = async (userId) => {
+  try {
+    const response = await ApiClient.get(`/api/orders/user/${userId}/categories/1-2`);
+    return handleResponse(response);
+  } catch (error) {
+    console.error(`Failed to fetch orders for user ${userId}:`, error);
+    throw error;
+  }
 };
