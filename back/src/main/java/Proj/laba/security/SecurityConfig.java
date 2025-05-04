@@ -84,6 +84,8 @@ public class SecurityConfig implements WebMvcConfigurer {
                         .requestMatchers("/api/users/paged").hasRole("ADMIN")
                         .requestMatchers("/api/support/send").authenticated()
                         .requestMatchers("/api/support/admin/answer/**").hasRole("ADMIN")
+                        .requestMatchers("/api/master-requests/all", "/api/master-requests/status/**").hasRole("MASTER")
+                        .requestMatchers("/api/master-requests").authenticated()
                         .anyRequest().authenticated()
                 )
                 .authenticationProvider(authenticationProvider())

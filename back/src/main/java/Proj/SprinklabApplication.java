@@ -28,6 +28,7 @@ public class SprinklabApplication implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         createAdminUser();
+        createMasterUser();
     }
 
     @PostConstruct
@@ -47,8 +48,15 @@ public class SprinklabApplication implements CommandLineRunner {
             adminRole.setDescription("Administrator role");
             roleRepository.save(adminRole);
         }
-    }
 
+        // Создаем роль MASTER если она не существует
+        if (roleRepository.findByTitle("MASTER").isEmpty()) {
+            Role masterRole = new Role();
+            masterRole.setTitle("MASTER");
+            masterRole.setDescription("Master role for handling requests");
+            roleRepository.save(masterRole);
+        }
+    }
 
     private void createAdminUser() {
         if (userRepository.findByLogin("admin").isEmpty()) {
@@ -61,9 +69,28 @@ public class SprinklabApplication implements CommandLineRunner {
             admin.setEmail("admin@example.com");
             admin.setFirstName("Admin");
             admin.setLastName("Adminov");
+            admin.setPhone("1234567890");
             admin.setRole(adminRole);
 
             userRepository.save(admin);
+        }
+    }
+
+    private void createMasterUser() {
+        if (userRepository.findByLogin("master").isEmpty()) {
+            Role masterRole = roleRepository.findByTitle("MASTER")
+                    .orElseThrow(() -> new RuntimeException("Master role not found"));
+
+            User master = new User();
+            master.setLogin("master");
+            master.setPassword(passwordEncoder.encode("Master123!"));
+            master.setEmail("master@example.com");
+            master.setFirstName("Master");
+            master.setLastName("Masterov");
+            master.setPhone("0987654321");
+            master.setRole(masterRole);
+
+            userRepository.save(master);
         }
     }
 }

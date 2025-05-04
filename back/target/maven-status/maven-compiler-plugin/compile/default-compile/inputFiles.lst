@@ -4,9 +4,9 @@
 /home/gtr/Рабочий стол/kursProj/back/src/main/java/Proj/laba/config/DatabaseConfig.java
 /home/gtr/Рабочий стол/kursProj/back/src/main/java/Proj/laba/config/ModelMapperConfig.java
 /home/gtr/Рабочий стол/kursProj/back/src/main/java/Proj/laba/config/OpenApiConfig.java
-/home/gtr/Рабочий стол/kursProj/back/src/main/java/Proj/laba/config/WebConfig.java
 /home/gtr/Рабочий стол/kursProj/back/src/main/java/Proj/laba/controller/rest/AuthController.java
 /home/gtr/Рабочий стол/kursProj/back/src/main/java/Proj/laba/controller/rest/GenericController.java
+/home/gtr/Рабочий стол/kursProj/back/src/main/java/Proj/laba/controller/rest/MasterRequestController.java
 /home/gtr/Рабочий стол/kursProj/back/src/main/java/Proj/laba/controller/rest/OrderController.java
 /home/gtr/Рабочий стол/kursProj/back/src/main/java/Proj/laba/controller/rest/PasswordResetController.java
 /home/gtr/Рабочий стол/kursProj/back/src/main/java/Proj/laba/controller/rest/ProductCategoryController.java
@@ -22,6 +22,7 @@
 /home/gtr/Рабочий стол/kursProj/back/src/main/java/Proj/laba/dto/GenericDTO.java
 /home/gtr/Рабочий стол/kursProj/back/src/main/java/Proj/laba/dto/JwtResponse.java
 /home/gtr/Рабочий стол/kursProj/back/src/main/java/Proj/laba/dto/LoginRequest.java
+/home/gtr/Рабочий стол/kursProj/back/src/main/java/Proj/laba/dto/MasterRequestDTO.java
 /home/gtr/Рабочий стол/kursProj/back/src/main/java/Proj/laba/dto/OrderDTO.java
 /home/gtr/Рабочий стол/kursProj/back/src/main/java/Proj/laba/dto/ProductCategoryDTO.java
 /home/gtr/Рабочий стол/kursProj/back/src/main/java/Proj/laba/dto/ProductServiceDTO.java
@@ -34,6 +35,7 @@
 /home/gtr/Рабочий стол/kursProj/back/src/main/java/Proj/laba/dto/UserUpdateDTO.java
 /home/gtr/Рабочий стол/kursProj/back/src/main/java/Proj/laba/mapper/GenericMapper.java
 /home/gtr/Рабочий стол/kursProj/back/src/main/java/Proj/laba/mapper/Mapper.java
+/home/gtr/Рабочий стол/kursProj/back/src/main/java/Proj/laba/mapper/MasterRequestMapper.java
 /home/gtr/Рабочий стол/kursProj/back/src/main/java/Proj/laba/mapper/OrderMapper.java
 /home/gtr/Рабочий стол/kursProj/back/src/main/java/Proj/laba/mapper/ProductCategoryMapper.java
 /home/gtr/Рабочий стол/kursProj/back/src/main/java/Proj/laba/mapper/ProductServiceMapper.java
@@ -43,6 +45,7 @@
 /home/gtr/Рабочий стол/kursProj/back/src/main/java/Proj/laba/mapper/UserHistoryMapper.java
 /home/gtr/Рабочий стол/kursProj/back/src/main/java/Proj/laba/mapper/UserMapper.java
 /home/gtr/Рабочий стол/kursProj/back/src/main/java/Proj/laba/model/GenericModel.java
+/home/gtr/Рабочий стол/kursProj/back/src/main/java/Proj/laba/model/MasterRequest.java
 /home/gtr/Рабочий стол/kursProj/back/src/main/java/Proj/laba/model/Order.java
 /home/gtr/Рабочий стол/kursProj/back/src/main/java/Proj/laba/model/PasswordResetToken.java
 /home/gtr/Рабочий стол/kursProj/back/src/main/java/Proj/laba/model/ProductCategory.java
@@ -53,6 +56,7 @@
 /home/gtr/Рабочий стол/kursProj/back/src/main/java/Proj/laba/model/User.java
 /home/gtr/Рабочий стол/kursProj/back/src/main/java/Proj/laba/model/UserHistory.java
 /home/gtr/Рабочий стол/kursProj/back/src/main/java/Proj/laba/reposirory/GenericRepository.java
+/home/gtr/Рабочий стол/kursProj/back/src/main/java/Proj/laba/reposirory/MasterRequestRepository.java
 /home/gtr/Рабочий стол/kursProj/back/src/main/java/Proj/laba/reposirory/OrderRepository.java
 /home/gtr/Рабочий стол/kursProj/back/src/main/java/Proj/laba/reposirory/PasswordResetTokenRepository.java
 /home/gtr/Рабочий стол/kursProj/back/src/main/java/Proj/laba/reposirory/ProductCategoryRepository.java
@@ -69,6 +73,7 @@
 /home/gtr/Рабочий стол/kursProj/back/src/main/java/Proj/laba/security/UserDetailsImpl.java
 /home/gtr/Рабочий стол/kursProj/back/src/main/java/Proj/laba/service/EmailService.java
 /home/gtr/Рабочий стол/kursProj/back/src/main/java/Proj/laba/service/GenericService.java
+/home/gtr/Рабочий стол/kursProj/back/src/main/java/Proj/laba/service/MasterRequestService.java
 /home/gtr/Рабочий стол/kursProj/back/src/main/java/Proj/laba/service/OrderService.java
 /home/gtr/Рабочий стол/kursProj/back/src/main/java/Proj/laba/service/PasswordResetService.java
 /home/gtr/Рабочий стол/kursProj/back/src/main/java/Proj/laba/service/ProductCategoryService.java
