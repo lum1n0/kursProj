@@ -1,6 +1,7 @@
 package Proj.laba.service;
 
 import Proj.laba.dto.OrderDTO;
+import Proj.laba.dto.SpendingReportDTO;
 import Proj.laba.mapper.OrderMapper;
 import Proj.laba.model.Order;
 import Proj.laba.model.ProductService;
@@ -58,7 +59,7 @@ public class OrderService extends GenericService<Order, OrderDTO> {
         }
 
         user.setBalance(user.getBalance().subtract(totalPrice));
-        userRepository.save(user);
+        
 
         Order order = mapper.toEntity(newObject);
         order.setQuantity(quantity);
@@ -72,9 +73,12 @@ public class OrderService extends GenericService<Order, OrderDTO> {
             Optional<Order> existingOrder = orderRepository.findByUserAndProductServiceCategoryId(user, 3L);
             existingOrder.ifPresent(orderRepository::delete);
             user.setTariff(productService);
-            userRepository.save(user);
+            //set the lastTariffChargeDate when buying a tariff
+            user.setLastTariffChargeDate(LocalDateTime.now());
+            
         }
 
+        userRepository.save(user); // moved here to save the tariff and the lastTariffChargeDate
         Order savedOrder = repository.save(order);
         return mapper.toDTO(savedOrder);
     }
@@ -142,5 +146,18 @@ public class OrderService extends GenericService<Order, OrderDTO> {
     public List<OrderDTO> findByUserIdAndCategoryIds(Long userId) {
         List<Order> orders = orderRepository.findByUserIdAndCategoryIds(userId);
         return orders.stream().map(mapper::toDTO).collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<SpendingReportDTO> getSpendingReport(Long userId, int year, int month) {
+        List<Object[]> results = orderRepository.getSpendingReport(userId, year, month);
+        return results.stream()
+                .map(result -> {
+                    SpendingReportDTO dto = new SpendingReportDTO();
+                    dto.setCategory((String) result[0]);
+                    dto.setTotalSpent((BigDecimal) result[1]);
+                    return dto;
+                })
+                .collect(Collectors.toList());
     }
 }

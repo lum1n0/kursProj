@@ -47,4 +47,11 @@ public class MasterRequestController extends GenericController<MasterRequest, Ma
         MasterRequestDTO updatedRequest = masterRequestService.updateStatus(id, status);
         return ResponseEntity.ok(updatedRequest);
     }
+
+    @Operation(summary = "Получить заявки пользователя")
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<MasterRequestDTO>> getUserRequests(@PathVariable Long userId) {
+        List<MasterRequestDTO> requests = masterRequestService.findByUserId(userId);
+        return ResponseEntity.ok(requests);
+    }
 }

@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
-import SupportForm from '../components/SupportForm';
-import MasterForm from '../components/MasterForm';
+import Header from '../components/Templates/Header.jsx';
+import Footer from '../components/Templates/Footer.jsx';
+import SupportForm from '../components/SupportComponents/SupportForm.jsx';
+import MasterForm from '../components/SupportComponents/MasterForm.jsx';
 import { useAuthStore } from '../store/authStore';
 import '../assets/styles/Support.scss';
 

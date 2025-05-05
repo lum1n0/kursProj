@@ -29,6 +29,7 @@
 /home/gtr/Рабочий стол/kursProj/back/src/main/java/Proj/laba/dto/ReviewDTO.java
 /home/gtr/Рабочий стол/kursProj/back/src/main/java/Proj/laba/dto/RoleDTO.java
 /home/gtr/Рабочий стол/kursProj/back/src/main/java/Proj/laba/dto/SimpleRegistrationDTO.java
+/home/gtr/Рабочий стол/kursProj/back/src/main/java/Proj/laba/dto/SpendingReportDTO.java
 /home/gtr/Рабочий стол/kursProj/back/src/main/java/Proj/laba/dto/SupportMessageDTO.java
 /home/gtr/Рабочий стол/kursProj/back/src/main/java/Proj/laba/dto/UserHistoryDTO.java
 /home/gtr/Рабочий стол/kursProj/back/src/main/java/Proj/laba/dto/UserResponseDTO.java
@@ -81,5 +82,6 @@
 /home/gtr/Рабочий стол/kursProj/back/src/main/java/Proj/laba/service/ReviewService.java
 /home/gtr/Рабочий стол/kursProj/back/src/main/java/Proj/laba/service/RoleService.java
 /home/gtr/Рабочий стол/kursProj/back/src/main/java/Proj/laba/service/SupportMessageService.java
+/home/gtr/Рабочий стол/kursProj/back/src/main/java/Proj/laba/service/TariffChargeService.java
 /home/gtr/Рабочий стол/kursProj/back/src/main/java/Proj/laba/service/UserHistoryService.java
 /home/gtr/Рабочий стол/kursProj/back/src/main/java/Proj/laba/service/UserService.java

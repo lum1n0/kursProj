@@ -62,4 +62,7 @@ public class User extends GenericModel {
 
     @Column(name = "balance", nullable = false)
     private BigDecimal balance = BigDecimal.ZERO; // Баланс пользователя
+
+    @Column(name = "last_tariff_charge_date")
+    private LocalDateTime lastTariffChargeDate; // Дата последнего списания за тариф
 }

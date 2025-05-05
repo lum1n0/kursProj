@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { ApiClient } from '../api/ApiClient';
 import { useAuthStore } from '../store/authStore';
-import Header from "../components/Header.jsx";
+import Header from "../components/Templates/Header.jsx";
 import Swal from 'sweetalert2';
 import { getImageUrl } from '../utils/utils';
 

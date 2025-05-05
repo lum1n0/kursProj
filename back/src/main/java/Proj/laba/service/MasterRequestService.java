@@ -52,4 +52,10 @@ public class MasterRequestService extends GenericService<MasterRequest, MasterRe
         MasterRequest updatedRequest = repository.save(request);
         return masterRequestMapper.toDTO(updatedRequest);
     }
+
+    public List<MasterRequestDTO> findByUserId(Long userId) {
+        return masterRequestRepository.findByUserId(userId).stream()
+                .map(masterRequestMapper::toDTO)
+                .collect(Collectors.toList());
+    }
 }

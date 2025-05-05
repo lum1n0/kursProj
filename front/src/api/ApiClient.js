@@ -109,3 +109,25 @@ export const getUserOrdersByCategories = async (userId) => {
     throw error;
   }
 };
+
+export const getSpendingReport = async (userId, year, month) => {
+  try {
+    const response = await ApiClient.get('/api/orders/spending-report', {
+      params: { userId, year, month }
+    });
+    return handleResponse(response);
+  } catch (error) {
+    console.error(`Failed to fetch spending report:`, error);
+    throw error;
+  }
+};
+
+export const getUserMasterRequests = async (userId) => {
+  try {
+    const response = await ApiClient.get(`/api/master-requests/user/${userId}`);
+    return handleResponse(response);
+  } catch (error) {
+    console.error(`Failed to fetch master requests for user ${userId}:`, error);
+    throw error;
+  }
+};

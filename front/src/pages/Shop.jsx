@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
-import ProductCard from '../components/ProductCard';
+import Header from '../components/Templates/Header.jsx';
+import Footer from '../components/Templates/Footer.jsx';
+import ProductCard from '../components/ShopComponents/ProductCard.jsx';
 import { useShopStore } from '../store/shopStore';
 import { ApiClient } from '../api/ApiClient';
 import { useAuthStore } from '../store/authStore';

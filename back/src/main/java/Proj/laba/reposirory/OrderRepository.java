@@ -28,4 +28,14 @@ public interface OrderRepository extends GenericRepository<Order> {
 
     @Query("SELECT o FROM Order o JOIN FETCH o.productService JOIN FETCH o.user WHERE o.user.id = :userId AND o.productService.productCategory.id IN (1, 2)")
     List<Order> findByUserIdAndCategoryIds(@Param("userId") Long userId);
+
+    @Query("SELECT pc.title AS category, SUM(o.finalPrice) AS totalSpent " +
+            "FROM Order o " +
+            "JOIN o.productService ps " +
+            "JOIN ps.productCategory pc " +
+            "WHERE o.user.id = :userId " +
+            "AND YEAR(o.orderDate) = :year " +
+            "AND MONTH(o.orderDate) = :month " +
+            "GROUP BY pc.title")
+    List<Object[]> getSpendingReport(@Param("userId") Long userId, @Param("year") int year, @Param("month") int month);
 }

@@ -1,6 +1,7 @@
 package Proj.laba.controller.rest;
 
 import Proj.laba.dto.OrderDTO;
+import Proj.laba.dto.SpendingReportDTO;
 import Proj.laba.model.Order;
 import Proj.laba.service.OrderService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -83,5 +84,15 @@ public class OrderController extends GenericController<Order, OrderDTO> {
     public ResponseEntity<OrderDTO> updateOrderStatus(@PathVariable Long orderId, @RequestBody String status) {
         OrderDTO updatedOrder = orderService.updateOrderStatus(orderId, status);
         return ResponseEntity.ok(updatedOrder);
+    }
+
+    @Operation(summary = "Получить отчёт по тратам пользователя")
+    @GetMapping("/spending-report")
+    public ResponseEntity<List<SpendingReportDTO>> getSpendingReport(
+            @RequestParam Long userId,
+            @RequestParam int year,
+            @RequestParam int month) {
+        List<SpendingReportDTO> report = orderService.getSpendingReport(userId, year, month);
+        return ResponseEntity.ok(report);
     }
 }
