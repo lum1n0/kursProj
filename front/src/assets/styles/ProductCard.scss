@@ -1,18 +1,29 @@
+
 .product-card {
   .card {
     border-radius: 15px;
     border: 1px solid #ccc;
     padding: 15px;
     text-align: center;
+    height: 400px; /* Фиксированная высота для всех карточек */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* Равномерное распределение содержимого */
 
     .card-img-top {
       width: 200px;
+      height: 150px; /* Фиксированная высота изображений */
+      object-fit: cover; /* Сохранение пропорций изображения */
       margin: 0 auto;
       display: block;
     }
 
     .card-body {
       padding-top: 15px;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
 
       .card-title {
         font-size: 18px;
@@ -24,10 +35,20 @@
         font-size: 14px;
         color: #333;
         margin: 0 0 10px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        -webkit-line-clamp: 2; /* Ограничение текста до 2 строк */
+        -webkit-box-orient: vertical;
       }
 
       .card-price {
         font-size: 16px;
+        margin: 0 0 10px;
+      }
+
+      .card-status {
+        font-size: 14px;
         margin: 0 0 10px;
       }
 
@@ -38,6 +59,7 @@
         border: none;
         border-radius: 25px;
         cursor: pointer;
+        margin-top: 10px; /* Отступ сверху для кнопок */
 
         &:hover {
           background-color: #007acc;

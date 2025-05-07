@@ -51,6 +51,7 @@ public class DataInitializer implements CommandLineRunner {
         if (productServiceRepository.count() == 0) {
             ProductService initialProduct = new ProductService();
             initialProduct.setName("начальный тариф");
+            initialProduct.setDescription("тариф присваивается по умолчанию");
             initialProduct.setPrice(BigDecimal.ZERO);
             initialProduct.setStatus("в наличии"); // Добавляем статус
             initialProduct.setImageUrl("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQBQY54bP2CxjmHdg_6yAGjR0Zjgc6d7v-_Ng&s");

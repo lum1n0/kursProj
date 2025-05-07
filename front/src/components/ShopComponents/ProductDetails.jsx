@@ -43,23 +43,21 @@ function ProductDetails() {
     }
 
     if (product.categoryId === 3) {
-      // Для товаров с категорией ID 3 создаем заказ напрямую
       const quantity = 1;
-      const finalPrice = product.price * quantity; // Вычисляем finalPrice
+      const finalPrice = product.price * quantity;
       try {
         const response = await ApiClient.post('/api/orders', {
           userId: user.id,
           productServiceId: product.id,
           quantity: quantity,
-          finalPrice: finalPrice, // Добавляем обязательное поле
-          deliveryAddress: null, // Устанавливаем адрес доставки как null
+          finalPrice: finalPrice,
+          deliveryAddress: null,
         });
         Swal.fire('Успех', 'Товар успешно куплен', 'success');
       } catch (error) {
         Swal.fire('Ошибка', error.response?.data?.message || 'Не удалось совершить покупку', 'error');
       }
     } else {
-      // Для остальных товаров перенаправляем на страницу оформления
       navigate('/order/new', { state: { product } });
     }
   };
