@@ -1,7 +1,6 @@
 /home/gtr/Рабочий стол/kursProj/back/src/main/java/Proj/ServletInitializer.java
 /home/gtr/Рабочий стол/kursProj/back/src/main/java/Proj/SprinklabApplication.java
 /home/gtr/Рабочий стол/kursProj/back/src/main/java/Proj/laba/config/DataInitializer.java
-/home/gtr/Рабочий стол/kursProj/back/src/main/java/Proj/laba/config/DatabaseConfig.java
 /home/gtr/Рабочий стол/kursProj/back/src/main/java/Proj/laba/config/ModelMapperConfig.java
 /home/gtr/Рабочий стол/kursProj/back/src/main/java/Proj/laba/config/OpenApiConfig.java
 /home/gtr/Рабочий стол/kursProj/back/src/main/java/Proj/laba/controller/rest/AuthController.java

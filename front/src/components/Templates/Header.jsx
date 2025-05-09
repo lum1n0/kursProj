@@ -19,6 +19,9 @@ function Header() {
     navigate('/');
   };
 
+
+
+
   return (
     <header className="head_conteiner">
       <nav className="nav_bar">

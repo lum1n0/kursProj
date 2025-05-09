@@ -15,6 +15,7 @@ function User() {
     return (
         <div className="user">
             <Header />
+            <div className="page-conteiner">
             <div className="container">
                 <div className="sidebar">
                     <button onClick={() => setCurrentSection('profile')}>Мой профиль</button>
@@ -29,6 +30,7 @@ function User() {
                     {currentSection === 'requests' && <MasterRequestsSection userId={user.id} />}
                 </div>
             </div>
+            /</div>
             <Footer />
         </div>
     );

@@ -18,31 +18,18 @@ function Home() {
           <div className="cards_block">
             <div className="duo_top">
               <div className="top_card">
-                <h3 className="card_title">Оплатить <span className="blue_title">смартфон/планшет</span></h3>
+                <h3 className="card_title">Удобная <span className="blue_title">оплата</span></h3>
                 <div className="form_card">
-                  <form>
-                    <div className="forma_my">
-                      <div className="form_item">
-                        <label htmlFor="prices">Сумма</label>
-                        <div className="input-container">
-                          <input id="prices" type="text" name="prices" placeholder="500" />
-                          <span className="currency">₽</span>
-                        </div>
-                      </div>
-                      <div className="form_item">
-                        <label htmlFor="telephon">Номер телефона</label>
-                        <input type="tel" name="telephon" id="telephon" placeholder="+7" />
-                      </div>
-                    </div>
-                    <button className="blue_btn">Оплатить</button>
-                  </form>
+                <div className="card_text">Пополнения баланса через сайт</div>
+                    <div className="card_text">Автоматическое списания</div>
+
                 </div>
               </div>
               <div className="top_card card_right">
                 <div className="card_child_left">
-                  <h3 className="card_title">Настроить свой тариф</h3>
+                  <h3 className="card_title">Выберите подходящий тариф</h3>
                   <p className="card_text">Выбери нужное количество минут и гигабайтов</p>
-                  <Link className="card_btn" to="/rate">Выбрать</Link>
+                  <Link className="card_btn" to="Shop">Выбрать</Link>
                 </div>
                 <img src="/img/card_top_img.png" alt="" className="card_top" />
               </div>
@@ -131,9 +118,7 @@ function Home() {
           </div>
         </section>
 
-        <section className="conteiner" id="z5">
-          <div id="map"></div>
-        </section>
+        
         <Footer />
       </div>
   );

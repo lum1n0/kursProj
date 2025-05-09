@@ -74,7 +74,7 @@ public class AuthController {
 
             // Создание cookie
             ResponseCookie cookie = ResponseCookie.from("jwtToken", jwt)
-                    .httpOnly(false) // Доступно для JavaScript
+                    .httpOnly(true) // Доступно для JavaScript
                     .secure(false) // Для localhost (в продакшене true)
                     .path("/") // Доступно для всего приложения
                     .maxAge(10 * 60) // 10 минут

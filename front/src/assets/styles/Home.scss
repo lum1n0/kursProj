@@ -421,6 +421,7 @@
 
 .dark_time {
   .home {
+    background-color: #121212;
     .conteiner {
       .title_hero {
         .blue_title {
@@ -430,9 +431,10 @@
 
       #z2 {
         .cards_block {
+
           .duo_top {
             .top_card {
-              background-color: #2a2a2a;
+              background-color: #0056b3 !important;
 
               .card_title {
                 .blue_title {
@@ -556,6 +558,7 @@
             border-color: #444;
 
             .card_elemt_text {
+              color: #fff;
               a.blue_title {
                 color: #4db8ff;
               }
