@@ -3,6 +3,24 @@
   flex-direction: column;
   min-height: 100vh;
 }
+.no-active{
+  background-color: #434c5d !important;
+  border-color: #434c5d !important;
+  color: #fff !important;
+  &:hover{
+    background-color: #0056b3 !important;
+    transition: 0.5s;
+  }
+
+}
+.active{
+
+  &:hover{
+    background-color: #007bff !important;
+    color: white !important;
+    border-color: #007bff !important;
+  }
+}
 
 
 .support {
@@ -79,6 +97,9 @@
       color: #666;
       margin-top: 20px;
     }
+  }
+  .footer{
+    padding-top: 318px;
   }
 }
 

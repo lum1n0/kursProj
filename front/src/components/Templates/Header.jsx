@@ -3,6 +3,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore.js';
 import { useModalStore } from '../../store/modalStore.js';
 import { useThemeStore } from '../../store/themeStore.js';
+import { logout as apiLogout } from '../../api/ApiClient.js'; // Добавь импорт функции logout
+import Swal from 'sweetalert2'; // Если используешь SweetAlert для уведомлений
 import '../../assets/styles/Header.scss';
 
 function Header() {
@@ -13,10 +15,23 @@ function Header() {
 
   const isMaster = user && user.roleId === 3; // Предполагаем, что MASTER имеет roleId = 3
 
-  const handleLogout = () => {
-    setIsLoggedIn(false);
-    setIsAdmin(false);
-    navigate('/');
+  const handleLogout = async () => { // Сделай функцию асинхронной
+    try {
+      await apiLogout(); // Вызываем API для выхода
+      setIsLoggedIn(false);
+      setIsAdmin(false);
+      // Если у тебя есть функция для очистки данных пользователя в сторе, вызови её:
+      // if (clearUser) {
+      //   clearUser();
+      // }
+      // Или вручную:
+      useAuthStore.setState({ user: null }); // Очищаем пользователя из стора
+
+      navigate('/');
+      Swal.fire('Успех', 'Вы успешно вышли из системы.', 'success');
+    } catch (error) {
+      Swal.fire('Ошибка', 'Не удалось выйти из системы. Попробуйте снова.', 'error');
+    }
   };
 
 
@@ -38,14 +53,14 @@ function Header() {
         <div className="right">
           {isLoggedIn ? (
             <div className="auth-links">
-              <Link to="/user" className="nav_link">Профиль</Link>
+              <Link to="/user" className="nav_link" style={{ padding: '7px 0 0 0' }}>Профиль</Link>
               {isAdmin && (
-                <Link to="/admin" className="nav_link">Админ-панель</Link>
+                <Link to="/admin" className="nav_link" style={{ padding: '7px 0 0 0' }}>Админ-панель</Link>
               )}
               {isMaster && (
-                <Link to="/master" className="nav_link">Панель мастера</Link>
+                <Link to="/master" className="nav_link" style={{ padding: '7px 0 0 0' }}>Панель мастера</Link>
               )}
-              <button onClick={handleLogout} className="nav_link logout-btn">Выйти</button>
+              <button onClick={handleLogout} className="logout-btn">Выйти</button>
             </div>
           ) : (
             <button onClick={openAuthModal} className="login-btn">Войти / Зарегистрироваться</button>

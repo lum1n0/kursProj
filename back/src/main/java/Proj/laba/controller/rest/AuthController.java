@@ -7,6 +7,8 @@ import Proj.laba.model.User;
 import Proj.laba.security.JwtUtils;
 import Proj.laba.security.UserDetailsImpl;
 import Proj.laba.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -18,6 +20,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
@@ -77,7 +80,7 @@ public class AuthController {
                     .httpOnly(true) // Доступно для JavaScript
                     .secure(false) // Для localhost (в продакшене true)
                     .path("/") // Доступно для всего приложения
-                    .maxAge(10 * 60) // 10 минут
+                    .maxAge(30 * 60) // 30 минут
                     .sameSite("Lax") // Для локальной разработки
                     .build();
     
@@ -113,4 +116,26 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not authenticated");
         }
     }
+    @PostMapping("/logout")
+    public ResponseEntity<?> logoutUser(HttpServletRequest request, HttpServletResponse response) {
+        // Очищаем security context
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null) {
+            new SecurityContextLogoutHandler().logout(request, response, auth);
+        }
+
+        // Создаем cookie с истекшим сроком действия
+        ResponseCookie cookie = ResponseCookie.from("jwtToken", "") // Пустое значение
+                .httpOnly(true)
+                .secure(false) // Должно совпадать с настройками при установке (false для localhost)
+                .path("/")
+                .maxAge(0) // Устанавливаем время жизни в 0, чтобы удалить cookie
+                .sameSite("Lax") // Должно совпадать
+                .build();
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                .body("You've been signed out!");
+    }
+
 }

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { ApiClient } from '../../api/ApiClient.js';
 import Swal from 'sweetalert2';
 import AdminHeader from "../../components/AdminComponents/AdminHeader.jsx";
+import "../../assets/styles/AdminOrders.scss";
 
 function AdminOrders() {
   const [orders, setOrders] = useState([]);
@@ -33,10 +34,10 @@ function AdminOrders() {
   };
 
   return (
-      <div>
+      <div className="section">
         <AdminHeader />
         <h2>Управление заказами</h2>
-        <table>
+        <table className="order-table">
           <thead>
           <tr>
             <th>ID</th>

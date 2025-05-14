@@ -103,8 +103,8 @@ public class UserService extends GenericService<User, UserResponseDTO> {
 
         log.info("Пользователь сохранен: {}", user);
 
-        ProductService initialTariff = productServiceRepository.findById(4L)
-                .orElseThrow(() -> new NotFoundException("Initial tariff with id=4 not found"));
+        ProductService initialTariff = productServiceRepository.findById(1L)
+                .orElseThrow(() -> new NotFoundException("Initial tariff with id=1 not found"));
 
         user.setTariff(initialTariff);
 
