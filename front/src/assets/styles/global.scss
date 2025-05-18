@@ -35,11 +35,53 @@ a {
     color: #e0e0e0;
   }
 
-.card_right{
-  background-color: #333;
-}
+
 
   // Дополнительные стили для тёмной темы можно добавить здесь
+}
+
+.dark_time .card_right{
+  background-color: #333 !important;
+  color: #fff;
+
+}
+
+.dark_time .top_card{
+  background-color: #333 !important;
+  color: #fff;
+  .card_btn{
+    background-color: #434c5d !important;
+  }
+}
+.dark_time .bot_card{
+  background-color: #333 !important;
+  color: #fff;
+  .card_btn{
+    background-color: #434c5d !important;
+  }
+}
+
+.dark_time .rate_card{
+  background-color: #333 !important;
+  color: #fff;
+  .card_btn{
+    background-color: #434c5d !important;
+  }
+}
+.dark_time .card_item{
+  background-color: #333 !important;
+  color: #fff;
+  .card_btn{
+    background-color: #434c5d !important;
+  }
+}
+
+.dark_time .title_sect{
+  color: #89909c;
+}
+
+.dark_time .title_hero{
+  color: #89909c;
 }
 
 // Другие общие стили...

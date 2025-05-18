@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { ApiClient } from '../../api/ApiClient.js';
 import Swal from 'sweetalert2';
 import AdminHeader from "../../components/AdminComponents/AdminHeader.jsx";
+import "../../assets/styles/AdminOrders.scss";
 
 function AdminOrders() {
   const [orders, setOrders] = useState([]);
@@ -33,11 +34,11 @@ function AdminOrders() {
   };
 
   return (
-      <div>
-        <AdminHeader />
-        <h2>Управление заказами</h2>
-        <table>
-          <thead>
+    <div className="section">
+      <AdminHeader />
+      <h2>Управление заказами</h2>
+      <table className="order-table">
+        <thead>
           <tr>
             <th>ID</th>
             <th>Пользователь</th>
@@ -46,32 +47,39 @@ function AdminOrders() {
             <th>Статус</th>
             <th>Действия</th>
           </tr>
-          </thead>
-          <tbody>
+        </thead>
+        <tbody>
           {orders.map((order) => (
-              <tr key={order.id}>
-                <td>{order.id}</td>
-                <td>{order.userLogin}</td>
-                <td>{order.productServiceName}</td>
-                <td>{order.deliveryAddress}</td>
-                <td>{order.status}</td>
-                <td>
-                  <select
-                      value={order.status}
-                      onChange={(e) => handleStatusChange(order.id, e.target.value)}
-                  >
-                    <option value="в обработке">в обработке</option>
-                    <option value="доставляется">доставляется</option>
-                    <option value="доставлен">доставлен</option>
-                  </select>
-                </td>
-              </tr>
+            <tr key={order.id}>
+              <td>{order.id}</td>
+              <td>{order.userLogin}</td>
+              <td>{order.productServiceName}</td>
+              <td>{order.deliveryAddress}</td>
+              <td>{order.status}</td>
+              <td>
+                <select
+                  value={order.status}
+                  onChange={(e) => handleStatusChange(order.id, e.target.value)}
+                  aria-label={`Изменить статус заказа ${order.id}`}
+                >
+                  <option value="в обработке">в обработке</option>
+                  <option value="доставляется">доставляется</option>
+                  <option value="доставлен">доставлен</option>
+                </select>
+              </td>
+            </tr>
           ))}
-          </tbody>
-        </table>
-        <button onClick={() => setPage(page - 1)} disabled={page === 0}>Предыдущая</button>
-        <button onClick={() => setPage(page + 1)} disabled={page === totalPages - 1}>Следующая</button>
+        </tbody>
+      </table>
+      <div className="pagination">
+        <button onClick={() => setPage(page - 1)} disabled={page === 0}>
+          Предыдущая
+        </button>
+        <button onClick={() => setPage(page + 1)} disabled={page === totalPages - 1}>
+          Следующая
+        </button>
       </div>
+    </div>
   );
 }
 

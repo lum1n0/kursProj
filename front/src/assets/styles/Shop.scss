@@ -47,7 +47,7 @@
       }
 
       .products {
-        width: 75%;
+        width: 70%;
 
         .search-filter {
           display: flex;
@@ -65,7 +65,7 @@
         .row_card {
           display: flex;
           flex-wrap: wrap;
-          gap: 25px;
+          gap: 20px;
         }
       }
     }
@@ -112,6 +112,17 @@
               background-color: #1e1e1e;
               color: #e0e0e0;
               border-color: #444;
+            }
+          }
+        }
+        .row_card{
+          .product-card{
+            .card{
+              .card-body{
+                .card-title{
+                  color: #fff !important;
+                }
+              }
             }
           }
         }

@@ -55,6 +55,7 @@ function AuthModal() {
         <div className="modal-content">
           <span className="close" onClick={closeAuthModal}>×</span>
           <h2>{isLogin ? 'Вход' : 'Регистрация'}</h2>
+          <div className="auth-column">
           <form onSubmit={handleSubmit(onSubmit)}>
             {!isLogin && (
                 <div>
@@ -78,10 +79,11 @@ function AuthModal() {
             )}
             <button type="submit">{isLogin ? 'Войти' : 'Зарегистрироваться'}</button>
           </form>
-          <button onClick={() => setIsLogin(!isLogin)}>
+          <button className="" onClick={() => setIsLogin(!isLogin)}>
             {isLogin ? 'Создать аккаунт' : 'У меня есть аккаунт'}
           </button>
           <Link to="/forgot-password">Забыли пароль?</Link>
+          </div>
         </div>
       </div>
   );

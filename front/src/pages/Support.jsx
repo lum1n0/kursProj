@@ -21,13 +21,13 @@ function Support() {
             <div className="form-toggle">
               <button
                 onClick={() => setFormType('support')}
-                className={formType === 'support' ? 'active' : ''}
+                className={formType === 'support' ? 'active' : 'no-active'}
               >
                 Задать вопрос
               </button>
               <button
                 onClick={() => setFormType('master')}
-                className={formType === 'master' ? 'active' : ''}
+                className={formType === 'master' ? 'active' : 'no-active'}
               >
                 Вызов мастера
               </button>

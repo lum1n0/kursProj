@@ -4,7 +4,7 @@
     padding: 10px;
     border: 1px solid #ced4da;
     border-radius: 5px;
-    width: 100%;
+    width: 98%;
     font-size: 16px;
   }
     form {
@@ -15,11 +15,14 @@
         padding: 10px;
         border: 1px solid #ccc;
         border-radius: 4px;
+        width: 98%;
+
       }
       button {
         padding: 10px;
         background-color: #007bff;
         color: white;
+        // width: 100% !important;
         border: none;
         border-radius: 4px;
         cursor: pointer;
@@ -31,5 +34,32 @@
         color: red;
         margin: 0 0 10px;
       }
+
     }
   }
+// .react-datepicker__navigation .react-datepicker__navigation--next .react-datepicker__navigation--next--with-time{
+//   left: 85px !important;
+
+// }
+.react-datepicker__month-container{
+  padding-top: 10px!important;
+}
+
+.dark_time{
+.component-title{
+  color: #ffffff !important;
+}
+  form{
+    textarea, input{
+      background-color: #2a2a2a !important;
+      &::placeholder,
+      &:active,
+      &:focus{
+        color: #fff !important
+      }
+
+    }
+  }
+
+
+}

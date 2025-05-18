@@ -76,7 +76,7 @@ function ProductDetails() {
           <p>{product.description || 'Описание отсутствует'}</p>
           <p>Цена: {product.price} руб.</p>
           <p>Статус: {product.status || 'Не указано'}</p>
-          <button onClick={handleBuy} disabled={!isAvailable || isLoading}>
+          <button className="btn-bay" onClick={handleBuy} disabled={!isAvailable || isLoading}>
             {isAvailable ? 'Купить' : 'Недоступно'}
           </button>
         </div>

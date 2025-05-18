@@ -131,3 +131,25 @@ export const getUserMasterRequests = async (userId) => {
     throw error;
   }
 };
+
+export const logout = async () => {
+  try {
+    // Используем POST, так как это изменяет состояние сессии на сервере
+    const response = await ApiClient.post('/auth/logout');
+    return handleResponse(response); // handleResponse должен быть настроен на обработку успешных ответов
+  } catch (error) {
+    console.error('Logout failed:', error);
+    // Можно специфично обработать ошибки сети или ответа сервера
+    if (error.response) {
+      // Запрос был сделан, и сервер ответил кодом состояния, который выходит за пределы 2xx
+      console.error('Logout server error:', error.response.data);
+    } else if (error.request) {
+      // Запрос был сделан, но ответ не был получен
+      console.error('Logout network error:', error.request);
+    } else {
+      // Что-то случилось при настройке запроса, вызвавшее ошибку
+      console.error('Logout setup error:', error.message);
+    }
+    throw error; // Перебрасываем ошибку для дальнейшей обработки в компоненте
+  }
+};

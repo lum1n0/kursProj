@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 @Data
 @Entity
 @Table(name = "user_history")
+@SequenceGenerator(name = "default_generator", sequenceName = "user_history_id_seq", allocationSize = 1)
 public class UserHistory extends GenericModel{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

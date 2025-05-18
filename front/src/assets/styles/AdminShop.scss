@@ -2,6 +2,7 @@
   max-width: 1200px;
   margin: 0 auto;
   padding: 20px;
+  min-height: 100vh; // Changed from height to min-height for content flexibility
 
   h1 {
     font-size: 32px;
@@ -9,8 +10,18 @@
     margin-bottom: 40px;
   }
 
+  .loading-state, .error-state {
+    text-align: center;
+    font-size: 18px;
+    padding: 20px;
+  }
+
   .form-section {
     margin-bottom: 40px;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 
     h2 {
       font-size: 24px;
@@ -21,69 +32,130 @@
       display: flex;
       flex-direction: column;
       gap: 15px;
-      max-width: 500px;
+      max-width: 600px; // Increased max-width for better form layout
+      margin: 0 auto; // Center form
 
-      input,
-      select {
-        padding: 10px;
+      input[type="text"],
+      input[type="number"],
+      input[type="file"],
+      select,
+      textarea {
+        padding: 12px; // Increased padding
         border: 1px solid #ced4da;
         border-radius: 5px;
+        font-size: 16px; // Added font-size
       }
 
-      p {
+      textarea {
+        min-height: 80px; // Set min-height for textarea
+        resize: vertical; // Allow vertical resize
+      }
+
+      .file-upload-label {
+        font-size: 14px;
+        color: #555;
+        margin-bottom: -10px; // Adjust spacing
+      }
+
+      p { // Error messages
         color: #d32f2f;
-        margin: 5px 0 0;
+        margin: -10px 0 0 5px; // Adjust spacing for errors
         font-size: 14px;
       }
 
       button {
-        padding: 10px 20px;
+        padding: 12px 20px; // Adjusted padding
         background-color: #00aeef;
         color: #fff;
         border: none;
         border-radius: 25px;
         cursor: pointer;
+        font-size: 16px; // Added font-size
+        transition: background-color 0.3s ease;
 
         &:hover {
           background-color: #007acc;
+        }
+      }
+      .cancel-button {
+        background-color: #6c757d;
+        &:hover {
+          background-color: #5a6268;
         }
       }
     }
   }
 
-  .product-list {
-    list-style: none;
+  // Grid styles for products
+  .product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); // Responsive grid
+    gap: 20px;
     padding: 0;
+  }
 
-    li {
-      display: flex;
-      align-items: center;
-      gap: 20px;
-      padding: 15px;
-      border-bottom: 1px solid #ddd;
+  .admin-product-card {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; // Ensures buttons are at the bottom
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 
-      img {
-        width: 50px;
-        height: 50px;
-        object-fit: cover;
+    .admin-product-card-image {
+      width: 100%;
+      height: 200px; // Fixed height for image container
+      object-fit: cover; // Changed to cover for better aesthetics
+      border-radius: 4px;
+      margin-bottom: 10px;
+    }
+
+    .admin-product-card-details {
+      h4 {
+        font-size: 18px;
+        margin-bottom: 8px;
+        color: #333;
       }
+      p {
+        font-size: 14px;
+        margin-bottom: 5px;
+        color: #555;
+      }
+      .admin-product-card-description {
+        font-size: 13px;
+        color: #666;
+        max-height: 60px; // Limit description height
+        overflow-y: auto; // Allow scrolling for long descriptions
+        margin-bottom: 10px;
+      }
+    }
+
+    .admin-product-card-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px; // Add margin to separate from details
 
       button {
-        padding: 8px 16px;
-        background-color: #00aeef;
+        flex-grow: 1; // Make buttons take equal width
+        padding: 10px 15px; // Adjusted padding
         color: #fff;
         border: none;
         border-radius: 25px;
         cursor: pointer;
-        margin-left: 10px;
+        font-size: 14px; // Added font-size
+        transition: background-color 0.3s ease;
 
-        &:hover {
-          background-color: #007acc;
+        &.edit-button {
+          background-color: #00aeef;
+          &:hover {
+            background-color: #007acc;
+          }
         }
 
-        &:last-child {
+        &.delete-button {
           background-color: #dc3545;
-
           &:hover {
             background-color: #c82333;
           }
@@ -93,45 +165,75 @@
   }
 }
 
+// Dark theme adjustments
 .dark_time {
   .admin-shop {
     color: #e0e0e0;
+    background-color: #121212; // Dark background for the page
 
     .form-section {
+      background-color: #1e1e1e; // Darker background for form section
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
       form {
-        input,
-        select {
-          background-color: #1e1e1e;
+        input[type="text"],
+        input[type="number"],
+        input[type="file"],
+        select,
+        textarea {
+          background-color: #2c2c2c; // Darker input fields
           color: #e0e0e0;
           border-color: #444;
         }
 
+        .file-upload-label {
+          color: #bbb;
+        }
+
         button {
           background-color: #007acc;
-
           &:hover {
             background-color: #0056b3;
+          }
+        }
+        .cancel-button {
+          background-color: #454d54;
+          &:hover {
+            background-color: #394046;
           }
         }
       }
     }
 
-    .product-list {
-      li {
-        border-bottom-color: #444;
+    .admin-product-card {
+      background-color: #1e1e1e;
+      border-color: #444;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.5);
 
+      .admin-product-card-details {
+        h4 {
+          color: #e0e0e0;
+        }
+        p {
+          color: #bbb;
+        }
+        .admin-product-card-description {
+          color: #aaa;
+        }
+      }
+
+      .admin-product-card-actions {
         button {
-          background-color: #007acc;
-
-          &:hover {
-            background-color: #0056b3;
+          &.edit-button {
+            background-color: #007acc;
+            &:hover {
+              background-color: #0056b3;
+            }
           }
 
-          &:last-child {
-            background-color: #ff4d6a;
-
+          &.delete-button {
+            background-color: #ff4d6a; // Brighter red for dark theme
             &:hover {
-              background-color: #c82333;
+              background-color: #e03c58; // Darker hover for red
             }
           }
         }

@@ -17,7 +17,7 @@ function AdminHeader() {
               <Link to="/admin/shop" className="nav_link">Товары и Услуги</Link>
               <Link to="/admin/answer" className="nav_link">Ответы на вопросы</Link>
               <Link to="/admin/orders" className="nav_link">Заказы</Link>
-              <Link to="/admin/products" className="nav_link">Управление товарами</Link>
+              {/*<Link to="/admin/products" className="nav_link">Управление товарами</Link>*/}
               <a
                   href="http://localhost:8080/swagger-ui/index.html"
                   className="nav_link"

@@ -32,7 +32,7 @@ function MasterForm() {
 
   return (
       <div className="master-form">
-        <h2>Вызов мастера</h2>
+        <h2 className="component-title">Вызов мастера</h2>
         <form onSubmit={handleSubmit(onSubmit)}>
         <textarea
             {...register('description', { required: 'Описание обязательно' })}

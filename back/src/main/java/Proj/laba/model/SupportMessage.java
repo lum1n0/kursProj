@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 @Setter
 @Entity
 @Table(name = "support_messages")
+@SequenceGenerator(name = "default_generator", sequenceName = "support_messages_seq", allocationSize = 1)
 public class SupportMessage extends GenericModel {
 
     @Column(name = "user_id", nullable = false)
